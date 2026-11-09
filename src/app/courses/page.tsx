@@ -4,12 +4,8 @@ export default function Page() {
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">从零开始，路线清晰</p>
-        <h1>打好网络安全基础。</h1>
-        <p>
-          规划 8
-          节课程，前三节完整开放。英文教材配中文词汇注释，按自己的节奏学习。
-        </p>
+        <h1>课程目录</h1>
+        <p>3 节开放课程 · 5 节后续课程</p>
       </header>
       <div className="library-banner">
         <span className="live-dot" /> 基础学习路线{" "}

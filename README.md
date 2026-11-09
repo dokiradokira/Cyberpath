@@ -1,6 +1,10 @@
-# CyberPath V2
+# CyberPath V2.1
 
 面向零基础中文学习者的网络安全学习网站：**中文界面和操作引导、英文课程正文、中文术语注释、独立英语词汇学习**。
+
+## V2.1 界面调整
+
+移除口号式文案、页首装饰标签和大标题标点。课程标题以英文为主，下一行提供中文注释；操作入口保留中文。侧栏、空状态和统计说明改为直接描述用途与状态，使用现有线性图标，不使用 emoji。
 
 ## V2 更新与手机启动
 
@@ -66,7 +70,7 @@ npm run test:lan
 powershell -ExecutionPolicy Bypass -File tests/Test-Agents.ps1
 ```
 
-`test:e2e` 在独立端口 3100 自动启动生产服务（因此先 build），不复用用户的开发服务。`test:lan` 在端口 3000 启动或复用开发服务，通过实际网卡 IPv4 地址模拟手机来源测试。测试覆盖 Chromium 和 WebKit iPhone 模拟、页面导航、测验和保存恢复、四个实验、导出/非法导入/重置，以及 375、390、768、1024、1440 宽度。WebKit 模拟不等于真机 Safari 验收。失败时查看 `test-results` 或 `test-results-lan` 中的 trace。
+`test:e2e` 在独立端口 3100 自动启动生产服务（因此先 build），不复用用户的开发服务。`test:lan` 在独立端口 3102 启动生产服务，通过实际网卡 IPv4 地址模拟手机来源测试。测试覆盖 Chromium 和 WebKit iPhone 模拟、页面导航、测验和保存恢复、四个实验、导出/非法导入/重置，以及 375、390、768、1024、1440 宽度。WebKit 模拟不等于真机 Safari 验收。失败时查看 `test-results` 或 `test-results-lan` 中的 trace。
 
 生产运行：
 

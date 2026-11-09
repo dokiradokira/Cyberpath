@@ -5,7 +5,7 @@ import { Shell } from "../components/layout/shell";
 import "./globals.css";
 export const metadata: Metadata = {
   title: {
-    default: "CyberPath V2 — 中文引导，双语学习网络安全",
+    default: "CyberPath — Network Security Learning",
     template: "%s | CyberPath",
   },
   description:

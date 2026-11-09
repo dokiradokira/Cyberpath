@@ -83,11 +83,8 @@ export function VocabularyView() {
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">VOCABULARY / 网络安全英语</p>
         <h1>词汇学习</h1>
-        <p>
-          先理解安全知识，再积累表达它的英语。按课程查词、收藏生词，用闪卡和释义测验巩固记忆。
-        </p>
+        <p>网络安全术语 · 搜索、收藏与复习</p>
       </header>
       <div className="stats-grid">
         <div className="panel">

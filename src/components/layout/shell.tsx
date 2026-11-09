@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ArrowUpRight,
   BookOpen,
   FlaskConical,
   LayoutDashboard,
@@ -34,7 +33,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span className="brand-icon">
             <ShieldCheck size={25} />
           </span>
-          CyberPath<span className="version">V2</span>
+          CyberPath<span className="version">V2.1</span>
         </Link>
         <p className="nav-label">你的学习空间</p>
         <nav aria-label="主导航">
@@ -55,22 +54,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="mini-mark">学习 · 实验 · 理解</div>
-          <p>
-            迈出第一步，走进
-            <br />
-            更安全的数字世界。
-          </p>
-          <Link prefetch={false} href="/courses">
-            探索学习路线 <ArrowUpRight size={16} />
-          </Link>
-          <div className="profile">
-            <span>Y</span>
-            <div>
-              你的学习旅程
-              <small>本地学习档案 · 无需账号</small>
-            </div>
-          </div>
+          <p>Local workspace</p>
+          <small>学习记录保存在当前浏览器</small>
         </div>
       </aside>
       <div className="workspace">
@@ -137,7 +122,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </noscript>
         </main>
         <footer>
-          为好奇心而构建。 <span>CyberPath / 一步一个概念，理解网络安全。</span>
+          CyberPath <span>Network security · English learning</span>
         </footer>
       </div>
     </div>

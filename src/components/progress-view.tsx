@@ -26,9 +26,8 @@ export function ProgressView() {
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">每一步都值得记录</p>
-        <h1>你的进度，你的节奏。</h1>
-        <p>记录已经掌握的知识，保留仍想探索的问题 。</p>
+        <h1>学习进度</h1>
+        <p>课程、测验与笔记</p>
       </header>
       <section className="panel">
         <h2>学习档案</h2>
@@ -136,7 +135,7 @@ export function ProgressView() {
         )}
       </section>
       <section className="panel">
-        <h2>学习数据，由你保管</h2>
+        <h2>数据管理</h2>
         <p>
           进度仅保存在当前浏览器。无痕模式、清除网站数据或换设备会影响记录。请定期导出备份，在设备之间用
           JSON 导入迁移。

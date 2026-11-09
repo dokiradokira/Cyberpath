@@ -5,9 +5,8 @@ export default function Page() {
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">在动手中理解</p>
-        <h1>你的网络实验室。</h1>
-        <p>让看不见的原理变得直观。四个安全模拟，不发送真实网络流量。</p>
+        <h1>互动实验</h1>
+        <p>四个本地模拟，不发送真实网络流量</p>
       </header>
       <nav className="lab-tabs" aria-label="实验快捷导航">
         {Object.entries(labInfo).map(([id, info]) => (

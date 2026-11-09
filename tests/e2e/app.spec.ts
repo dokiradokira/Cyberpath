@@ -9,7 +9,7 @@ test("navigation, real lessons, previews, and error-free console", async ({
     if (msg.type() === "error") errors.push(msg.text());
   });
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await page.getByRole("link", { name: "课程目录", exact: true }).click();
   await expect(page.getByText("即将推出", { exact: true })).toHaveCount(5);
   for (const slug of slugs) {
@@ -20,13 +20,9 @@ test("navigation, real lessons, previews, and error-free console", async ({
     await expect(page.getByRole("button", { name: "提交测验" })).toBeDisabled();
   }
   await page.getByRole("link", { name: "互动实验", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "你的网络实验室。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "互动实验" })).toBeVisible();
   await page.getByRole("link", { name: "学习进度", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "你的进度，你的节奏。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习进度" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 test("quiz, completion, vocabulary, notes, and theme persist", async ({
@@ -179,7 +175,7 @@ test("learning mode, valid imports, confirmations, and visual previews", async (
   await page.getByRole("button", { name: "重置学习数据" }).click();
   await expect(page.getByText("Imported note", { exact: true })).toBeVisible();
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("dashboard.png"),
     fullPage: true,

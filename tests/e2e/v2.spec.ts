@@ -51,7 +51,7 @@ test("V2 server-rendered content remains readable without JavaScript", async ({
   });
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:3100/");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await expect(page.getByText("Opening your learning space")).toHaveCount(0);
   await page.getByRole("link", { name: "课程目录", exact: true }).click();
   await expect(page.getByText("即将推出", { exact: true })).toHaveCount(5);
@@ -66,7 +66,7 @@ test("V2 failed app scripts show recovery instead of a blank loading screen", as
 }) => {
   await page.route("**/_next/**/*.js*", (route) => route.abort());
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await expect(page.locator("#startup-recovery")).toBeVisible({
     timeout: 12000,
   });
@@ -83,7 +83,7 @@ test("V2 blocked browser storage never prevent mobile learning", async ({
   });
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await page.getByRole("button", { name: "切换深浅主题" }).click();
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
@@ -188,7 +188,7 @@ test("V2 corrupted storage safely recovers without blocking the page", async ({
   );
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
-  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await expect(page.getByText(/本机数据无法读取/)).toBeVisible();
   await page.getByRole("button", { name: "切换深浅主题" }).click();
   await expect(page.locator("body")).toHaveCSS(

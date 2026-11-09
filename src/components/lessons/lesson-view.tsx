@@ -117,9 +117,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 <AnnotatedText text={s.text} />
               </p>
               <button className="text-button" onClick={() => track(s.title)}>
-                {record.section === s.title
-                  ? "✓ 已保存章节书签"
-                  : "保存章节书签"}
+                {record.section === s.title ? "已保存章节书签" : "保存章节书签"}
               </button>
             </section>
           ))}
@@ -175,11 +173,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           </section>
           <div className="completion panel">
             <div>
-              <h3>
-                {record.completed
-                  ? "本课已完成，继续探索吧。"
-                  : "准备好下一步了吗？"}
-              </h3>
+              <h3>{record.completed ? "本课已完成" : "课程完成确认"}</h3>
               <p className="muted">
                 由你决定何时完成本课，完成状态与测验成绩分别记录。
               </p>

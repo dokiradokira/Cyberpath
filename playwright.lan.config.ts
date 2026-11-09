@@ -13,9 +13,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: true,
+    command: "npm run start -- --port 3102",
+    url: "http://127.0.0.1:3102",
+    reuseExistingServer: false,
     timeout: 120000,
   },
 });

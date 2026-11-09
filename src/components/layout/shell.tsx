@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -21,6 +22,7 @@ const links = [
   { href: "/progress", label: "学习进度", icon: ChartNoAxesCombined },
 ];
 export function Shell({ children }: { children: React.ReactNode }) {
+  const [feedback, setFeedback] = useState("");
   const path = usePathname(),
     { data, update, warning, ready } = useLearning();
   return (
@@ -33,7 +35,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span className="brand-icon">
             <ShieldCheck size={25} />
           </span>
-          CyberPath<span className="version">V2.1</span>
+          CyberPath<span className="version">V2.1.1</span>
         </Link>
         <p className="nav-label">你的学习空间</p>
         <nav aria-label="主导航">
@@ -73,14 +75,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div className="tools">
             <span className="local-indicator">● 保存在当前设备</span>
             <button
+              title="切换中文辅助 / 英语挑战模式"
               aria-label="切换英语挑战模式"
               aria-pressed={data.mode === "challenge"}
-              onClick={() =>
+              onClick={() => {
+                setFeedback(
+                  data.mode === "learning"
+                    ? "英语挑战模式：课程中文注释默认隐藏，点击术语可查看"
+                    : "中文辅助模式：课程默认显示中文词汇注释",
+                );
                 update((p) => ({
                   ...p,
                   mode: p.mode === "learning" ? "challenge" : "learning",
-                }))
-              }
+                }));
+              }}
             >
               <Languages size={17} />
               <span>
@@ -88,6 +96,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </span>
             </button>
             <button
+              title="切换深浅主题"
               aria-label="切换深浅主题"
               aria-pressed={data.theme === "light"}
               disabled={!ready}
@@ -103,6 +112,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main id="main" tabIndex={-1}>
+          {feedback && (
+            <div className="action-feedback" role="log" aria-live="polite">
+              {feedback}
+            </div>
+          )}
           {warning && (
             <p role="status" className="notice">
               {warning}

@@ -6,6 +6,7 @@ import { wordEntries, type WordEntry } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import { useLearning } from "./learning-provider";
 export function VocabularyView() {
+  const [feedback, setFeedback] = useState("");
   const { data, update } = useLearning();
   const [query, setQuery] = useState(""),
     [lesson, setLesson] = useState("all"),
@@ -73,6 +74,9 @@ export function VocabularyView() {
     });
   }
   function save(word: string) {
+    setFeedback(
+      `${word}：${data.favorites.includes(word) ? "已取消收藏" : "已收藏，可在我的收藏中查看"}`,
+    );
     update((p) => ({
       ...p,
       favorites: p.favorites.includes(word)
@@ -168,6 +172,11 @@ export function VocabularyView() {
             </button>
           ))}
         </div>
+        {feedback && (
+          <div className="action-feedback" role="log" aria-live="polite">
+            {feedback}
+          </div>
+        )}
         <p className="muted">当前筛选：{words.length} 个词汇</p>
         {words.length === 0 && !lockedWord ? (
           <p role="status">没有匹配的词汇，试试其他关键词或筛选条件。</p>
@@ -184,7 +193,14 @@ export function VocabularyView() {
                     aria-pressed={data.favorites.includes(w.word)}
                     onClick={() => save(w.word)}
                   >
-                    <Bookmark size={16} />
+                    <Bookmark
+                      size={16}
+                      fill={
+                        data.favorites.includes(w.word)
+                          ? "currentColor"
+                          : "none"
+                      }
+                    />
                   </button>
                 </div>
                 <p lang="en">{w.definition}</p>
@@ -272,7 +288,7 @@ export function VocabularyView() {
               </>
             )}
             <div className="step-controls">
-              <button onClick={() => move(-1)}>
+              <button disabled={words.length <= 1} onClick={() => move(-1)}>
                 <ArrowLeft size={16} /> 上一个词
               </button>
               <button onClick={() => save(current.word)}>
@@ -280,7 +296,7 @@ export function VocabularyView() {
                   ? "取消收藏"
                   : "收藏此词"}
               </button>
-              <button onClick={() => move(1)}>
+              <button disabled={words.length <= 1} onClick={() => move(1)}>
                 下一个词 <ArrowRight size={16} />
               </button>
             </div>

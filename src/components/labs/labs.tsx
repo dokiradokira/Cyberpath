@@ -55,7 +55,11 @@ function Stepper({
       >
         下一步 <ArrowRight size={16} />
       </button>
-      <button aria-label="重置模拟" onClick={() => setStep(0)}>
+      <button
+        aria-label="重置模拟"
+        disabled={step === 0}
+        onClick={() => setStep(0)}
+      >
         <RotateCcw size={16} /> 重置
       </button>
     </div>
@@ -139,6 +143,7 @@ export function DnsLab() {
   );
 }
 export function SubnetLab() {
+  const [feedback, setFeedback] = useState("");
   const [ip, setIp] = useState("192.168.1.100"),
     [prefix, setPrefix] = useState("24"),
     [result, setResult] = useState(() => calculateSubnet("192.168.1.100", 24)),
@@ -147,6 +152,7 @@ export function SubnetLab() {
     try {
       setResult(calculateSubnet(address, bits));
       setError("");
+      setFeedback(`已计算 ${address}/${bits}`);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -198,6 +204,11 @@ export function SubnetLab() {
           </button>
         ))}
       </div>
+      {feedback && !error && (
+        <div role="log" className="action-feedback" aria-live="polite">
+          {feedback}
+        </div>
+      )}
       {error ? (
         <p role="alert" className="error">
           {error}

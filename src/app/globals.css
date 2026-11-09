@@ -2038,3 +2038,39 @@ h3 {
     font-size: 11px;
   }
 }
+
+/* Status labels and illustrations are informational, not controls. */
+.badge {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: default;
+}
+.badge.done {
+  background: transparent;
+}
+.icon-box {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+}
+.orbit-art,
+.lab-preview {
+  pointer-events: none;
+}
+button[aria-pressed="true"] {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--soft);
+}
+.action-feedback {
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-left: 2px solid var(--primary);
+  background: var(--soft);
+  color: var(--text);
+  font-size: 13px;
+}

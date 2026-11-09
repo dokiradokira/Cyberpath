@@ -934,6 +934,9 @@ footer {
   color: var(--muted);
   margin: 10px 5px;
 }
+.vocab > .vocab-detail {
+  display: block;
+}
 .command {
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -1880,6 +1883,44 @@ details p {
   background: var(--soft);
   font-size: 14px;
 }
+.term-definition > span {
+  display: block;
+}
+.term-definition .term-example {
+  margin: 8px 0;
+  color: var(--muted);
+}
+.term-definition .term-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.term-actions button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--raised);
+  font: inherit;
+}
+.inline-term > button {
+  min-height: 28px;
+}
+.term-definition {
+  overflow-wrap: anywhere;
+  position: static;
+}
+.review-progress {
+  color: var(--muted);
+}
+.flashcard .step-controls {
+  flex-wrap: wrap;
+}
+.word-meta {
+  flex-wrap: wrap;
+  align-items: center;
+}
 .vocab-filters {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -1919,6 +1960,14 @@ select {
   font-size: 14px;
   font-weight: 400;
   letter-spacing: 0;
+}
+.word-title {
+  font: inherit;
+  color: var(--primary);
+  background: transparent;
+  border: 0;
+  padding: 2px 0;
+  min-height: 32px;
 }
 .word-entry p {
   font-size: 14px;

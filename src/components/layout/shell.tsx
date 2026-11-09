@@ -77,6 +77,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <button
               title="切换中文辅助 / 英语挑战模式"
               aria-label="切换英语挑战模式"
+              disabled={!ready}
               aria-pressed={data.mode === "challenge"}
               onClick={() => {
                 setFeedback(

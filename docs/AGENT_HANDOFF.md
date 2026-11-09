@@ -1,6 +1,6 @@
 # Agent Handoff
 
-适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮文档任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
+适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 V2.2-B 词汇任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
 
 先读 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md)、[安全工作流](SECURE_DEVELOPMENT_WORKFLOW.md)。历史报告只作对应时间/SHA 的证据；实际 Git、源码和同一 SHA 的 CI 优先核实。不得仅凭聊天重做已有功能。
 
@@ -76,6 +76,25 @@ git push origin feature/v2.2-learning-experience
 绝不修改 ACL、完整性级别、关闭安全机制或删除工作区来获得 Git 写入权限。工具正规逐命令审批可用时按授权使用；不支持则由人类执行。
 
 ## 交接记录
+
+### Agent Handoff — 2026-11-09（Codex，V2.2-B 提交前快照）
+
+- Previous Agent: Codex；本轮继续开发，没有启动并发 Agent。
+- Current Development Phase: 用户指定的 V2.2-B 英语词汇升级，实现及 CI 验收；原事件时间计划留待 V2.2-C。
+- Branch: `feature/v2.2-learning-experience`。
+- HEAD: `d828452` 提交前基线；本阶段提交用 `git log -1 -- docs/V2.2_B_IMPLEMENTATION.md` 实查。
+- Working Tree Status: 开始时 README.md 已有一处空格改动，保留且不暂存。本轮代码、测试、文档待提交，完整范围见实施报告。
+- Latest Completed Task: 正文词汇例句/收藏/键盘解释，模式即时与持久化、有限轮次复习、进度及掌握调整，90 个单元测试通过。
+- Changed Files: vocabulary 数据、vocabulary-learning 纯函数、AnnotatedText、课程 Vocabulary、VocabularyView、shell、globals.css、两个新增测试文件、本实施报告、PROJECT_STATUS、此交接及路线阶段映射。README 用户改动不包含。
+- Tests Actually Run: `npm test`（含初次新模块未实现的失败测试）、`npm run typecheck`、`npm run lint`、`npx playwright test --list`、Prettier、diff 检查；最后结果见实施报告。
+- Test Results: 单元 10 文件 90 测试、typecheck、lint 通过；本地浏览器仅列举，未执行；不在本机重跑已知受限的 build/e2e。
+- CI Status: 本次提交尚未创建，CI 待 push 后按新 SHA 查询，不能预填通过；基线 d828452 历史 CI 已成功。
+- Uncommitted Changes: 提交前为本阶段文件及已有 README 用户改动；交付后重新查 status，README 应仍保留。
+- Unpushed Commits: 基线与 origin 缓存一致；本阶段提交须正常推送并通过远端 API 核对，不 force push。
+- Known Issues: Windows EPERM、真机未验收；自评/测验结果代表最近掌握状态，不是 SRS；原事件时间混用仍未解决。
+- Remaining Tasks: 检查敏感文件及 diff，提交并按本次授权 push，核验完整 CI；若失败按真实日志修复，不删除旧测试或放宽断言。
+- Next Recommended Action: 下一 Agent 先核对本阶段实际 SHA/CI 和 README 用户改动；获授权后处理 V2.2-C 时间与测验复习契约。
+- Important Warnings: 模式切换与词汇操作不得改课程完成状态；保护 F01–F03、schema 1 和原 key。不得把用户 README 空格一并提交，不 merge/master、不部署、不改安全设置。本阶段 push 授权不自动转移到下阶段。
 
 ### Agent Handoff — 2026-11-09（Codex，本轮文档提交前快照）
 

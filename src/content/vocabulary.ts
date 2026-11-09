@@ -1,6 +1,34 @@
 import { availableLessons } from "./lessons";
 import type { Vocabulary } from "../types";
-export type WordEntry = Vocabulary & { lessonId: string; example: string };
+export type WordEntry = Vocabulary & {
+  readonly id: string;
+  lessonId: string;
+  example: string;
+};
+// Explicit examples avoid silently replacing a usage example with a definition.
+const courseExamples: Record<string, string> = {
+  packet: "A firewall checks a packet before allowing it into the network.",
+  protocol:
+    "TLS is a protocol that protects data sent between a browser and a server.",
+  destination:
+    "The router uses the destination IP address to choose the next hop.",
+  authentication:
+    "Multi-factor authentication helps protect an account when a password is stolen.",
+  resolver:
+    "A DNS resolver can return a cached answer without querying the authoritative server again.",
+  acknowledgment:
+    "A TCP acknowledgment tells the sender which byte the receiver expects next.",
+  encryption: "HTTPS uses encryption to protect application data in transit.",
+  reliability:
+    "TCP provides reliability, but it does not encrypt the application data.",
+  subnet:
+    "A network administrator can place guest devices in a separate subnet.",
+  gateway: "The default gateway forwards a packet toward a different network.",
+  broadcast:
+    "An IPv4 broadcast stays within its broadcast domain unless a special relay is used.",
+  translation:
+    "Address translation changes packet addresses; it does not replace a firewall policy.",
+};
 const extras: [number, string, string, string, string][] = [
   [
     1,
@@ -161,15 +189,13 @@ export const wordEntries: WordEntry[] = [
   ...availableLessons.flatMap((l) =>
     l.vocabulary.map((v) => ({
       ...v,
+      id: v.word,
       lessonId: l.id,
-      example:
-        l.sections
-          .find((s) => s.text.toLowerCase().includes(v.word))
-          ?.text.split(/(?<=[.!?])\s+/)
-          .find((t) => t.toLowerCase().includes(v.word)) ?? v.definition,
+      example: courseExamples[v.word],
     })),
   ),
   ...extras.map(([number, word, zh, definition, example]) => ({
+    id: word,
     word,
     zh,
     definition,

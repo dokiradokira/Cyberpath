@@ -1,15 +1,47 @@
 "use client";
 import { reviewPosition, reviewIndex } from "../lib/review-queue";
-import { useState } from "react";
+import { useId, useState } from "react";
 import Link from "next/link";
 import { Bookmark, ArrowLeft, ArrowRight } from "lucide-react";
 import { wordEntries, type WordEntry } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import { useLearning } from "./learning-provider";
+import {
+  reviewSummary,
+  recordWord,
+  toggleWord,
+} from "../lib/vocabulary-learning";
+function WordTitle({ entry }: { entry: WordEntry }) {
+  const { data } = useLearning();
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <h2 lang="en">
+      {data.mode === "learning" ? (
+        entry.word
+      ) : (
+        <button
+          className="word-title"
+          aria-label={`解释 ${entry.word}`}
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {entry.word}
+        </button>
+      )}
+      <small id={id} lang="zh-CN" hidden={data.mode === "challenge" && !open}>
+        {entry.zh}
+      </small>
+    </h2>
+  );
+}
 export function VocabularyView() {
+  const [answered, setAnswered] = useState<string[]>([]);
+  const [finished, setFinished] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [feedback, setFeedback] = useState("");
-  const { data, update } = useLearning();
+  const { data, update, ready } = useLearning();
   const [query, setQuery] = useState(""),
     [lesson, setLesson] = useState("all"),
     [filter, setFilter] = useState("all"),
@@ -36,6 +68,11 @@ export function VocabularyView() {
     reviewed,
   );
   const current = wordEntries.find((w) => w.word === position.current)!;
+  const summary = reviewSummary(
+    words.map((w) => w.id),
+    answered,
+  );
+  const finish = position.finish || (summary.allReviewed && choice !== null);
   const options = current
     ? [
         current,
@@ -45,6 +82,8 @@ export function VocabularyView() {
       ].sort((a, b) => a.zh.localeCompare(b.zh, "zh-CN"))
     : [];
   function reset() {
+    setAnswered([]);
+    setFinished(false);
     setReviewed(false);
     setIndex(0);
     setRevealed(false);
@@ -65,33 +104,16 @@ export function VocabularyView() {
     setLockedWord(null);
   }
   function record(word: string, correct: boolean) {
-    setReviewed(true);
     if (choice !== null) return;
-    update((p) => {
-      const old = p.reviews[word] ?? { known: false, attempts: 0, correct: 0 };
-      return {
-        ...p,
-        reviews: {
-          ...p.reviews,
-          [word]: {
-            known: correct,
-            attempts: old.attempts + 1,
-            correct: old.correct + (correct ? 1 : 0),
-          },
-        },
-      };
-    });
+    setReviewed(true);
+    setAnswered((p) => [...new Set([...p, word])]);
+    update((p) => recordWord(p, word, correct));
   }
   function save(word: string) {
     setFeedback(
       `${word}：${data.favorites.includes(word) ? "已取消收藏" : "已收藏，可在我的收藏中查看"}`,
     );
-    update((p) => ({
-      ...p,
-      favorites: p.favorites.includes(word)
-        ? p.favorites.filter((w) => w !== word)
-        : [...p.favorites, word],
-    }));
+    update((p) => toggleWord(p, word));
   }
   return (
     <>
@@ -187,9 +209,19 @@ export function VocabularyView() {
           </div>
         )}
         <p className="muted">当前筛选：{words.length} 个词汇</p>
-        {position.complete && mode !== "list" ? (
+        {mode !== "list" && (
+          <p aria-live="polite" className="review-progress">
+            本轮已复习 {summary.count} 个 · 当前队列 {words.length} 个
+          </p>
+        )}
+        {(position.complete || finished) && mode !== "list" ? (
           <div role="status">
             <h2>本轮复习已完成</h2>
+            <p>
+              已复习 {summary.count}{" "}
+              个词汇。掌握状态是本次自评或测验结果，可随时调整。
+            </p>
+            <button onClick={reset}>再复习一轮</button>
             <button
               onClick={() => {
                 setMode("list");
@@ -204,14 +236,13 @@ export function VocabularyView() {
         ) : mode === "list" ? (
           <div className="word-list">
             {words.map((w) => (
-              <article className="word-entry" key={w.word}>
+              <article className="word-entry" key={w.id}>
                 <div className="section-heading">
-                  <h2 lang="en">
-                    {w.word} <small lang="zh-CN">{w.zh}</small>
-                  </h2>
+                  <WordTitle key={data.mode} entry={w} />
                   <button
                     aria-label={`${data.favorites.includes(w.word) ? "取消收藏" : "收藏"} ${w.word}`}
                     aria-pressed={data.favorites.includes(w.word)}
+                    disabled={!ready}
                     onClick={() => save(w.word)}
                   >
                     <Bookmark
@@ -232,18 +263,53 @@ export function VocabularyView() {
                   <Link prefetch={false} href={`/courses/${w.lessonId}`}>
                     返回所属课程 →
                   </Link>
-                  <span>
+                  <button
+                    className="text-button"
+                    disabled={!ready}
+                    aria-label={`${data.reviews[w.id]?.known ? "设为待巩固" : "标记已掌握"} ${w.word}`}
+                    onClick={() =>
+                      update((p) =>
+                        recordWord(p, w.id, !p.reviews[w.id]?.known),
+                      )
+                    }
+                  >
                     {data.reviews[w.word]?.known ? "已掌握" : "待巩固"}
-                  </span>
+                  </button>
                 </div>
               </article>
             ))}
           </div>
         ) : (
-          <div className="flashcard" aria-live="polite">
+          <div
+            className="flashcard"
+            role="region"
+            aria-label="词汇复习卡片"
+            tabIndex={0}
+            aria-describedby="review-keys"
+            onKeyDown={(e) => {
+              if (e.target !== e.currentTarget || !ready) return;
+              if (e.key === " " && mode === "cards") {
+                e.preventDefault();
+                setRevealed((v) => !v);
+              }
+              if (e.key === "ArrowLeft" && position.canPrevious) {
+                e.preventDefault();
+                move(-1);
+              }
+              if (e.key === "ArrowRight" && (position.canNext || finish)) {
+                e.preventDefault();
+                if (finish) setFinished(true);
+                else move(1);
+              }
+            }}
+          >
+            <p id="review-keys" className="muted">
+              聚焦卡片后，空格翻卡，方向键切换；也可使用下方按钮。掌握状态可重新调整。
+            </p>
             <p className="eyebrow">
-              {(index % Math.max(1, words.length)) + 1} /{" "}
-              {Math.max(1, words.length)}
+              {words.some((w) => w.id === current.id)
+                ? `${words.findIndex((w) => w.id === current.id) + 1} / ${words.length}`
+                : "当前词已移出筛选队列"}
             </p>
             <h2 lang="en">{current.word}</h2>
             {mode === "cards" ? (
@@ -258,17 +324,33 @@ export function VocabularyView() {
                     </p>
                     <div className="device-buttons">
                       <button
+                        disabled={!ready}
                         onClick={() => {
                           record(current.word, true);
-                          move(filter === "practice" ? 0 : 1);
+                          if (
+                            reviewSummary(
+                              words.map((w) => w.id),
+                              [...answered, current.id],
+                            ).allReviewed
+                          )
+                            setFinished(true);
+                          else move(filter === "practice" ? 0 : 1);
                         }}
                       >
                         认识，下一词
                       </button>
                       <button
+                        disabled={!ready}
                         onClick={() => {
                           record(current.word, false);
-                          move(filter === "known" ? 0 : 1);
+                          if (
+                            reviewSummary(
+                              words.map((w) => w.id),
+                              [...answered, current.id],
+                            ).allReviewed
+                          )
+                            setFinished(true);
+                          else move(filter === "known" ? 0 : 1);
                         }}
                       >
                         再练一次，下一词
@@ -288,7 +370,7 @@ export function VocabularyView() {
                   {options.map((o) => (
                     <button
                       key={o.word}
-                      disabled={choice !== null}
+                      disabled={!ready || choice !== null}
                       onClick={() => {
                         setLockedWord(current);
                         setChoice(o.word);
@@ -312,17 +394,19 @@ export function VocabularyView() {
               <button disabled={!position.canPrevious} onClick={() => move(-1)}>
                 <ArrowLeft size={16} /> 上一个词
               </button>
-              <button onClick={() => save(current.word)}>
+              <button disabled={!ready} onClick={() => save(current.word)}>
                 {data.favorites.includes(current.word)
                   ? "取消收藏"
                   : "收藏此词"}
               </button>
               <button
-                disabled={!position.canNext && !position.finish}
-                onClick={() => move(1)}
+                disabled={!position.canNext && !finish}
+                onClick={() => {
+                  if (finish) setFinished(true);
+                  else move(1);
+                }}
               >
-                {position.finish ? "完成复习" : "下一个词"}{" "}
-                <ArrowRight size={16} />
+                {finish ? "完成复习" : "下一个词"} <ArrowRight size={16} />
               </button>
             </div>
           </div>

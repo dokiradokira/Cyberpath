@@ -9,6 +9,9 @@ import { Vocabulary } from "./vocabulary";
 import { AnnotatedText } from "./annotated-text";
 import { Quiz } from "./quiz";
 import { Lab, type LabId } from "../labs/labs";
+import { useReading } from "../../hooks/use-reading";
+import { resolveSection } from "../../lib/reading";
+import { ChapterNavigation } from "./chapter-navigation";
 function Command({
   command,
   explanation,
@@ -20,7 +23,9 @@ function Command({
   return (
     <div className="command">
       <div>
-        <code>{command}</code>
+        <pre className="command-code">
+          <code lang="en">{command}</code>
+        </pre>
         <button
           aria-label={`复制 ${command}`}
           onClick={async () => {
@@ -43,8 +48,11 @@ function Command({
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const { data, update, ready } = useLearning();
   const record = data.lessons[lesson.id],
-    previous = availableLessons[lesson.number - 2],
-    next = availableLessons[lesson.number];
+    courseIndex = availableLessons.findIndex((l) => l.id === lesson.id),
+    previous = availableLessons[courseIndex - 1],
+    next = availableLessons[courseIndex + 1];
+  const { active, go } = useReading(lesson, record, ready, update);
+  const chapterIndex = lesson.sections.findIndex((s) => s.id === active);
   useEffect(() => {
     if (!ready) return;
     update((p) => ({
@@ -60,12 +68,16 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       },
     }));
   }, [lesson.id, update, ready]);
-  function track(title: string) {
+  function track(id: string) {
     update((p) => ({
       ...p,
       lessons: {
         ...p.lessons,
-        [lesson.id]: { ...p.lessons[lesson.id], section: title },
+        [lesson.id]: {
+          ...p.lessons[lesson.id],
+          section: id,
+          sectionProgress: 0,
+        },
       },
     }));
   }
@@ -78,17 +90,33 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         <p className="eyebrow">
           网络基础 / 课程 {String(lesson.number).padStart(2, "0")}
         </p>
-        <h1>{lesson.title}</h1>
+        <h1 lang="en">{lesson.title}</h1>
         <p lang="zh-CN">
           {lesson.zh} <span className="dot">·</span> 预计 {lesson.minutes} 分钟
         </p>
       </header>
+      <ChapterNavigation lesson={lesson} active={active} onSelect={go} mobile />
+      <nav className="chapter-controls" aria-label="章节切换">
+        <button
+          disabled={!ready || chapterIndex <= 0}
+          onClick={() => go(lesson.sections[chapterIndex - 1].id)}
+        >
+          <ArrowLeft size={16} /> 上一章节
+        </button>
+        <span lang="en">{resolveSection(lesson, active)?.title}</span>
+        <button
+          disabled={!ready || chapterIndex >= lesson.sections.length - 1}
+          onClick={() => go(lesson.sections[chapterIndex + 1].id)}
+        >
+          下一章节 <ArrowRight size={16} />
+        </button>
+      </nav>
       <div className="lesson-layout">
         <article>
           <section className="panel">
             <p className="eyebrow">本课目标</p>
             <h2>你将学到</h2>
-            <ul className="objectives">
+            <ul className="objectives" lang="en">
               {lesson.objectives.map((o) => (
                 <li key={o}>
                   <Check size={17} />
@@ -100,25 +128,36 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           {record.section && (
             <a
               className="resume-section"
-              href={`#section-${lesson.sections.findIndex((s) => s.title === record.section)}`}
+              href={`#${resolveSection(lesson, record.section)?.id ?? lesson.sections[0].id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                go(record.section);
+              }}
             >
-              继续阅读： {record.section} <ArrowRight size={16} />
+              继续阅读： {resolveSection(lesson, record.section)?.title}{" "}
+              <ArrowRight size={16} />
             </a>
           )}
           {lesson.sections.map((s, i) => (
             <section
               className="reading-section"
-              key={s.title}
-              id={`section-${i}`}
+              key={s.id}
+              id={s.id}
+              tabIndex={-1}
+              data-active={active === s.id}
             >
-              <p className="eyebrow">{String(i + 1).padStart(2, "0")} / 概念</p>
-              <h2>{s.title}</h2>
-              <p lang="en">
-                <AnnotatedText text={s.text} />
-              </p>
-              <button className="text-button" onClick={() => track(s.title)}>
-                {record.section === s.title ? "已保存章节书签" : "保存章节书签"}
-              </button>
+              <div id={`section-${i}`}>
+                <p className="eyebrow">
+                  {String(i + 1).padStart(2, "0")} / 概念
+                </p>
+                <h2 lang="en">{s.title}</h2>
+                <p lang="en">
+                  <AnnotatedText text={s.text} />
+                </p>
+                <button className="text-button" onClick={() => track(s.id)}>
+                  {record.section === s.id ? "已保存章节书签" : "保存章节书签"}
+                </button>
+              </div>
             </section>
           ))}
           <section className="panel">
@@ -148,7 +187,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               <Command key={c.command} {...c} />
             ))}
           </section>
-          <Quiz lesson={lesson} />
+          <Quiz key={lesson.id} lesson={lesson} />
           <section className="panel">
             <h2>学习笔记</h2>
             <label htmlFor="lesson-notes">
@@ -220,25 +259,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             )}
           </nav>
         </article>
-        <aside className="lesson-toc">
-          <p className="eyebrow">本课目录</p>
-          {lesson.sections.map((s, i) => (
-            <a
-              key={s.title}
-              href={`#section-${i}`}
-              onClick={() => track(s.title)}
-            >
-              {String(i + 1).padStart(2, "0")} {s.title}
-            </a>
-          ))}
-          <a href="#practical-experiment">动手实践</a>
-          <a href="#knowledge-check">知识测验</a>
-          <div className="notice">
-            一步一步，打好基础。
-            <br />
-            <span lang="zh-CN">理解原理，比记住答案更重要。</span>
-          </div>
-        </aside>
+        <ChapterNavigation lesson={lesson} active={active} onSelect={go} />
       </div>
     </>
   );

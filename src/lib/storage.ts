@@ -1,6 +1,7 @@
 import { wordEntries } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import type { Progress, RecordEntry } from "../types";
+import { resolveSection } from "./reading";
 export const STORAGE_KEY = "cyberpath.v1";
 export const emptyRecord = (): RecordEntry => ({
   completed: false,
@@ -13,6 +14,10 @@ export const emptyRecord = (): RecordEntry => ({
 });
 export const initialProgress = (): Progress => ({
   version: 1,
+  contentVersion: Math.max(
+    1,
+    ...availableLessons.map((l) => l.introducedIn ?? 1),
+  ),
   lessons: Object.fromEntries(
     availableLessons.map((l) => [l.id, emptyRecord()]),
   ),
@@ -44,8 +49,20 @@ export function parseProgress(text: string): Progress {
   )
     throw new Error("学习数据结构不合法。");
   const clean = initialProgress();
+  const contentVersion = x.contentVersion === undefined ? 1 : x.contentVersion;
+  if (
+    typeof contentVersion !== "number" ||
+    !Number.isSafeInteger(contentVersion) ||
+    contentVersion < 1 ||
+    contentVersion > (clean.contentVersion ?? 1)
+  )
+    throw new Error("不兼容的课程数据版本，原始记录已保留。");
   for (const lesson of availableLessons) {
     const r = x.lessons[lesson.id];
+    // Only a genuinely newer lesson may be absent in a valid older backup.
+    // Missing existing records remain an import error (F01 protection).
+    if (r === undefined && (lesson.introducedIn ?? 1) > contentVersion)
+      continue;
     const score = (s: unknown) =>
       s === null ||
       (typeof s === "number" &&
@@ -64,9 +81,12 @@ export function parseProgress(text: string): Progress {
       ) ||
       new Set(r.incorrect).size !== r.incorrect.length ||
       typeof r.section !== "string" ||
-      !(
-        r.section === "" || lesson.sections.some((s) => s.title === r.section)
-      ) ||
+      !(r.section === "" || resolveSection(lesson, r.section)) ||
+      (r.sectionProgress !== undefined &&
+        (typeof r.sectionProgress !== "number" ||
+          !Number.isFinite(r.sectionProgress) ||
+          r.sectionProgress < 0 ||
+          r.sectionProgress > 1)) ||
       typeof r.updated !== "string" ||
       (r.updated !== "" && !Number.isFinite(Date.parse(r.updated)))
     )
@@ -87,7 +107,10 @@ export function parseProgress(text: string): Progress {
       latest: r.latest as number | null,
       best: r.best as number | null,
       incorrect: [...r.incorrect] as string[],
-      section: r.section,
+      section: resolveSection(lesson, r.section)?.id ?? "",
+      ...(r.sectionProgress === undefined
+        ? {}
+        : { sectionProgress: r.sectionProgress as number }),
       updated: r.updated,
     };
     const note = x.notes[lesson.id];

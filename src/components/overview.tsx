@@ -15,6 +15,7 @@ import {
 import { courseSummaries } from "../content/course-summaries";
 import { availableLessons, lessons } from "../content/lessons";
 import { useLearning } from "./learning-provider";
+import { lessonHref } from "../lib/reading";
 export function CourseCards() {
   const { data } = useLearning();
   return (
@@ -143,7 +144,7 @@ export function Overview() {
                 <Link
                   prefetch={false}
                   className="button primary"
-                  href={`/courses/${current.id}`}
+                  href={lessonHref(current, data.lessons[current.id].section)}
                 >
                   继续学习 <ArrowRight size={17} />
                 </Link>

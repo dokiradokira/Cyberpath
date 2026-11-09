@@ -14,8 +14,15 @@ export type Lesson = {
   description: string;
   minutes: number;
   available: boolean;
+  /** Content revision where this lesson first became available; defaults to 1. */
+  introducedIn?: number;
   objectives: string[];
-  sections: { title: string; text: string }[];
+  sections: {
+    id: string;
+    title: string;
+    text: string;
+    legacyTitles?: string[];
+  }[];
   vocabulary: Vocabulary[];
   labs: string[];
   commands: { command: string; explanation: string }[];
@@ -28,10 +35,12 @@ export type RecordEntry = {
   incorrect: string[];
   visited: boolean;
   section: string;
+  sectionProgress?: number;
   updated: string;
 };
 export type Progress = {
   version: 1;
+  contentVersion?: number;
   lessons: Record<string, RecordEntry>;
   currentLesson: string;
   favorites: string[];

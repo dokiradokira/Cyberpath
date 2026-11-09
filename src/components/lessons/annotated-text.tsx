@@ -10,7 +10,15 @@ const matcher = new RegExp(
     .join("|")})(s?)\\b`,
   "gi",
 );
-function Term({ entry, text }: { entry: WordEntry; text: string }) {
+function Term({
+  entry,
+  text,
+  initialHint,
+}: {
+  entry: WordEntry;
+  text: string;
+  initialHint: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const { data } = useLearning();
   return (
@@ -23,7 +31,7 @@ function Term({ entry, text }: { entry: WordEntry; text: string }) {
       >
         {text}
       </button>
-      {(data.mode === "learning" || open) && (
+      {((data.mode === "learning" && initialHint) || open) && (
         <span className="term-translation" lang="zh-CN">
           （{entry.zh}）
         </span>
@@ -38,11 +46,20 @@ function Term({ entry, text }: { entry: WordEntry; text: string }) {
 }
 export function AnnotatedText({ text }: { text: string }) {
   const nodes: React.ReactNode[] = [];
+  const seen = new Set<string>();
   let last = 0;
   for (const match of text.matchAll(matcher)) {
     nodes.push(text.slice(last, match.index));
     const entry = byWord.get(match[1].toLowerCase())!;
-    nodes.push(<Term key={match.index} entry={entry} text={match[0]} />);
+    nodes.push(
+      <Term
+        key={match.index}
+        entry={entry}
+        text={match[0]}
+        initialHint={!seen.has(entry.word)}
+      />,
+    );
+    seen.add(entry.word);
     last = match.index! + match[0].length;
   }
   nodes.push(text.slice(last));

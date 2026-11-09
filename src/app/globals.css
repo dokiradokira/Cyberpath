@@ -2074,3 +2074,110 @@ button[aria-pressed="true"] {
   color: var(--text);
   font-size: 13px;
 }
+
+/* Reading room: stable chapter navigation without changing the application shell. */
+.mobile-chapters {
+  display: none;
+}
+.lesson-toc h2 {
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.lesson-toc nav a,
+.mobile-chapters nav a {
+  display: flex;
+  gap: 10px;
+  padding: 9px 10px;
+  border-left: 2px solid transparent;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13px;
+}
+.lesson-toc nav a[aria-current="location"],
+.mobile-chapters nav a[aria-current="location"] {
+  border-color: var(--primary);
+  background: var(--soft);
+  color: var(--text);
+}
+.chapter-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.chapter-controls > span {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.chapter-controls button {
+  flex-shrink: 0;
+}
+.reading-section {
+  scroll-margin-top: 96px;
+}
+.reading-section > div > p[lang="en"] {
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.95;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.reading-section h2 {
+  max-width: 32ch;
+  font-size: 26px;
+  line-height: 1.4;
+}
+.reading-section[data-active="true"] > div > .eyebrow {
+  color: var(--primary);
+}
+.command-code {
+  margin: 0;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+@media (max-width: 1150px) {
+  .mobile-chapters {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 0 0 16px;
+    background: var(--surface);
+  }
+  .mobile-chapters summary {
+    color: var(--text);
+    font-size: 14px;
+    padding: 4px;
+  }
+  .mobile-chapters nav {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .chapter-controls > span {
+    display: none;
+  }
+  .chapter-controls button {
+    font-size: 12px;
+  }
+  .reading-section > div > p[lang="en"] {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+  .reading-section h2 {
+    font-size: 23px;
+  }
+  .mobile-chapters nav a {
+    padding: 12px 8px;
+  }
+}

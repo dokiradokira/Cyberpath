@@ -16,26 +16,32 @@ export const lessons: Lesson[] = [
     ],
     sections: [
       {
+        id: "what-is-a-network",
         title: "What is a computer network?",
         text: "A computer network connects devices so they can exchange data and share services. Your laptop, phone, printer, and a web server are all possible endpoints. A protocol is an agreed set of rules for communication. Data is split into smaller units called packets, which carry addressing information as well as a payload. A packet is like an envelope: the address helps deliver it, while the payload contains the message. Different layers use different units; Ethernet uses frames and TCP carries segments.",
       },
       {
+        id: "devices-and-communication",
         title: "Devices and communication",
         text: "A network interface connects a device to a network, through Wi-Fi or a cable. A switch forwards Ethernet frames within a local network using MAC addresses. A wireless access point connects wireless devices to that network. A router forwards IP packets between networks. A home router often combines routing, switching, Wi-Fi, DHCP, and a firewall in one box. These are separate functions even when one device performs them all.",
       },
       {
+        id: "lan-and-wan",
         title: "LAN and WAN",
         text: "A local area network (LAN) covers a limited area, such as a home, classroom, or office. A wide area network (WAN) connects networks over larger distances, often through a service provider. The Internet is a network of interconnected networks. Wi-Fi describes a wireless connection technology; it is not another name for the Internet. You can be connected to Wi-Fi and still have no Internet access.",
       },
       {
+        id: "ip-addresses-and-routers",
         title: "IP addresses and routers",
         text: "An IP address identifies a network interface for IP communication. IPv4 addresses use four decimal numbers from 0 to 255, such as 192.168.1.100. The subnet prefix tells the device which destinations are on its local network. For another network, it usually sends the packet to its default gateway, a router on the local link. Routers examine the destination IP and choose a next hop using a routing table. Addresses may change; an IP address is not a permanent personal identity.",
       },
       {
+        id: "ports-identify-services",
         title: "Ports identify services",
         text: "An IP address helps reach a host; a transport port helps identify an application endpoint on that host. TCP and UDP ports are separate 16-bit namespaces, ranging from 0 to 65535. For example, HTTPS commonly uses TCP port 443, while DNS commonly uses UDP port 53 and also supports TCP. A browser normally uses a temporary source port to contact a server's service port. A port number alone does not prove which application is running or whether it is safe.",
       },
       {
+        id: "network-security",
         title: "A first look at network security",
         text: "Network security protects confidentiality (keeping data private), integrity (preventing unauthorized changes), and availability (keeping services usable). Encryption protects data in transit; authentication checks identity; authorization controls what that identity can do. Keep software updated, use strong unique passwords, and only practice on systems you own or have permission to use. A connected device is not automatically trustworthy.",
       },
@@ -154,30 +160,37 @@ export const lessons: Lesson[] = [
     ],
     sections: [
       {
+        id: "dns-records",
         title: "DNS: names to addresses",
         text: "The Domain Name System (DNS) lets applications look up records for names such as example.com. A records contain IPv4 addresses and AAAA records contain IPv6 addresses. DNS also supports other records, including mail routing information. A domain name and a complete URL are different: a URL also includes a scheme and may include a port, path, and query. DNS does not download the web page.",
       },
       {
+        id: "dns-lookup",
         title: "Follow a DNS lookup",
         text: "The browser and operating system may already have a cached answer. Otherwise, a recursive resolver checks its cache and, if needed, asks the DNS hierarchy. A root server refers it to a top-level domain (TLD) server; the TLD server refers it to an authoritative server. The authoritative server provides the relevant record, or a negative answer if it does not exist. The resolver returns the result and caches it according to its time to live (TTL). Cached answers can skip several of these steps. This is a simplified model; aliases and delegated zones can require extra queries.",
       },
       {
+        id: "tcp-reliability",
         title: "TCP: an ordered byte stream",
         text: "Transmission Control Protocol (TCP) provides a reliable, ordered byte stream between endpoints. Sequence numbers track bytes, acknowledgments indicate receipt, and lost data can be retransmitted. TCP also manages flow control and congestion. It cannot guarantee that a disconnected peer will return, and applications still need to handle errors. TCP is a transport mechanism, not encryption.",
       },
       {
+        id: "tcp-handshake",
         title: "The three-way handshake",
         text: "A client starts with SYN and an initial sequence number. The server responds with SYN-ACK, acknowledging the client's sequence number and proposing its own. The client replies with ACK. In the ordinary successful case, both sides can now exchange application data. SYN means synchronize; ACK means acknowledgment. The diagram here models connection setup only, not actual packets, retransmission timers, or all TCP states.",
       },
       {
+        id: "udp-transport",
         title: "UDP and transport choices",
         text: "User Datagram Protocol (UDP) sends individual datagrams without TCP's connection setup or built-in ordered retransmission. This can suit real-time media and protocols that implement their own control. UDP does not mean an application must be unreliable: QUIC implements reliability and congestion control over UDP. HTTP/1.1 and HTTP/2 generally use TCP; HTTP/3 uses QUIC over UDP. Protocol overhead alone does not determine real-world speed.",
       },
       {
+        id: "https-tls",
         title: "HTTP, HTTPS, and TLS",
         text: "HTTP is an application protocol for exchanging requests and responses. HTTPS protects HTTP communication with TLS. TLS encrypts traffic, detects tampering, and normally authenticates a server using certificates and a trusted name check. It does not guarantee that the website is honest, free of malware, or safe to give personal information to. HTTP/3 integrates TLS 1.3 with QUIC, so its setup differs from a separate TCP handshake followed by TLS.",
       },
       {
+        id: "browser-request",
         title: "How a browser loads a website",
         text: "For a fresh HTTPS request over HTTP/2, the browser resolves the name, establishes TCP, negotiates TLS, sends an HTTP request, and receives a response. It parses HTML and requests resources such as CSS, JavaScript, and images, then lays out and paints the page. Caches and reused connections can skip work; HTTP/3 uses QUIC instead of TCP. A page often requires many requests to multiple origins. Developer Tools can help you observe those requests.",
       },
@@ -303,30 +316,37 @@ export const lessons: Lesson[] = [
     ],
     sections: [
       {
+        id: "ipv4-ipv6",
         title: "IPv4 and IPv6",
         text: "IPv4 addresses contain 32 bits, commonly written as four decimal octets. IPv6 addresses contain 128 bits, written in hexadecimal groups separated by colons. IPv6 can compress consecutive zero groups once with ::. Both protocols route packets, but their addressing and neighbor discovery differ. IPv6 does not require IPv4 NAT. IPv6 networks still need appropriate firewall policies and secure device configuration.",
       },
       {
+        id: "private-addresses",
         title: "Public and private addresses",
         text: "RFC 1918 reserves 10.0.0.0/8, 172.16.0.0/12 (172.16.0.0 through 172.31.255.255), and 192.168.0.0/16 for private IPv4 networks. They are not globally routed on the public Internet. Public addresses must be appropriately allocated; not every non-private address is public or globally reachable. Loopback, link-local, multicast, and other special ranges also exist. Our simulated external addresses 192.0.2.0/24, 198.51.100.0/24, and 203.0.113.0/24 are documentation-only reserved ranges, not real public destinations.",
       },
       {
+        id: "subnet-cidr",
         title: "Subnet masks and CIDR",
         text: "A prefix length says how many leading address bits identify a network. /24 means 24 network bits and 8 remaining bits; its subnet mask is 255.255.255.0. A /26 mask is 255.255.255.192 and each block contains 64 addresses. To find the network, keep the prefix bits and set the remaining bits to zero. The last address sets the remaining bits to one. CIDR supports prefixes from /0 to /32 for IPv4; smaller prefix numbers describe larger blocks.",
       },
       {
+        id: "host-addresses",
         title: "Network, broadcast, and usable hosts",
         text: "For 192.168.1.100/26, the block runs from 192.168.1.64 to 192.168.1.127. In a conventional subnet, .64 is the network address, .127 is the directed broadcast address, and .65 through .126 are 62 usable host addresses. Total addresses equal 2 to the power of (32 minus prefix). The usual minus-two rule has exceptions: /31 point-to-point links can use both addresses under RFC 3021; /32 describes one host route. /0 spans all IPv4 addresses, including special-use ranges, and is commonly used for a default route rather than a practical LAN.",
       },
       {
+        id: "gateways-routing",
         title: "Default gateway and routing",
         text: "A device uses its routing table to choose an outgoing interface and next hop. The longest matching prefix wins. A directly connected destination can be reached locally; a remote destination may use a gateway. The default route, 0.0.0.0/0, matches when no more specific route applies. ARP finds the next-hop MAC address on an IPv4 Ethernet link. The gateway must be reachable on the local link, but it is not the final destination of the IP packet.",
       },
       {
+        id: "nat-pat",
         title: "NAT, PAT, and port mapping",
         text: "Network Address Translation (NAT) rewrites IP addressing information. Port Address Translation (PAT), also called NAPT, additionally translates transport ports so multiple private clients can share one external IPv4 address. For example, 192.168.1.100:51000 and 192.168.1.101:51000 can become 203.0.113.10:40001 and :40002. A mapping table lets reply traffic be translated back to the correct client. Real allocation and filtering policies vary. Static port forwarding can map an inbound external port to an internal service; it requires deliberate configuration and security review.",
       },
       {
+        id: "nat-firewall",
         title: "NAT is not a firewall",
         text: "NAT translates addressing; a firewall applies a traffic policy. A common home gateway performs both, which can make them seem identical. Missing mappings may prevent unsolicited inbound traffic in many PAT configurations, but this is not a substitute for explicit firewall rules. IPv6 can provide global addresses without IPv4 NAT while a stateful firewall still controls inbound traffic. Security depends on policy and implementation, not on address translation alone.",
       },

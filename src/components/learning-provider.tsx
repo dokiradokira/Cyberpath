@@ -4,14 +4,18 @@ import {
   useContext,
   useEffect,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import type { Progress } from "../types";
-import { initialProgress, readProgress, STORAGE_KEY } from "../lib/storage";
+import { initialProgress } from "../lib/storage";
+import { StorageSession } from "../lib/storage-session";
 type Store = {
   data: Progress;
   ready: boolean;
   warning: string;
+  raw: string | null | undefined;
+  replace: (data: Progress) => boolean;
   update: (fn: (p: Progress) => Progress) => void;
 };
 const Context = createContext<Store | null>(null);
@@ -19,15 +23,15 @@ export function LearningProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState(initialProgress),
     [ready, setReady] = useState(false),
     [warning, setWarning] = useState("");
+  const session = useRef<StorageSession | null>(null);
+  const [raw, setRaw] = useState<string | null | undefined>(undefined);
   useEffect(() => {
     const timer = setTimeout(() => {
-      try {
-        const saved = readProgress(window.localStorage);
-        setData(saved.data);
-        setWarning(saved.warning);
-      } catch {
-        setWarning("当前浏览器不允许存储，仍可学习；离开前请导出备份。");
-      }
+      const saved = new StorageSession(() => window.localStorage);
+      session.current = saved;
+      setData(saved.load());
+      setWarning(saved.warning);
+      setRaw(saved.raw);
       document.documentElement.dataset.hydrated = "true";
       setReady(true);
     }, 0);
@@ -36,14 +40,34 @@ export function LearningProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     document.documentElement.dataset.theme = data.theme;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      queueMicrotask(() => setWarning("当前浏览器无法保存进度，请导出备份。"));
-    }
+    session.current?.save(data);
+    const saved = session.current;
+    queueMicrotask(() => {
+      if (saved) {
+        setWarning(saved.warning);
+        setRaw(saved.raw);
+      }
+    });
   }, [data, ready]);
   return (
-    <Context.Provider value={{ data, ready, warning, update: setData }}>
+    <Context.Provider
+      value={{
+        data,
+        ready,
+        warning,
+        raw,
+        update: setData,
+        replace: (next) => {
+          const saved = session.current;
+          if (!saved) return false;
+          const ok = saved.replace(next);
+          setWarning(saved.warning);
+          setRaw(saved.raw);
+          if (ok) setData(next);
+          return ok;
+        },
+      }}
+    >
       {children}
     </Context.Provider>
   );

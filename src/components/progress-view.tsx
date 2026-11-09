@@ -8,7 +8,7 @@ import { initialProgress, parseProgress } from "../lib/storage";
 import { useLearning } from "./learning-provider";
 import { Vocabulary } from "./lessons/vocabulary";
 export function ProgressView() {
-  const { data, update } = useLearning(),
+  const { data, update, raw, replace } = useLearning(),
     [message, setMessage] = useState(""),
     [importing, setImporting] = useState(false),
     file = useRef<HTMLInputElement>(null);
@@ -141,6 +141,23 @@ export function ProgressView() {
           JSON 导入迁移。
         </p>
         <div className="data-actions">
+          <button
+            disabled={typeof raw !== "string"}
+            onClick={() => {
+              if (typeof raw !== "string") return;
+              const url = URL.createObjectURL(
+                new Blob([raw], { type: "application/octet-stream" }),
+              );
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "cyberpath-raw-backup.txt";
+              a.click();
+              URL.revokeObjectURL(url);
+              setMessage("原始数据已导出，请妥善保存。");
+            }}
+          >
+            导出原始数据
+          </button>
           <button onClick={exportData}>
             <Download size={16} /> 导出 JSON
           </button>
@@ -155,8 +172,11 @@ export function ProgressView() {
                   "确定重置本机所有进度、成绩、词汇、笔记和偏好吗？",
                 )
               ) {
-                update(() => initialProgress());
-                setMessage("学习数据已重置。");
+                setMessage(
+                  replace(initialProgress())
+                    ? "学习数据已重置。"
+                    : "重置未完成，原始数据已保留，请检查存储提示。",
+                );
               }
             }}
           >
@@ -180,8 +200,11 @@ export function ProgressView() {
               if (
                 window.confirm("确定用此备份覆盖当前全部学习记录与偏好吗？")
               ) {
-                update(() => parsed);
-                setMessage("备份导入成功。");
+                setMessage(
+                  replace(parsed)
+                    ? "备份导入成功。"
+                    : "导入未完成，原始数据已保留，请检查存储提示。",
+                );
               } else setMessage("已取消导入，当前记录已保留。");
             } catch (error) {
               setMessage(`导入失败： ${(error as Error).message}`);

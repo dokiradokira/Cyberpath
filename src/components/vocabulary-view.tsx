@@ -1,4 +1,5 @@
 "use client";
+import { reviewPosition, reviewIndex } from "../lib/review-queue";
 import { useState } from "react";
 import Link from "next/link";
 import { Bookmark, ArrowLeft, ArrowRight } from "lucide-react";
@@ -6,6 +7,7 @@ import { wordEntries, type WordEntry } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import { useLearning } from "./learning-provider";
 export function VocabularyView() {
+  const [reviewed, setReviewed] = useState(false);
   const [feedback, setFeedback] = useState("");
   const { data, update } = useLearning();
   const [query, setQuery] = useState(""),
@@ -27,7 +29,13 @@ export function VocabularyView() {
         .toLowerCase()
         .includes(query.toLowerCase()),
   );
-  const current = lockedWord ?? words[index % Math.max(1, words.length)];
+  const position = reviewPosition(
+    words.map((w) => w.word),
+    index,
+    lockedWord?.word ?? null,
+    reviewed,
+  );
+  const current = wordEntries.find((w) => w.word === position.current)!;
   const options = current
     ? [
         current,
@@ -37,6 +45,7 @@ export function VocabularyView() {
       ].sort((a, b) => a.zh.localeCompare(b.zh, "zh-CN"))
     : [];
   function reset() {
+    setReviewed(false);
     setIndex(0);
     setRevealed(false);
     setChoice(null);
@@ -44,20 +53,20 @@ export function VocabularyView() {
   }
   function move(delta: number) {
     setIndex((i) =>
-      words.length
-        ? (i +
-            (lockedWord && !words.some((w) => w.word === lockedWord.word)
-              ? 0
-              : delta) +
-            words.length) %
-          words.length
-        : 0,
+      reviewIndex(
+        words.map((w) => w.word),
+        i,
+        lockedWord?.word ?? null,
+        delta,
+      ),
     );
     setRevealed(false);
     setChoice(null);
     setLockedWord(null);
   }
   function record(word: string, correct: boolean) {
+    setReviewed(true);
+    if (choice !== null) return;
     update((p) => {
       const old = p.reviews[word] ?? { known: false, attempts: 0, correct: 0 };
       return {
@@ -178,7 +187,19 @@ export function VocabularyView() {
           </div>
         )}
         <p className="muted">当前筛选：{words.length} 个词汇</p>
-        {words.length === 0 && !lockedWord ? (
+        {position.complete && mode !== "list" ? (
+          <div role="status">
+            <h2>本轮复习已完成</h2>
+            <button
+              onClick={() => {
+                setMode("list");
+                reset();
+              }}
+            >
+              返回词汇列表
+            </button>
+          </div>
+        ) : words.length === 0 && !lockedWord ? (
           <p role="status">没有匹配的词汇，试试其他关键词或筛选条件。</p>
         ) : mode === "list" ? (
           <div className="word-list">
@@ -288,7 +309,7 @@ export function VocabularyView() {
               </>
             )}
             <div className="step-controls">
-              <button disabled={words.length <= 1} onClick={() => move(-1)}>
+              <button disabled={!position.canPrevious} onClick={() => move(-1)}>
                 <ArrowLeft size={16} /> 上一个词
               </button>
               <button onClick={() => save(current.word)}>
@@ -296,8 +317,12 @@ export function VocabularyView() {
                   ? "取消收藏"
                   : "收藏此词"}
               </button>
-              <button disabled={words.length <= 1} onClick={() => move(1)}>
-                下一个词 <ArrowRight size={16} />
+              <button
+                disabled={!position.canNext && !position.finish}
+                onClick={() => move(1)}
+              >
+                {position.finish ? "完成复习" : "下一个词"}{" "}
+                <ArrowRight size={16} />
               </button>
             </div>
           </div>

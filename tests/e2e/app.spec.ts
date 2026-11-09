@@ -9,29 +9,23 @@ test("navigation, real lessons, previews, and error-free console", async ({
     if (msg.type() === "error") errors.push(msg.text());
   });
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: "Welcome back." }),
-  ).toBeVisible();
-  await page.getByRole("link", { name: "Course library", exact: true }).click();
-  await expect(page.getByText("Coming Soon", { exact: true })).toHaveCount(5);
+  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
+  await page.getByRole("link", { name: "课程目录", exact: true }).click();
+  await expect(page.getByText("即将推出", { exact: true })).toHaveCount(5);
   for (const slug of slugs) {
     await page.goto(`/courses/${slug}`);
     await expect(
-      page.getByRole("heading", { name: "Knowledge Check", exact: true }),
+      page.getByRole("heading", { name: "知识测验", exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Submit quiz" }),
-    ).toBeDisabled();
+    await expect(page.getByRole("button", { name: "提交测验" })).toBeDisabled();
   }
-  await page
-    .getByRole("link", { name: "Interactive labs", exact: true })
-    .click();
+  await page.getByRole("link", { name: "互动实验", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Your network sandbox." }),
+    page.getByRole("heading", { name: "你的网络实验室。" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "My progress", exact: true }).click();
+  await page.getByRole("link", { name: "学习进度", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Your progress, your pace." }),
+    page.getByRole("heading", { name: "你的进度，你的节奏。" }),
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -39,7 +33,7 @@ test("quiz, completion, vocabulary, notes, and theme persist", async ({
   page,
 }) => {
   await page.goto(`/courses/${slugs[0]}`);
-  await page.getByRole("button", { name: "Submit quiz" }).waitFor();
+  await page.getByRole("button", { name: "提交测验" }).waitFor();
   for (const [i, answer] of [0, 1, 2, 3, 0].entries()) {
     await page
       .locator("fieldset")
@@ -48,78 +42,76 @@ test("quiz, completion, vocabulary, notes, and theme persist", async ({
       .nth(answer)
       .check();
   }
-  await page.getByRole("button", { name: "Submit quiz" }).click();
-  await expect(page.getByText("Your score: 5 / 5")).toBeVisible();
-  await page.getByRole("button", { name: "Mark lesson complete" }).click();
-  await page.getByRole("button", { name: "Save packet", exact: true }).click();
+  await page.getByRole("button", { name: "提交测验" }).click();
+  await expect(page.getByText("本次得分： 5 / 5")).toBeVisible();
+  await page.getByRole("button", { name: "标记课程完成" }).click();
+  await page.getByRole("button", { name: "收藏 packet", exact: true }).click();
   await page
-    .getByLabel("What clicked? What would you like to investigate?")
+    .getByLabel("记下你的理解，或想进一步探索的问题")
     .fill("A router forwards packets.");
-  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("button", { name: "切换深浅主题" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Completed", exact: true }),
+    page.getByRole("button", { name: "已完成", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Unsave packet", exact: true }),
+    page.getByRole("button", { name: "取消收藏 packet", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByLabel("What clicked? What would you like to investigate?"),
+    page.getByLabel("记下你的理解，或想进一步探索的问题"),
   ).toHaveValue("A router forwards packets.");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.goto("/progress");
   await expect(page.getByText("A router forwards packets.")).toBeVisible();
-  await expect(page.locator("tbody tr").first()).toContainText("Completed");
+  await expect(page.locator("tbody tr").first()).toContainText("已完成");
 });
 test("all four labs work", async ({ page }) => {
   await page.goto("/labs");
   const tcp = page.locator("#lab-tcp");
-  await tcp.getByRole("button", { name: "Next Step", exact: true }).click();
-  await expect(tcp.getByText(/SYN: the client/)).toBeVisible();
-  await tcp.getByRole("button", { name: "Next Step", exact: true }).click();
-  await tcp.getByRole("button", { name: "Next Step", exact: true }).click();
-  await expect(tcp.getByText(/ACK: the client acknowledges/)).toBeVisible();
-  await tcp.getByRole("button", { name: "Reset simulation" }).click();
-  await expect(tcp.getByText(/Ready to connect/)).toBeVisible();
+  await tcp.getByRole("button", { name: "下一步", exact: true }).click();
+  await expect(tcp.getByText(/SYN：客户端/)).toBeVisible();
+  await tcp.getByRole("button", { name: "下一步", exact: true }).click();
+  await tcp.getByRole("button", { name: "下一步", exact: true }).click();
+  await expect(tcp.getByText(/ACK：客户端/)).toBeVisible();
+  await tcp.getByRole("button", { name: "重置模拟" }).click();
+  await expect(tcp.getByText(/准备连接/)).toBeVisible();
   const dns = page.locator("#lab-dns");
   await dns.getByRole("checkbox").check();
-  await dns.getByRole("button", { name: "Next Step", exact: true }).click();
-  await expect(dns.getByText(/cached IP address is returned/)).toBeVisible();
+  await dns.getByRole("button", { name: "下一步", exact: true }).click();
+  await expect(dns.getByText(/缓存的 IP 地址返回/)).toBeVisible();
   const subnet = page.locator("#lab-subnet");
   await subnet
     .getByRole("button", { name: "192.168.1.100/26", exact: true })
     .click();
   await expect(subnet.getByText("192.168.1.64", { exact: true })).toBeVisible();
-  await subnet.getByLabel("CIDR prefix").fill("33");
-  await subnet.getByRole("button", { name: "Calculate" }).click();
+  await subnet.getByLabel("CIDR 前缀").fill("33");
+  await subnet.getByRole("button", { name: "计算" }).click();
   await expect(subnet.getByRole("alert")).toBeVisible();
   const nat = page.locator("#lab-nat");
-  await nat.getByRole("button", { name: "Device 2" }).click();
+  await nat.getByRole("button", { name: "设备 2" }).click();
   await expect(nat.locator("tr.highlight")).toContainText(
     "192.168.1.101:51000",
   );
-  await nat.getByRole("button", { name: "Simulate return traffic" }).click();
-  await expect(nat.getByRole("status")).toContainText("Device 2");
+  await nat.getByRole("button", { name: "模拟返回流量" }).click();
+  await expect(nat.getByRole("status")).toContainText("设备 2");
 });
 test("data export, validated import and reset confirmation", async ({
   page,
 }) => {
   await page.goto("/progress");
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export JSON" }).click();
+  await page.getByRole("button", { name: "导出 JSON" }).click();
   expect((await download).suggestedFilename()).toBe("cyberpath-progress.json");
   await page.locator('input[type="file"]').setInputFiles({
     name: "bad.json",
     mimeType: "application/json",
     buffer: Buffer.from('{"version":99}'),
   });
-  await expect(page.getByRole("status")).toContainText(
-    "Unsupported data version",
-  );
+  await expect(page.getByRole("status")).toContainText("不兼容的数据版本");
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Reset data" }).click();
-  await expect(page.getByRole("status")).toContainText("Learning data reset");
+  await page.getByRole("button", { name: "重置学习数据" }).click();
+  await expect(page.getByRole("status")).toContainText("学习数据已重置");
 });
 test("responsive widths have no document overflow", async ({ page }) => {
   for (const width of [375, 390, 768, 1024, 1440]) {
@@ -144,7 +136,7 @@ test("responsive widths have no document overflow", async ({ page }) => {
       if (width <= 390)
         expect(
           (await page
-            .getByRole("button", { name: "Toggle theme" })
+            .getByRole("button", { name: "切换深浅主题" })
             .boundingBox())!.height,
         ).toBeGreaterThanOrEqual(44);
     }
@@ -157,9 +149,7 @@ test("learning mode, valid imports, confirmations, and visual previews", async (
   await page.goto(`/courses/${slugs[0]}`);
   const word = page.getByRole("button", { name: /^packet/ });
   await expect(word).toContainText("数据包");
-  await page
-    .getByRole("button", { name: "Toggle English challenge mode" })
-    .click();
+  await page.getByRole("button", { name: "切换英语挑战模式" }).click();
   await expect(word).not.toContainText("数据包");
   await word.click();
   await expect(word).toContainText("数据包");
@@ -175,7 +165,7 @@ test("learning mode, valid imports, confirmations, and visual previews", async (
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(parsed)),
   });
-  await expect(page.getByRole("status")).toContainText("Import cancelled");
+  await expect(page.getByRole("status")).toContainText("已取消导入");
   page.once("dialog", (dialog) => dialog.accept());
   await page.locator('input[type="file"]').setInputFiles({
     name: "backup.json",
@@ -186,12 +176,10 @@ test("learning mode, valid imports, confirmations, and visual previews", async (
   await page.reload();
   await expect(page.getByText("Imported note", { exact: true })).toBeVisible();
   page.once("dialog", (dialog) => dialog.dismiss());
-  await page.getByRole("button", { name: "Reset data" }).click();
+  await page.getByRole("button", { name: "重置学习数据" }).click();
   await expect(page.getByText("Imported note", { exact: true })).toBeVisible();
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: "Welcome back." }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "欢迎回来." })).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("dashboard.png"),
     fullPage: true,

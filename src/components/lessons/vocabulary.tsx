@@ -21,7 +21,7 @@ export function Vocabulary({ item }: { item: Word }) {
           )}
         </button>
         <button
-          aria-label={`${saved ? "Unsave" : "Save"} ${item.word}`}
+          aria-label={`${saved ? "取消收藏" : "收藏"} ${item.word}`}
           aria-pressed={saved}
           onClick={() =>
             update((p) => ({

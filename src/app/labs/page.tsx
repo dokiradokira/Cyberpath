@@ -1,18 +1,15 @@
 import { Lab } from "../../components/labs/labs";
 import { labInfo, type LabId } from "../../lib/labs";
-export const metadata = { title: "Interactive labs" };
+export const metadata = { title: "互动实验" };
 export default function Page() {
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">LEARN BY DOING</p>
-        <h1>Your network sandbox.</h1>
-        <p>
-          Make the invisible visible. Four safe simulations, zero real network
-          traffic.
-        </p>
+        <p className="eyebrow">在动手中理解</p>
+        <h1>你的网络实验室。</h1>
+        <p>让看不见的原理变得直观。四个安全模拟，不发送真实网络流量。</p>
       </header>
-      <nav className="lab-tabs" aria-label="Lab shortcuts">
+      <nav className="lab-tabs" aria-label="实验快捷导航">
         {Object.entries(labInfo).map(([id, info]) => (
           <a key={id} href={`#lab-${id}`}>
             {info.title}

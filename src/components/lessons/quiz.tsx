@@ -31,11 +31,10 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
   }
   return (
     <section className="panel" id="knowledge-check">
-      <p className="eyebrow">PUT IT INTO PRACTICE</p>
-      <h2>Knowledge Check</h2>
+      <p className="eyebrow">检验理解</p>
+      <h2>知识测验</h2>
       <p className="muted">
-        Five questions. Take your time. Your latest and best scores are saved
-        separately.
+        共 5 道英文题目，按自己的节奏作答。最近与最高成绩分别保存 。
       </p>
       <form
         onSubmit={(e) => {
@@ -65,7 +64,7 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
             ))}
             {submitted && (
               <p className="feedback">
-                {answers[q.id] === q.answer ? "Correct" : "Incorrect"} ·{" "}
+                {answers[q.id] === q.answer ? "回答正确" : "回答错误"} ·{" "}
                 {q.explanation}
               </p>
             )}
@@ -74,7 +73,7 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
         {submitted ? (
           <div role="status" className="quiz-summary">
             <h3>
-              Your score: {score} / {lesson.quiz.length}
+              本次得分： {score} / {lesson.quiz.length}
             </h3>
             <button
               type="button"
@@ -83,7 +82,7 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
                 setAnswers({});
               }}
             >
-              Retake quiz
+              重新测验
             </button>
           </div>
         ) : (
@@ -92,7 +91,7 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
             type="submit"
             disabled={Object.keys(answers).length !== lesson.quiz.length}
           >
-            Submit quiz
+            提交测验
           </button>
         )}
       </form>

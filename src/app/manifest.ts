@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CyberPath — Network Security Learning",
+    name: "CyberPath — 网络安全与英语学习",
     short_name: "CyberPath",
-    description: "Your path to network security",
+    description: "中文引导、英文教材、双语词汇学习",
     start_url: "/",
     display: "standalone",
     background_color: "#0b1220",

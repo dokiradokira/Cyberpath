@@ -1,6 +1,24 @@
-# CyberPath V1
+# CyberPath V2
 
-面向零基础中文学习者的网络安全学习网站：英文教材、中文术语辅助、可交互网络模拟和本地学习档案。
+面向零基础中文学习者的网络安全学习网站：**中文界面和操作引导、英文课程正文、中文术语注释、独立英语词汇学习**。
+
+## V2 更新与手机启动
+
+V2 修复整页依赖客户端初始化而卡住的问题：正文改为服务端可读，记录恢复不再阻塞页面；脚本加载失败会显示恢复提示。开发来源仅允许本机实际网卡地址和主机名；开发产物 `.next-dev` 与生产 `.next-v2` 分离，防止开发/构建互相覆盖资源。
+
+手机日常使用建议运行生产服务：先在原服务窗口按 **Ctrl+C** 停止旧服务，再运行：
+
+```powershell
+cd D:\cyberpath
+npm ci
+npm run serve
+```
+
+`serve` 会构建并启动生产版。电脑打开 http://localhost:3000，手机与电脑在同一局域网时打开 `http://电脑的IPv4地址:3000`。请沿用原来的 IP、端口与浏览器，以读取同源旧进度；若换了网址，用 JSON 导入迁移。仅刷新手机页面无法替换仍在运行的旧生产服务。
+
+主题现在同时应用于页面根节点和整个应用容器，回归测试直接断言首页、课程、实验、进度、词汇页的实际背景颜色，并检查导航和刷新后的保存状态。
+
+新增 `/vocabulary`：34 个带中文释义、英文定义、例句与课程链接的术语；中英搜索、课程/收藏/掌握状态筛选、闪卡自评、释义测验、学习记录持久化。课程正文中的词语可点击，中文辅助模式默认显示注释，挑战模式按需展开。V1 记录和备份无需手动转换，新增词汇复习记录会一并导出。存储 schema 1 采用向后兼容的可选 `reviews` 字段，不更换原存储键。
 
 ## 环境和安装
 
@@ -18,7 +36,7 @@ Windows 浏览器打开 http://localhost:3000 。停止服务按 Ctrl+C。开发
 
 电脑与手机连接相同可信局域网。在 Windows 自行运行 `ipconfig` 找到活动网卡的局域网 IPv4，例如 `192.168.1.10`，然后用 iPhone Safari 打开 `http://192.168.1.10:3000`。访客 Wi-Fi 隔离、组织网络策略或防火墙可能阻止连接；本项目不会更改这些设置。跨网络访问请使用下述 HTTPS 部署。
 
-不同浏览器、主机名、端口与设备有独立 localStorage。用 Progress 的 Export JSON / Import JSON 转移记录；这不是自动云同步。剪贴板 API 在局域网 HTTP 下可能不可用，界面会提示手动复制。
+不同浏览器、主机名、端口与设备有独立 localStorage。用「学习进度」中的「导出 JSON / 导入 JSON」 转移记录；这不是自动云同步。剪贴板 API 在局域网 HTTP 下可能不可用，界面会提示手动复制。
 
 ## 功能
 
@@ -27,6 +45,7 @@ Windows 浏览器打开 http://localhost:3000 。停止服务按 Ctrl+C。开发
 - `/courses/network-foundations`：网络、设备、LAN/WAN、IP、路由器、端口、安全与 Windows 诊断。
 - `/courses/dns-tcp-web`：DNS、缓存、TCP/UDP、握手、HTTP/HTTPS、TLS、HTTP/3 与浏览器请求。
 - `/courses/ip-subnets-nat`：IPv4/IPv6、RFC 1918、CIDR、路由、网关、NAT/PAT 与防火墙区别。
+- `/vocabulary`：34 个中英术语，支持搜索、筛选、闪卡、释义测验和复习记录。
 - `/labs`：可逐步切换 TCP 握手、DNS 缓存与解析过程、IPv4 子网计算、双设备 PAT 映射与返回流量。
 - 每课 5 道单选题；全部作答后才能提交，显示逐题结果和解释；可重测，保存最近与最高分、最近一次错题。
 - 课程完成由用户明确标记，独立于成绩；收藏词汇、学习/英语挑战模式、章节书签、自动保存笔记。
@@ -43,10 +62,11 @@ npm test
 npm run build
 npx playwright install chromium webkit
 npm run test:e2e
+npm run test:lan
 powershell -ExecutionPolicy Bypass -File tests/Test-Agents.ps1
 ```
 
-`test:e2e` 在端口 3000 自动启动生产服务（因此先 build）；若已经运行同源服务则复用。测试覆盖 Chromium 和 WebKit iPhone 模拟、页面导航、测验和保存恢复、四个实验、导出/非法导入/重置，以及 375、390、768、1024、1440 宽度。WebKit 模拟不等于真机 Safari 验收。失败时查看 `test-results` 中的 trace。
+`test:e2e` 在独立端口 3100 自动启动生产服务（因此先 build），不复用用户的开发服务。`test:lan` 在端口 3000 启动或复用开发服务，通过实际网卡 IPv4 地址模拟手机来源测试。测试覆盖 Chromium 和 WebKit iPhone 模拟、页面导航、测验和保存恢复、四个实验、导出/非法导入/重置，以及 375、390、768、1024、1440 宽度。WebKit 模拟不等于真机 Safari 验收。失败时查看 `test-results` 或 `test-results-lan` 中的 trace。
 
 生产运行：
 
@@ -95,6 +115,6 @@ ESLint 使用 ESLint 10、TypeScript、React Hooks 和 Next 官方插件的 flat
 
 所有实验为简化模型，不发送网络请求；示例外部 IPv4 地址为文档保留范围。命令只是带复制与结果解释的教材文本，没有后端命令执行接口。
 
-## V1 边界
+## 当前版本边界
 
 未实现课程 4–8 正文、真实账号、云同步、云数据库、AI、支付、真实攻击靶场或任意命令执行，符合本期范围。不含 Service Worker，不声称离线可用。浏览器数据会随清理而丢失，请定期导出备份。未在真实 iPhone 上测试，也未代替用户部署到公网；部署步骤已提供。

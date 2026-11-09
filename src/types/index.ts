@@ -35,6 +35,10 @@ export type Progress = {
   lessons: Record<string, RecordEntry>;
   currentLesson: string;
   favorites: string[];
+  reviews: Record<
+    string,
+    { known: boolean; attempts: number; correct: number }
+  >;
   notes: Record<string, string>;
   theme: "dark" | "light";
   mode: "learning" | "challenge";

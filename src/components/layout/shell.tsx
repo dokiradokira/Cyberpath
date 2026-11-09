@@ -11,33 +11,36 @@ import {
   Sun,
   Moon,
   Languages,
+  LibraryBig,
 } from "lucide-react";
 import { useLearning } from "../learning-provider";
 const links = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/courses", label: "Course library", icon: BookOpen },
-  { href: "/labs", label: "Interactive labs", icon: FlaskConical },
-  { href: "/progress", label: "My progress", icon: ChartNoAxesCombined },
+  { href: "/", label: "学习首页", icon: LayoutDashboard },
+  { href: "/courses", label: "课程目录", icon: BookOpen },
+  { href: "/labs", label: "互动实验", icon: FlaskConical },
+  { href: "/vocabulary", label: "词汇学习", icon: LibraryBig },
+  { href: "/progress", label: "学习进度", icon: ChartNoAxesCombined },
 ];
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname(),
     { data, update, warning, ready } = useLearning();
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={data.theme}>
       <a className="skip" href="#main">
-        Skip to content
+        跳到正文
       </a>
       <aside className="sidebar">
-        <Link className="brand" href="/">
+        <Link prefetch={false} className="brand" href="/">
           <span className="brand-icon">
             <ShieldCheck size={25} />
           </span>
-          CyberPath<span className="version">V1</span>
+          CyberPath<span className="version">V2</span>
         </Link>
-        <p className="nav-label">YOUR LEARNING SPACE</p>
-        <nav aria-label="Main navigation">
+        <p className="nav-label">你的学习空间</p>
+        <nav aria-label="主导航">
           {links.map(({ href, label, icon: Icon }) => (
             <Link
+              prefetch={false}
               key={href}
               href={href}
               aria-current={
@@ -52,19 +55,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="mini-mark">LEARN. EXPERIMENT. UNDERSTAND.</div>
+          <div className="mini-mark">学习 · 实验 · 理解</div>
           <p>
-            Your first step into a<br />
-            more secure digital world.
+            迈出第一步，走进
+            <br />
+            更安全的数字世界。
           </p>
-          <Link href="/courses">
-            Explore the path <ArrowUpRight size={16} />
+          <Link prefetch={false} href="/courses">
+            探索学习路线 <ArrowUpRight size={16} />
           </Link>
           <div className="profile">
             <span>Y</span>
             <div>
-              Your learning journey
-              <small>Local workspace · no account needed</small>
+              你的学习旅程
+              <small>本地学习档案 · 无需账号</small>
             </div>
           </div>
         </div>
@@ -72,19 +76,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="workspace">
         <header className="topbar">
           <span className="breadcrumb">
-            <span className="workspace-label">Workspace</span> <span>/</span>{" "}
+            <span className="workspace-label">学习空间</span> <span>/</span>{" "}
             <strong>
               {path === "/"
-                ? "Overview"
+                ? "学习首页"
                 : path.startsWith("/courses/")
-                  ? "Learning room"
+                  ? "课程学习"
                   : links.find((l) => l.href === path)?.label}
             </strong>
           </span>
           <div className="tools">
-            <span className="local-indicator">● Saved on this device</span>
+            <span className="local-indicator">● 保存在当前设备</span>
             <button
-              aria-label="Toggle English challenge mode"
+              aria-label="切换英语挑战模式"
               aria-pressed={data.mode === "challenge"}
               onClick={() =>
                 update((p) => ({
@@ -95,13 +99,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
             >
               <Languages size={17} />
               <span>
-                {data.mode === "learning"
-                  ? "Learning mode"
-                  : "English challenge"}
+                {data.mode === "learning" ? "中文辅助模式" : "英语挑战模式"}
               </span>
             </button>
             <button
-              aria-label="Toggle theme"
+              aria-label="切换深浅主题"
+              aria-pressed={data.theme === "light"}
+              disabled={!ready}
               onClick={() =>
                 update((p) => ({
                   ...p,
@@ -119,17 +123,21 @@ export function Shell({ children }: { children: React.ReactNode }) {
               {warning}
             </p>
           )}
-          {ready ? (
-            children
-          ) : (
-            <p className="muted" role="status">
-              Opening your learning space…
+          {!ready && (
+            <p className="storage-status" role="status">
+              正在恢复本机记录，课程内容可直接阅读。
             </p>
           )}
+          {children}
+          <noscript>
+            <p className="notice">
+              JavaScript
+              未启用，当前仅支持阅读。请启用后刷新以使用实验、测验和进度保存。
+            </p>
+          </noscript>
         </main>
         <footer>
-          Built for curious minds.{" "}
-          <span>CyberPath / Network security, one concept at a time.</span>
+          为好奇心而构建。 <span>CyberPath / 一步一个概念，理解网络安全。</span>
         </footer>
       </div>
     </div>

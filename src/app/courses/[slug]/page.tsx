@@ -12,8 +12,7 @@ export async function generateMetadata({
   const { slug } = await params;
   return {
     title:
-      availableLessons.find((l) => l.id === slug)?.title ??
-      "Lesson unavailable",
+      availableLessons.find((l) => l.id === slug)?.title ?? "课程 unavailable",
   };
 }
 export default async function Page({

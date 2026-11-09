@@ -6,6 +6,8 @@ import next from "@next/eslint-plugin-next";
 export default defineConfig([
   globalIgnores([
     ".next/**",
+    ".next-dev/**",
+    ".next-v2/**",
     "out/**",
     "playwright-report/**",
     "test-results/**",

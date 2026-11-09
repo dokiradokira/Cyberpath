@@ -26,10 +26,9 @@ export function LearningProvider({ children }: { children: ReactNode }) {
         setData(saved.data);
         setWarning(saved.warning);
       } catch {
-        setWarning(
-          "Browser storage is unavailable. Export a backup before leaving.",
-        );
+        setWarning("当前浏览器不允许存储，仍可学习；离开前请导出备份。");
       }
+      document.documentElement.dataset.hydrated = "true";
       setReady(true);
     }, 0);
     return () => clearTimeout(timer);
@@ -40,11 +39,7 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch {
-      queueMicrotask(() =>
-        setWarning(
-          "Progress cannot be saved in this browser. Please export a backup.",
-        ),
-      );
+      queueMicrotask(() => setWarning("当前浏览器无法保存进度，请导出备份。"));
     }
   }, [data, ready]);
   return (

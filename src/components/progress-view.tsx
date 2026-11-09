@@ -2,7 +2,8 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { Download, Upload, RotateCcw } from "lucide-react";
-import { availableLessons, vocabulary } from "../content/lessons";
+import { availableLessons } from "../content/lessons";
+import { wordEntries as vocabulary } from "../content/vocabulary";
 import { initialProgress, parseProgress } from "../lib/storage";
 import { useLearning } from "./learning-provider";
 import { Vocabulary } from "./lessons/vocabulary";
@@ -20,48 +21,45 @@ export function ProgressView() {
     a.download = "cyberpath-progress.json";
     a.click();
     URL.revokeObjectURL(url);
-    setMessage("Backup exported.");
+    setMessage("备份已导出。");
   }
   return (
     <>
       <header className="page-heading">
-        <p className="eyebrow">EVERY STEP COUNTS</p>
-        <h1>Your progress, your pace.</h1>
-        <p>
-          A record of what you have learned, and what you are still curious
-          about.
-        </p>
+        <p className="eyebrow">每一步都值得记录</p>
+        <h1>你的进度，你的节奏。</h1>
+        <p>记录已经掌握的知识，保留仍想探索的问题 。</p>
       </header>
       <section className="panel">
-        <h2>Learning record</h2>
+        <h2>学习档案</h2>
         <p className="muted">
           {availableLessons.filter((l) => data.lessons[l.id].completed).length}{" "}
-          / 3 available lessons completed. Quiz scores are out of 5.
+          / 3 节开放课程已完成，测验满分为 5 分。
         </p>
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Lesson</th>
-                <th>Status</th>
-                <th>Latest</th>
-                <th>Best</th>
+                <th>课程</th>
+                <th>状态</th>
+                <th>最近成绩</th>
+                <th>最高成绩</th>
               </tr>
             </thead>
             <tbody>
               {availableLessons.map((l) => (
                 <tr key={l.id}>
                   <td>
-                    <Link href={`/courses/${l.id}`}>
-                      {l.number}. {l.title}
+                    <Link prefetch={false} href={`/courses/${l.id}`}>
+                      {l.number}. {l.zh}
                     </Link>
                   </td>
                   <td>
                     {data.lessons[l.id].completed
-                      ? "Completed"
+                      ? "已完成"
                       : data.lessons[l.id].visited
-                        ? "In Progress"
-                        : "Not Started"}
+                        ? "学习中"
+                        : "未开始"}
                   </td>
                   <td>{data.lessons[l.id].latest ?? "—"}</td>
                   <td>{data.lessons[l.id].best ?? "—"}</td>
@@ -72,13 +70,12 @@ export function ProgressView() {
         </div>
       </section>
       <section className="panel">
-        <h2>Questions to revisit</h2>
+        <h2>错题复习</h2>
         {availableLessons.flatMap((l) =>
           l.quiz.filter((q) => data.lessons[l.id].incorrect.includes(q.id)),
         ).length === 0 ? (
           <p className="muted">
-            No incorrect answers recorded. Submitted quiz mistakes will appear
-            here with explanations.
+            暂无错题。提交测验后，答错的题目和解释会显示 在这里。
           </p>
         ) : (
           availableLessons.flatMap((l) =>
@@ -86,14 +83,17 @@ export function ProgressView() {
               .filter((q) => data.lessons[l.id].incorrect.includes(q.id))
               .map((q) => (
                 <div className="review-question" key={q.id}>
-                  <small>LESSON {l.number}</small>
+                  <small>课程 {l.number}</small>
                   <h3>{q.prompt}</h3>
                   <p>
-                    <strong>Correct answer:</strong> {q.options[q.answer]}
+                    <strong>正确答案：</strong> {q.options[q.answer]}
                   </p>
                   <p>{q.explanation}</p>
-                  <Link href={`/courses/${l.id}#knowledge-check`}>
-                    Retake lesson quiz →
+                  <Link
+                    prefetch={false}
+                    href={`/courses/${l.id}#knowledge-check`}
+                  >
+                    重做本课测验 →
                   </Link>
                 </div>
               )),
@@ -102,8 +102,7 @@ export function ProgressView() {
       </section>
       <section className="panel">
         <h2>
-          Saved vocabulary{" "}
-          <span className="badge">{data.favorites.length}</span>
+          收藏词汇 <span className="badge">{data.favorites.length}</span>
         </h2>
         {data.favorites.length ? (
           <div className="vocabulary-grid">
@@ -115,55 +114,54 @@ export function ProgressView() {
           </div>
         ) : (
           <p className="muted">
-            Bookmark a word in a lesson to build your personal word list.
+            在课程中收藏词汇，建立自己的网络安全英语词库。
           </p>
         )}
       </section>
       <section className="panel">
-        <h2>Field notes</h2>
+        <h2>学习笔记</h2>
         {availableLessons.filter((l) => data.notes[l.id]).length ? (
           availableLessons
             .filter((l) => data.notes[l.id])
             .map((l) => (
               <div className="saved-note" key={l.id}>
-                <Link href={`/courses/${l.id}`}>{l.title}</Link>
+                <Link prefetch={false} href={`/courses/${l.id}`}>
+                  {l.zh}
+                </Link>
                 <p>{data.notes[l.id]}</p>
               </div>
             ))
         ) : (
-          <p className="muted">
-            Write a note at the end of a lesson. It will appear here.
-          </p>
+          <p className="muted">在课程末尾写下笔记，就能在这里集中查看。</p>
         )}
       </section>
       <section className="panel">
-        <h2>Your data stays with you</h2>
+        <h2>学习数据，由你保管</h2>
         <p>
-          Progress is saved in this browser only. Private browsing, clearing
-          site data, or changing devices may remove or separate your records.
-          Export a backup to move your learning history between devices.
+          进度仅保存在当前浏览器。无痕模式、清除网站数据或换设备会影响记录。请定期导出备份，在设备之间用
+          JSON 导入迁移。
         </p>
         <div className="data-actions">
           <button onClick={exportData}>
-            <Download size={16} /> Export JSON
+            <Download size={16} /> 导出 JSON
           </button>
           <button disabled={importing} onClick={() => file.current?.click()}>
-            <Upload size={16} /> Import JSON
+            <Upload size={16} /> 导入 JSON
           </button>
           <button
             className="danger"
             onClick={() => {
               if (
                 window.confirm(
-                  "Reset all lesson progress, quiz scores, vocabulary, notes, and preferences on this device?",
+                  "确定重置本机所有进度、成绩、词汇、笔记和偏好吗？",
                 )
               ) {
                 update(() => initialProgress());
-                setMessage("Learning data reset.");
+                setMessage("学习数据已重置。");
               }
             }}
           >
-            <RotateCcw size={16} /> Reset data
+            <RotateCcw size={16} /> 重置学习数据
           </button>
         </div>
         <input
@@ -178,19 +176,16 @@ export function ProgressView() {
             setImporting(true);
             try {
               if (selected.size > 1000000)
-                throw new Error("File is too large (maximum 1 MB).");
+                throw new Error("文件过大（最大 1 MB）。");
               const parsed = parseProgress(await selected.text());
               if (
-                window.confirm(
-                  "Replace ALL current learning records and preferences with this backup?",
-                )
+                window.confirm("确定用此备份覆盖当前全部学习记录与偏好吗？")
               ) {
                 update(() => parsed);
-                setMessage("Backup imported successfully.");
-              } else
-                setMessage("Import cancelled. Your data has been preserved.");
+                setMessage("备份导入成功。");
+              } else setMessage("已取消导入，当前记录已保留。");
             } catch (error) {
-              setMessage(`Import failed: ${(error as Error).message}`);
+              setMessage(`导入失败： ${(error as Error).message}`);
             } finally {
               setImporting(false);
               input.value = "";
@@ -199,16 +194,16 @@ export function ProgressView() {
         />
         <p role="status">{message}</p>
         <details>
-          <summary>Already studied elsewhere? Add an existing record</summary>
+          <summary>已经学过？补录已有学习记录</summary>
           <p>
-            This explicitly records Lesson 1 and Lesson 2 as completed and a 5/5
-            score for Lesson 2. No other lesson is changed.
+            此操作会将第 1、2 课明确标记为完成，并将第 2 课录入为 5/5
+            。其他课程不受影响。
           </p>
           <button
             onClick={() => {
               if (
                 window.confirm(
-                  "Record Lesson 1 and 2 as completed, and Lesson 2 as 5/5?",
+                  "确定补录第 1、2 课完成，并将第 2 课成绩设为 5/5 吗？",
                 )
               ) {
                 update((p) => {
@@ -229,11 +224,11 @@ export function ProgressView() {
                   };
                   return copy;
                 });
-                setMessage("Existing learning record added.");
+                setMessage("已有学习记录已补录。");
               }
             }}
           >
-            Add Lesson 1–2 record
+            补录第 1–2 课记录
           </button>
         </details>
       </section>

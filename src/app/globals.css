@@ -12,7 +12,8 @@
   --sidebar: #0d1625;
   color-scheme: dark;
 }
-[data-theme="light"] {
+html[data-theme="light"],
+.app-shell[data-theme="light"] {
   --bg: #f8fafc;
   --surface: #fff;
   --raised: #f0f5f8;
@@ -1836,5 +1837,140 @@ details p {
     content: "◈ CyberPath";
     color: var(--text);
     font-weight: 650;
+  }
+}
+
+.app-shell {
+  background: var(--bg);
+  color: var(--text);
+}
+.storage-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+@media (max-width: 600px) {
+  .sidebar nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .sidebar nav a {
+    font-size: 10px;
+  }
+}
+
+.inline-term button {
+  display: inline;
+  padding: 0 2px;
+  min-height: auto;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--primary);
+  border-radius: 0;
+  font: inherit;
+  color: var(--primary);
+}
+.term-translation {
+  font-size: 0.8em;
+  color: var(--muted);
+}
+.term-definition {
+  display: block;
+  border-left: 2px solid var(--primary);
+  padding: 8px 12px;
+  margin: 6px 0;
+  background: var(--soft);
+  font-size: 14px;
+}
+.vocab-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+select {
+  width: 100%;
+  display: block;
+  margin-top: 7px;
+  min-height: 45px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.word-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.word-entry {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-width: 0;
+}
+.word-entry h2 {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.word-entry h2 small {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.word-entry p {
+  font-size: 14px;
+}
+.word-example {
+  border-left: 2px solid var(--primary);
+  padding: 8px 12px;
+  background: var(--raised);
+  color: var(--muted);
+}
+.word-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  gap: 12px;
+  color: var(--muted);
+}
+.flashcard {
+  max-width: 650px;
+  margin: 30px auto;
+  padding: 30px;
+  background: var(--raised);
+  border-radius: 12px;
+}
+.flashcard > h2 {
+  font-size: 32px;
+  color: var(--primary);
+}
+.flashcard .step-controls {
+  margin-top: 28px;
+}
+.meaning-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 600px) {
+  .vocab-filters,
+  .word-list {
+    grid-template-columns: 1fr;
+  }
+  .flashcard {
+    padding: 20px;
+  }
+  .word-entry h2 {
+    font-size: 22px;
+  }
+  .term-translation {
+    font-size: 13px;
   }
 }

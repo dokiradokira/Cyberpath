@@ -6,6 +6,7 @@ import type { Lesson } from "../../types";
 import { availableLessons } from "../../content/lessons";
 import { useLearning } from "../learning-provider";
 import { Vocabulary } from "./vocabulary";
+import { AnnotatedText } from "./annotated-text";
 import { Quiz } from "./quiz";
 import { Lab, type LabId } from "../labs/labs";
 function Command({
@@ -21,17 +22,17 @@ function Command({
       <div>
         <code>{command}</code>
         <button
-          aria-label={`Copy ${command}`}
+          aria-label={`复制 ${command}`}
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(command);
-              setStatus("Copied");
+              setStatus("已复制");
             } catch {
-              setStatus("Select and copy the command manually.");
+              setStatus("当前环境不支持自动复制，请选中命令手动复制。");
             }
           }}
         >
-          <Copy size={15} /> Copy
+          <Copy size={15} /> 复制
         </button>
       </div>
       <p>{explanation}</p>
@@ -40,11 +41,12 @@ function Command({
   );
 }
 export function LessonView({ lesson }: { lesson: Lesson }) {
-  const { data, update } = useLearning();
+  const { data, update, ready } = useLearning();
   const record = data.lessons[lesson.id],
     previous = availableLessons[lesson.number - 2],
     next = availableLessons[lesson.number];
   useEffect(() => {
+    if (!ready) return;
     update((p) => ({
       ...p,
       currentLesson: lesson.id,
@@ -57,7 +59,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         },
       },
     }));
-  }, [lesson.id, update]);
+  }, [lesson.id, update, ready]);
   function track(title: string) {
     update((p) => ({
       ...p,
@@ -69,24 +71,23 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   }
   return (
     <>
-      <Link className="back-link" href="/courses">
-        <ArrowLeft size={15} /> Course library
+      <Link prefetch={false} className="back-link" href="/courses">
+        <ArrowLeft size={15} /> 课程目录
       </Link>
       <header className="page-heading">
         <p className="eyebrow">
-          FOUNDATIONS / LESSON {String(lesson.number).padStart(2, "0")}
+          网络基础 / 课程 {String(lesson.number).padStart(2, "0")}
         </p>
         <h1>{lesson.title}</h1>
         <p lang="zh-CN">
-          {lesson.zh} <span className="dot">·</span> Estimated {lesson.minutes}{" "}
-          min
+          {lesson.zh} <span className="dot">·</span> 预计 {lesson.minutes} 分钟
         </p>
       </header>
       <div className="lesson-layout">
         <article>
           <section className="panel">
-            <p className="eyebrow">YOUR DESTINATION</p>
-            <h2>What you will learn</h2>
+            <p className="eyebrow">本课目标</p>
+            <h2>你将学到</h2>
             <ul className="objectives">
               {lesson.objectives.map((o) => (
                 <li key={o}>
@@ -101,7 +102,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               className="resume-section"
               href={`#section-${lesson.sections.findIndex((s) => s.title === record.section)}`}
             >
-              Resume section: {record.section} <ArrowRight size={16} />
+              继续阅读： {record.section} <ArrowRight size={16} />
             </a>
           )}
           {lesson.sections.map((s, i) => (
@@ -110,23 +111,22 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               key={s.title}
               id={`section-${i}`}
             >
-              <p className="eyebrow">
-                {String(i + 1).padStart(2, "0")} / CONCEPT
-              </p>
+              <p className="eyebrow">{String(i + 1).padStart(2, "0")} / 概念</p>
               <h2>{s.title}</h2>
-              <p>{s.text}</p>
+              <p lang="en">
+                <AnnotatedText text={s.text} />
+              </p>
               <button className="text-button" onClick={() => track(s.title)}>
                 {record.section === s.title
-                  ? "✓ Bookmark saved"
-                  : "Bookmark this section"}
+                  ? "✓ 已保存章节书签"
+                  : "保存章节书签"}
               </button>
             </section>
           ))}
           <section className="panel">
-            <h2>Words worth knowing</h2>
+            <h2>本课重点词汇</h2>
             <p className="muted">
-              Tap a term for a simple English definition. Bookmark words to
-              review later.
+              点击词汇查看英文释义，收藏后可在词汇学习页 集中复习。
             </p>
             <div className="vocabulary-grid">
               {lesson.vocabulary.map((v) => (
@@ -138,8 +138,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             <Lab key={id} id={id as LabId} />
           ))}
           <section className="panel" id="practical-experiment">
-            <p className="eyebrow">WINDOWS / GUIDED PRACTICE</p>
-            <h2>Practical Experiment</h2>
+            <p className="eyebrow">WINDOWS / 实践指导</p>
+            <h2>动手实践</h2>
             <p>
               Open Windows Terminal or PowerShell yourself. Run these read-only
               diagnostics, compare the output with the explanation, and record
@@ -152,9 +152,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           </section>
           <Quiz lesson={lesson} />
           <section className="panel">
-            <h2>Your field notes</h2>
+            <h2>学习笔记</h2>
             <label htmlFor="lesson-notes">
-              What clicked? What would you like to investigate?
+              记下你的理解，或想进一步探索的问题
             </label>
             <textarea
               id="lesson-notes"
@@ -169,7 +169,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               }
             />
             <small className="muted">
-              Saved locally as you type · {(data.notes[lesson.id] ?? "").length}
+              输入时自动保存到本机 · {(data.notes[lesson.id] ?? "").length}
               /10,000
             </small>
           </section>
@@ -177,11 +177,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             <div>
               <h3>
                 {record.completed
-                  ? "Lesson completed. Keep exploring."
-                  : "Ready for the next step?"}
+                  ? "本课已完成，继续探索吧。"
+                  : "准备好下一步了吗？"}
               </h3>
               <p className="muted">
-                Completion is your choice and is independent of your quiz score.
+                由你决定何时完成本课，完成状态与测验成绩分别记录。
               </p>
             </div>
             <button
@@ -202,30 +202,32 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               }
             >
               <Check size={17} />
-              {record.completed ? "Completed" : "Mark lesson complete"}
+              {record.completed ? "已完成" : "标记课程完成"}
             </button>
           </div>
-          <nav className="lesson-navigation" aria-label="Lesson navigation">
+          <nav className="lesson-navigation" aria-label="课程导航">
             {previous ? (
-              <Link href={`/courses/${previous.id}`}>
-                <ArrowLeft size={16} /> Previous: Lesson {previous.number}
+              <Link prefetch={false} href={`/courses/${previous.id}`}>
+                <ArrowLeft size={16} /> 上一课： {previous.number}
               </Link>
             ) : (
-              <Link href="/courses">Back to library</Link>
+              <Link prefetch={false} href="/courses">
+                返回课程目录
+              </Link>
             )}
             {next ? (
-              <Link href={`/courses/${next.id}`}>
-                Next: Lesson {next.number} <ArrowRight size={16} />
+              <Link prefetch={false} href={`/courses/${next.id}`}>
+                下一课： {next.number} <ArrowRight size={16} />
               </Link>
             ) : (
-              <Link href="/progress">
-                View your progress <ArrowRight size={16} />
+              <Link prefetch={false} href="/progress">
+                查看学习进度 <ArrowRight size={16} />
               </Link>
             )}
           </nav>
         </article>
         <aside className="lesson-toc">
-          <p className="eyebrow">IN THIS LESSON</p>
+          <p className="eyebrow">本课目录</p>
           {lesson.sections.map((s, i) => (
             <a
               key={s.title}
@@ -235,10 +237,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               {String(i + 1).padStart(2, "0")} {s.title}
             </a>
           ))}
-          <a href="#practical-experiment">Practical Experiment</a>
-          <a href="#knowledge-check">Knowledge Check</a>
+          <a href="#practical-experiment">动手实践</a>
+          <a href="#knowledge-check">知识测验</a>
           <div className="notice">
-            Small steps, strong foundations.
+            一步一步，打好基础。
             <br />
             <span lang="zh-CN">理解原理，比记住答案更重要。</span>
           </div>

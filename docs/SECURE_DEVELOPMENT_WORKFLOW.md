@@ -1,5 +1,15 @@
 # CyberPath 安全开发工作流
 
+## 2026-11-09 协作入口更新
+
+本文件的安全红线继续有效。统一入口为根目录 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md) 和 [AGENT_HANDOFF.md](AGENT_HANDOFF.md)。启动先查实际 Git 与最新交接，结束按统一模板更新状态；交接模板兼容本文件第 11 节的旧交接块，历史报告不必重写。
+
+下文基线、权限能力矩阵、CI 模板和工具配置描述是当时的环境记录，不是当前环境保证，也不是操作授权。不要据此读取或修改用户全局工具配置；实际限制以本轮执行环境及命令结果为准，受阻不得绕过。更严格的安全红线保持不变；明确受限的操作须停止，普通 Git/联网命令可使用正规逐命令审批，不默认切换全访问或管理员模式。
+
+实际 CI 已存在于 [.github/workflows/ci.yml](../.github/workflows/ci.yml)，不是第 8 节的历史模板；2026-11-09 已核实 `19126ca` 的 [CI 成功](https://github.com/dokiradokira/Cyberpath/actions/runs/42618523949)。只对该 SHA 有效，不代表后续文档提交已通过。默认主分支仍为 `master`，当前功能分支为 `feature/v2.2-learning-experience`；不擅改为 main。禁止两个 Agent 同时写同一目录。
+
+下文“人工执行 push/不 push”遵循第 1 节：用户明确授权某阶段时，Agent 可以正常 push 到指定功能分支；没有授权就只保存本地提交与交接。合并、部署、标签须另获批准。历史章节保留作为安全及故障证据。
+
 适用对象：在 Codex 与 DeepSeek Harness（DSH）之间交替维护本项目的开发者与代理。
 版本：2026-11-09。基线提交 `e435314`（分支 `fix/v2.1.2-stability`）。
 
@@ -25,11 +35,11 @@
 
 ## 2. 角色
 
-| 角色                | 职责                                                                 |
-| ------------------- | -------------------------------------------------------------------- |
-| 人类负责人          | 决定验证路径、批准例外、执行 push/部署/发布、审阅 ACL 与安全姿态      |
-| 开发代理（Codex/DSH）| 读代码、改代码、写测试与文档、跑静态检查；构建/测试结果以 CI 为准      |
-| CI（启用后）        | 唯一权威的构建与自动化测试执行者                                     |
+| 角色                  | 职责                                                              |
+| --------------------- | ----------------------------------------------------------------- |
+| 人类负责人            | 决定验证路径、批准例外、执行 push/部署/发布、审阅 ACL 与安全姿态  |
+| 开发代理（Codex/DSH） | 读代码、改代码、写测试与文档、跑静态检查；构建/测试结果以 CI 为准 |
+| CI（启用后）          | 唯一权威的构建与自动化测试执行者                                  |
 
 ## 3. 会话启动检查（30 秒）
 
@@ -51,18 +61,18 @@ whoami /groups | Select-String -Pattern 'Mandatory Label'
 
 ## 4. 能力矩阵（默认沙箱，已实测）
 
-| 操作                          | 默认沙箱 | 说明                                             |
-| ----------------------------- | -------- | ------------------------------------------------ |
-| 读文件 / `git status` / `git log` | ✅   |                                                  |
-| Harness 文件工具改源码        | ✅       | 工具进程不受 Low shell 限制                      |
-| shell 改既有 Medium 文件      | ❌ EPERM | 含 `src`、`docs`、`.git`、`.next-v2`             |
-| `npm run typecheck`           | ✅       |                                                  |
-| `npm run lint`                | ✅       |                                                  |
-| `npm test`                    | ❌       | `spawn EPERM`（Vite 配置加载）                   |
-| `npm run build`               | ❌       | 文件 EPERM 或 `spawn EPERM`                      |
-| `npm run test:e2e`            | ❌       | 浏览器启动 `spawn EPERM`                         |
-| `git add/commit`              | ❌       | 不能写 `.git`                                    |
-| `git worktree` / `git clone`  | ❌       | 前者写 `.git` 失败，后者 sh 管道失败             |
+| 操作                              | 默认沙箱 | 说明                                 |
+| --------------------------------- | -------- | ------------------------------------ |
+| 读文件 / `git status` / `git log` | ✅       |                                      |
+| Harness 文件工具改源码            | ✅       | 工具进程不受 Low shell 限制          |
+| shell 改既有 Medium 文件          | ❌ EPERM | 含 `src`、`docs`、`.git`、`.next-v2` |
+| `npm run typecheck`               | ✅       |                                      |
+| `npm run lint`                    | ✅       |                                      |
+| `npm test`                        | ❌       | `spawn EPERM`（Vite 配置加载）       |
+| `npm run build`                   | ❌       | 文件 EPERM 或 `spawn EPERM`          |
+| `npm run test:e2e`                | ❌       | 浏览器启动 `spawn EPERM`             |
+| `git add/commit`                  | ❌       | 不能写 `.git`                        |
+| `git worktree` / `git clone`      | ❌       | 前者写 `.git` 失败，后者 sh 管道失败 |
 
 细节与证据见 `EPERM_PERMISSION_RECOMMENDATIONS.md` 第 2 节。
 

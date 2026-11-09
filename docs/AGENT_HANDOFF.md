@@ -1,0 +1,132 @@
+# Agent Handoff
+
+适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮文档任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
+
+先读 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md)、[安全工作流](SECURE_DEVELOPMENT_WORKFLOW.md)。历史报告只作对应时间/SHA 的证据；实际 Git、源码和同一 SHA 的 CI 优先核实。不得仅凭聊天重做已有功能。
+
+## 固定交接格式
+
+每阶段或工具切换时，在“交接记录”顶部追加一份以下格式，保留旧记录。所有字段必须填写；无则写“无”，未知写“待确认 + 原因”，受阻写错误和人工步骤。HEAD 与工作区均注明快照时点；不要填尚未创建的文档提交哈希。
+
+```text
+Agent Handoff — YYYY-MM-DD HH:mm timezone（记录时点）
+Previous Agent:
+Current Development Phase:
+Branch:
+HEAD:
+Working Tree Status:
+Latest Completed Task:
+Changed Files:
+Tests Actually Run:
+Test Results:
+CI Status:
+Uncommitted Changes:
+Unpushed Commits:
+Known Issues:
+Remaining Tasks:
+Next Recommended Action:
+Important Warnings:
+```
+
+CI Status 必须包含 SHA、运行链接和未触发/排队/运行中/失败/成功/无法读取；测试区分本地本轮、历史本地、远程 CI，写 skip 和未执行原因。Changed Files 包括已提交及未提交范围，授权不自动转移到下一 Agent。
+
+## 切换或额度将尽时
+
+1. 停止新任务，通知负责人正在交接。保存完整可用增量；未完成代码不能硬说完成，记录剩余工作。
+2. 检查 `git status`、diff、文件归属、密钥和产物。保留用户修改，不执行 reset/clean，不用 `git add .`。
+3. 运行当前环境允许的检查，记录实际结果。优先查询 CI，受阻不反复排查 Windows 权限，不跳过或放宽断言获取绿色结果。
+4. 按功能阶段提交到正确分支。提交前把 PROJECT_STATUS 与本交接记录写入同一提交；若阶段代码已经提交，则独立提交文档。
+5. 仅在该阶段获得用户明确授权时 push origin 的指定功能分支，核对远端 SHA 并查询对应 CI。未授权或失败就保留本地成果、记录未推送提交；不合并主分支、部署或打标签。
+6. 更新状态和交接中的已知事实；不能提前写“推送/CI 成功”。自身提交哈希通过下面命令在交付时核实，不为更新自身哈希无限追加提交；提交后新发现的 CI 失败须作为后续记录，不改写历史。
+7. 负责人确认前一 Agent 停止该目录的编辑、Git 与会写文件的后台任务，再授权下一 Agent 写入。不要擅自终止未知进程。若两边都在运行，先停止写入，只读核对后由负责人选择唯一写入者。
+
+## 接手时的最小检查
+
+```powershell
+Set-Location D:\cyberpath
+git status
+git branch -vv
+git remote -v
+git log -5 --oneline
+git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md
+git diff --stat
+git diff --cached --stat
+git log --oneline '@{upstream}..HEAD'
+```
+
+没有 upstream 时最后一条会失败，记录为未配置，不擅自设定或猜测远端。`origin/*` 是本地缓存；联网可用时经允许 fetch（不自动 pull）或只读远程查询核对实际 SHA。不要因两工具名称不同就重新创建仓库、分支、安装依赖或全量审计。先比较任务涉及文件及报告，遇到新证据才扩大相关检查。
+
+### commit / push 受阻的人工步骤
+
+保留所有文件，记录 `git status --short` 的完整清单及错误；列出实际文件，以下是本轮文档范围的示例，不是对未来任务的自动授权。普通 PowerShell 逐步执行，失败停止；检查暂存区没有用户无关文件后才提交。
+
+```powershell
+Set-Location D:\cyberpath
+git status -sb
+git diff --check
+git diff -- AGENTS.md docs/SECURE_DEVELOPMENT_WORKFLOW.md
+git add -- AGENTS.md docs/PROJECT_STATUS.md docs/AGENT_HANDOFF.md docs/SECURE_DEVELOPMENT_WORKFLOW.md
+git diff --cached --stat
+git diff --cached
+git commit -m "docs: establish shared agent workflow and handoff"
+# 只有用户明确授权此阶段才执行下一行
+git push origin feature/v2.2-learning-experience
+```
+
+绝不修改 ACL、完整性级别、关闭安全机制或删除工作区来获得 Git 写入权限。工具正规逐命令审批可用时按授权使用；不支持则由人类执行。
+
+## 交接记录
+
+### Agent Handoff — 2026-11-09（Codex，本轮文档提交前快照）
+
+- Previous Agent: Codex；此前 DSH 的构建/安全工作已由既有提交和报告接手，本轮不重新审计。
+- Current Development Phase: V2.2-A 已通过现有自动化验收；本轮建立双 Agent 规则与交接。V2.2-B 未开始。
+- Branch: `feature/v2.2-learning-experience`。
+- HEAD: `19126ca6e21bfca2cc280eaa25f7981f93862ad0`，提交前基线；本交接文档提交用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 实查。
+- Working Tree Status: 开始时干净；记录时为下列四个协作文档新增/修改，无其他用户改动。提交后须重跑 status，不能把此快照当实时状态。
+- Latest Completed Task: 核实 Git、远程、CI、版本和安全资料；增量建立通用规范、状态入口与固定交接格式。上个已提交任务为 README 更新 `19126ca`。
+- Changed Files: `AGENTS.md`、`docs/PROJECT_STATUS.md`（新增）、`docs/AGENT_HANDOFF.md`（新增）、`docs/SECURE_DEVELOPMENT_WORKFLOW.md`。不改源码、依赖、课程、测试断言或 CI。
+- Tests Actually Run: 本轮验证结果在下方“本轮文档验证”记录；GitHub API 只读核对分支/CI/标签/Release，读取了既有成功运行结果，不是本轮重跑全部测试。
+- Test Results: 以“本轮文档验证”为准；本轮不在 Windows 重跑 build/e2e，不重新排查 EPERM。
+- CI Status: 本轮核实 `19126ca` 的 [42618523949](https://github.com/dokiradokira/Cyberpath/actions/runs/42618523949) completed / success；typecheck、lint、unit、build、browser、LAN 步骤成功。新文档提交尚未创建，因此尚无其 CI 结果，不能沿用此结论。
+- Uncommitted Changes: 快照为上述四文档；实际交接后以 `git status --short` 核实。禁止删除这些文件来获得干净状态。
+- Unpushed Commits: 基线无，已用远程 API 核对功能分支 SHA；本次文档提交和推送结果需在交付/接手时实查。
+- Known Issues: Windows 沙箱 EPERM；updated 事件时间混用；250ms 阅读节流；本地档案同源隔离及极端多页并发限制；真机/部署未验收。详见 PROJECT_STATUS。
+- Remaining Tasks: 完成本轮文档检查、独立提交、按本次授权正常推送并核对新 SHA 的 CI；后续待新授权启动 V2.2-B。
+- Next Recommended Action: 下一个 Agent 先确认前任写入已停止并重新检查 Git/最新 CI；然后认领用户指定任务。若授权 V2.2-B，先为访问/测验/完成时间及旧档案兼容定义回归用例。
+- Important Warnings: 本次 push 授权仅适用于这批文档；不自动延续至下一 Agent/阶段。默认分支为 master，仓库首页仍是旧主线；不合并、不 force push、不部署/打标签、不改安全设置，保护 F01–F03 和学习数据。
+
+### 本轮文档验证
+
+| 本轮检查                              | 结果                                                                       |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| `npm run typecheck`                   | 通过，退出码 0                                                             |
+| `npm run lint`                        | 通过，退出码 0                                                             |
+| `./tests/Test-Agents.ps1`             | 通过；原三条规则完整保留，不改测试断言                                     |
+| Markdown 格式                         | 四文档经 Prettier 格式化并检查                                             |
+| 文档交叉链接、16 个模板字段及首份记录 | 本地脚本验证通过；全部路径存在、字段齐全、AGENTS 旧文本保持前缀            |
+| `git diff --check` / 范围审阅         | 通过；仅四个协作文档，无源码/依赖/测试/工作流改动                          |
+| 本轮本地 unit / build / e2e / LAN     | 未重跑，纯文档阶段；不排查 EPERM，不把历史 CI 当作本轮新执行               |
+| 既有 CI                               | 只读核实 `19126ca` 的 42618523949 成功；新文档 SHA 的 CI 待提交/推送后查询 |
+
+旧版安全流程交接块兼容摘要：
+
+## 交接状态（2026-11-09，工具：Codex）
+
+- 分支/提交：当前功能分支，提交前基线 19126ca；本交接所属提交由上方 Git 命令解析。
+- 本轮改动：仅 AGENTS、PROJECT_STATUS、AGENT_HANDOFF、安全流程入口。
+- 已验证：typecheck / lint / 文档及规则检查通过；unit / e2e / build 只核实既有 CI，不声称本轮本地执行。
+- 未验证及原因：本次文档提交的 CI 在提交前尚不存在；真机及部署仍未验收。
+- 环境限制/权限状态：不改安全设置；Git/联网操作仅使用本次授权与正规逐命令审批。
+- 下一步（最多 3 条）：提交并按本次授权推送；核对新 SHA 与 CI；下一 Agent 接手后认领获授权任务。
+- 阻塞项与需要人类做的事：阶段切换前负责人确认前一 Agent 已停止写入；如果 Git 或网络受阻，保留工作区并按上方人工步骤操作。
+
+## 可复用接手指令
+
+### A. Codex → DSH
+
+负责人确认 Codex 已停止对 `D:\cyberpath` 的所有写入任务。请 DSH 接手：先检查实际 Git，阅读 AGENTS.md、docs/PROJECT_STATUS.md、docs/AGENT_HANDOFF.md 和安全流程，核对最新提交、未提交/未推送内容及对应 CI。延续交接中已授权且未完成的任务；没有明确业务任务就先汇报下一步，不自行启动新阶段。不重复开发、不覆盖用户改动。结束按统一模板交接；push 须有本阶段明确授权，不合并主分支、不部署。
+
+### B. DSH → Codex
+
+负责人确认 DSH 已停止对 `D:\cyberpath` 的所有写入任务。请 Codex 接手：先检查实际 Git，阅读 AGENTS.md、docs/PROJECT_STATUS.md、docs/AGENT_HANDOFF.md 和安全流程，核对最新提交、未提交/未推送内容及对应 CI。延续交接中已授权且未完成的任务；没有明确业务任务就先汇报下一步，不自行启动新阶段。不重复开发、不覆盖用户改动。结束按统一模板交接；push 须有本阶段明确授权，不合并主分支、不部署。

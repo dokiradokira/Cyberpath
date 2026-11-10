@@ -7,6 +7,7 @@ import { wordEntries as vocabulary } from "../content/vocabulary";
 import { initialProgress, parseProgress } from "../lib/storage";
 import { useLearning } from "./learning-provider";
 import { Vocabulary } from "./lessons/vocabulary";
+import { StudyDashboard } from "./study-dashboard";
 export function ProgressView() {
   const { data, update, raw, replace } = useLearning(),
     [message, setMessage] = useState(""),
@@ -33,7 +34,8 @@ export function ProgressView() {
         <h2>学习档案</h2>
         <p className="muted">
           {availableLessons.filter((l) => data.lessons[l.id].completed).length}{" "}
-          / 3 节开放课程已完成，测验满分为 5 分。
+          / {availableLessons.length}{" "}
+          节开放课程已完成，测验分数按各课题目数记录。
         </p>
         <div className="table-scroll">
           <table>
@@ -68,6 +70,7 @@ export function ProgressView() {
           </table>
         </div>
       </section>
+      <StudyDashboard />
       <section className="panel">
         <h2>错题复习</h2>
         {availableLessons.flatMap((l) =>

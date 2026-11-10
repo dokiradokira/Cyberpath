@@ -2,6 +2,7 @@ import { wordEntries } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import type { Progress, RecordEntry } from "../types";
 import { resolveSection } from "./reading";
+import { parseStudy } from "./study";
 export const STORAGE_KEY = "cyberpath.v1";
 export const emptyRecord = (): RecordEntry => ({
   completed: false,
@@ -113,6 +114,18 @@ export function parseProgress(text: string): Progress {
         : { sectionProgress: r.sectionProgress as number }),
       updated: r.updated,
     };
+    for (const field of [
+      "lastVisitedAt",
+      "lastQuizAt",
+      "completedAt",
+    ] as const) {
+      const value = r[field];
+      if (value !== undefined) {
+        if (typeof value !== "string" || !Number.isFinite(Date.parse(value)))
+          throw new Error("学习事件时间不合法。");
+        clean.lessons[lesson.id][field] = value;
+      }
+    }
     const note = x.notes[lesson.id];
     if (note !== undefined && (typeof note !== "string" || note.length > 10000))
       throw new Error("笔记不合法（最多 10,000 字符）。");
@@ -144,6 +157,7 @@ export function parseProgress(text: string): Progress {
       };
     }
   }
+  if (x.study !== undefined) clean.study = parseStudy(x.study);
   return clean;
 }
 export type ReadResult = {

@@ -29,6 +29,9 @@ export type Lesson = {
   quiz: Question[];
 };
 export type RecordEntry = {
+  lastVisitedAt?: string;
+  lastQuizAt?: string;
+  completedAt?: string;
   completed: boolean;
   latest: number | null;
   best: number | null;
@@ -39,6 +42,7 @@ export type RecordEntry = {
   updated: string;
 };
 export type Progress = {
+  study?: { version: 1; history: QuizAttempt[] };
   version: 1;
   contentVersion?: number;
   lessons: Record<string, RecordEntry>;
@@ -51,4 +55,19 @@ export type Progress = {
   notes: Record<string, string>;
   theme: "dark" | "light";
   mode: "learning" | "challenge";
+};
+export type AnswerSnapshot = Question & {
+  topicId: string;
+  sectionId: string;
+  selected: number;
+  correct: boolean;
+};
+export type QuizAttempt = {
+  id: string;
+  lessonId: string;
+  kind: "quiz" | "review";
+  at: string;
+  score: number;
+  total: number;
+  questions: AnswerSnapshot[];
 };

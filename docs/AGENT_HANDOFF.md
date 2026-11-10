@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10（Codex，V2.2-C 提交前）
+
+- Previous Agent: Codex，继续同一工作区；不启动并发 Agent。
+- Current Development Phase: V2.2-C 历史、复习、进度及可视化，等待完整 CI。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: e645617 基线；本次提交用 git log -1 -- docs/V2.2_C_IMPLEMENTATION.md 实查。
+- Working Tree Status: README 原有空格修改保留，不暂存；其他均本轮文件。
+- Latest Completed Task: 真实作答快照、独立复习、时间分离、趋势/错误率/进度及单元浏览器测试。
+- Changed Files: types、study/storage、Quiz/LessonView、Overview/ProgressView、新 StudyDashboard、CSS、study 单元/浏览器测试、本报告及状态文档；见实施报告完整清单。
+- Tests Actually Run: 初次模块缺失红测、npm test、typecheck、lint、格式/diff；完整浏览器交由 CI。
+- Test Results: unit 11 文件 98 通过；最终 typecheck/lint/CI 以本次交付为准，未执行不能写通过。
+- CI Status: 新提交尚未创建，待推送后查询；基线已通过不代表本轮。
+- Uncommitted Changes: 本轮源码/测试/三文档与 README 用户修改。
+- Unpushed Commits: 开始时无，远程与本地 e645617 同步。
+- Known Issues: 真机未验收、Windows EPERM；历史最大 100 条，旧成绩无真实时间无法生成历史。
+- Remaining Tasks: 范围/敏感文件检查、正常提交推送、查完整 CI，若失败按实际日志修复。
+- Next Recommended Action: 先核对本 C 提交的真实 CI；D 仅建议，不自动启动。
+- Important Warnings: 不删除旧错误/伪造历史、不提交 README、不改安全设置、不合并/强推/部署/打标签。旧程序可能忽略 study，回滚先导出。
+
 ### Agent Handoff — 2026-11-10（Codex，修复 CI 成功）
 
 - Previous Agent: Codex。

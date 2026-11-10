@@ -63,6 +63,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         [lesson.id]: {
           ...p.lessons[lesson.id],
           visited: true,
+          lastVisitedAt: new Date().toISOString(),
           updated: new Date().toISOString(),
         },
       },
@@ -228,6 +229,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                     [lesson.id]: {
                       ...record,
                       completed: true,
+                      completedAt: new Date().toISOString(),
                       updated: new Date().toISOString(),
                     },
                   },

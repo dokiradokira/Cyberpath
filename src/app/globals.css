@@ -1992,6 +1992,51 @@ select {
   background: var(--raised);
   border-radius: 12px;
 }
+.study-dashboard {
+  min-width: 0;
+}
+.score-chart {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 16px auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+.score-chart [role="button"] {
+  cursor: pointer;
+}
+.score-chart [role="button"]:focus {
+  outline: 2px solid var(--primary);
+}
+.topic-bars {
+  list-style: none;
+  padding: 0;
+}
+.topic-bars li {
+  margin: 20px 0;
+  overflow-wrap: anywhere;
+}
+.topic-bar {
+  height: 12px;
+  background: var(--soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.topic-bar span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+.study-dashboard progress {
+  width: 100%;
+  accent-color: var(--primary);
+}
+.study-dashboard ol {
+  padding-left: 22px;
+  overflow-wrap: anywhere;
+}
 .flashcard > h2 {
   font-size: 32px;
   color: var(--primary);

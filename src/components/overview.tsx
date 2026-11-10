@@ -71,13 +71,21 @@ export function Overview() {
     completed = availableLessons.filter(
       (l) => data.lessons[l.id].completed,
     ).length,
-    percent = Math.round((completed / 3) * 100);
+    percent = Math.round((completed / availableLessons.length) * 100);
   const recent = availableLessons
       .filter((l) => data.lessons[l.id].updated)
       .sort((a, b) =>
         data.lessons[b.id].updated.localeCompare(data.lessons[a.id].updated),
       ),
-    lastQuiz = recent.find((l) => data.lessons[l.id].latest !== null),
+    lastQuiz =
+      availableLessons
+        .filter((l) => data.lessons[l.id].lastQuizAt)
+        .sort((a, b) =>
+          data.lessons[b.id].lastQuizAt!.localeCompare(
+            data.lessons[a.id].lastQuizAt!,
+          ),
+        )[0] ??
+      availableLessons.find((l) => data.lessons[l.id].latest !== null),
     recommended = availableLessons.find((l) => !data.lessons[l.id].completed);
   return (
     <>
@@ -104,7 +112,9 @@ export function Overview() {
           >
             <i style={{ width: `${percent}%` }} />
           </div>
-          <small>{completed} / 3 节已开放课程</small>
+          <small>
+            {completed} / {availableLessons.length} 节已开放课程
+          </small>
         </div>
         <div className="stat panel">
           <span>
@@ -112,9 +122,9 @@ export function Overview() {
           </span>
           <strong>
             {String(completed).padStart(2, "0")}
-            <small> / 03</small>
+            <small> / {String(availableLessons.length).padStart(2, "0")}</small>
           </strong>
-          <small>共 3 节已开放课程</small>
+          <small>共 {availableLessons.length} 节已开放课程</small>
         </div>
         <div className="stat panel">
           <span>
@@ -125,7 +135,9 @@ export function Overview() {
             <small>{lastQuiz ? " / 5" : ""}</small>
           </strong>
           <small>
-            {lastQuiz ? `Lesson ${lastQuiz.number}` : "尚无测验记录"}
+            {lastQuiz
+              ? `Lesson ${lastQuiz.number}${data.lessons[lastQuiz.id].lastQuizAt ? "" : " · 旧档案，测验时间未知"}`
+              : "尚无测验记录"}
           </small>
         </div>
       </div>

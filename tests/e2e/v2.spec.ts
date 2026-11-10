@@ -148,6 +148,15 @@ test("V2 inline Chinese hints and vocabulary search, cards, quiz, favorite and b
   await page.getByRole("button", { name: "释义测验", exact: true }).click();
   await page.getByRole("button", { name: "数据包", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("回答正确");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews.packet
+            ?.known,
+      ),
+    )
+    .toBe(true);
   await page.reload();
   await expect(page.getByRole("heading", { name: "1 个已掌握" })).toBeVisible();
   await page.getByLabel("搜索词汇").fill("数据包");

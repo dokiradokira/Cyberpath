@@ -95,6 +95,7 @@ test("legacy summaries do not invent chart history and mobile charts remain acce
       .locator(`#knowledge-check input[name="${q.id}"][value="${q.answer}"]`)
       .check();
   await page.getByRole("button", { name: "提交测验", exact: true }).click();
+  await expect(page.getByText("本次得分： 5 / 5")).toBeVisible();
   await page.goto("/progress");
   for (const width of [375, 768, 1280]) {
     await page.setViewportSize({ width, height: 850 });

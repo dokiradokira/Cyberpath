@@ -35,6 +35,13 @@ test("inline vocabulary has keyboard-accessible examples, favorites and immediat
   await page.getByRole("button", { name: "切换英语挑战模式" }).click();
   await page.getByRole("button", { name: "切换英语挑战模式" }).click();
   await expect(page.locator("#section-0 .term-translation")).toHaveCount(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => JSON.parse(localStorage.getItem("cyberpath.v1")!).mode,
+      ),
+    )
+    .toBe("challenge");
   await page.reload();
   await expect(
     page.getByRole("button", { name: "切换英语挑战模式" }),
@@ -100,6 +107,16 @@ test("saved flashcards finish a round, restart and preserve mastery on reload", 
   ).toBeVisible();
   await page.getByRole("button", { name: "再复习一轮" }).click();
   await expect(card).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          Object.values(
+            JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews,
+          ).filter((r) => (r as { known: boolean }).known).length,
+      ),
+    )
+    .toBe(2);
   await page.reload();
   await expect(page.getByRole("heading", { name: "2 个已掌握" })).toBeVisible();
   await page.getByLabel("搜索词汇").fill("protocol");

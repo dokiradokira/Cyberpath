@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10（Codex，修复 CI 成功）
+
+- Previous Agent: Codex。
+- Current Development Phase: V2.2-B 自动化验收通过，补记结果。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: 88ed2e6，文档补记前基线；本记录所属提交用 Git 实查。
+- Working Tree Status: 仅 README 原有用户改动及本轮三份结果文档。
+- Latest Completed Task: 两类浏览器测试修复均通过完整 CI。
+- Changed Files: 本结果提交仅实施报告、PROJECT_STATUS、AGENT_HANDOFF。
+- Tests Actually Run: 本地 typecheck、lint、unit 90、格式检查与 Playwright 列举；远端完整 CI。
+- Test Results: 本地检查通过；远端 unit/build/browser/LAN 步骤成功，浏览器配置保留 60 项。
+- CI Status: [42741692398](https://github.com/dokiradokira/Cyberpath/actions/runs/42741692398)，SHA 88ed2e6，completed/success；本结果文档的新 CI 仍需推送后核查。
+- Uncommitted Changes: 提交前为三文档和 README 原有改动；后者不暂存。
+- Unpushed Commits: 进入本补记时无；f2cdcb1、88ed2e6 已推送。
+- Known Issues: 真机未验收，Windows EPERM、事件时间等原问题不在此次范围。
+- Remaining Tasks: 保存并推送本结果记录，确认同步；不开发 C。
+- Next Recommended Action: 下个阶段需用户另行授权；建议再处理事件时间及测验复习。
+- Important Warnings: 不 merge、强推、部署或打标签；不清理 README；自动化验收不是正式发布。
+
 ### Agent Handoff — 2026-11-10（Codex，定向浏览器修复提交前）
 
 - Previous Agent: Codex。

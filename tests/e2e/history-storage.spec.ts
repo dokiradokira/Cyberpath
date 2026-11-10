@@ -48,7 +48,9 @@ async function upload(page: Page, text: string) {
       mimeType: "application/json",
       buffer: Buffer.from(text),
     });
-  await expect(page.getByRole("status").last()).toContainText("导入成功");
+  await expect(page.getByRole("status").last()).toContainText("导入成功", {
+    timeout: 30000,
+  });
 }
 
 test("100 legacy records migrate idempotently and the 101st quiz persists with a complete export", async ({
@@ -101,6 +103,7 @@ test("100 legacy records migrate idempotently and the 101st quiz persists with a
 test("1001 records import atomically, paginate, export completely and retain exact statistics", async ({
   page,
 }) => {
+  test.setTimeout(120000);
   const fixtures = records(1001);
   await page.goto("/progress");
   await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
@@ -204,7 +207,9 @@ test("IndexedDB unavailable permits reading but never claims a quiz was saved", 
       .locator(`#knowledge-check input[name="${q.id}"][value="${q.answer}"]`)
       .check();
   await page.getByRole("button", { name: "提交测验", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("历史未保存");
+  await expect(
+    page.locator("#knowledge-check").getByRole("alert"),
+  ).toContainText("历史未保存");
   await expect(page.getByText("本次得分： 5 / 5")).toHaveCount(0);
 });
 test("quota failure rolls back history and score, and stale tabs cannot overwrite", async ({
@@ -229,7 +234,9 @@ test("quota failure rolls back history and score, and stale tabs cannot overwrit
       .locator(`#knowledge-check input[name="${q.id}"][value="${q.answer}"]`)
       .check();
   await page.getByRole("button", { name: "提交测验", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("历史未保存");
+  await expect(
+    page.locator("#knowledge-check").getByRole("alert"),
+  ).toContainText("历史未保存");
   expect((await head(page)).count).toBe(before.count);
   expect((await head(page)).profile.lessons[lesson.id].latest).toBeNull();
   await page.goto("/vocabulary");

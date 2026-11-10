@@ -23,7 +23,9 @@ test("inline vocabulary has keyboard-accessible examples, favorites and immediat
   await expect(
     detail.getByRole("button", { name: "取消收藏 network", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
-  await detail.press("Escape");
+  await detail
+    .getByRole("button", { name: "取消收藏 network", exact: true })
+    .press("Escape");
   await expect(detail).toHaveCount(0);
   await expect(term).toBeFocused();
   await page.getByRole("button", { name: "切换英语挑战模式" }).click();

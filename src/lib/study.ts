@@ -163,7 +163,8 @@ export function parseStudy(x: unknown): NonNullable<Progress["study"]> {
     throw new Error("测验历史格式或版本不兼容，原始记录已保留。");
   };
   if (!obj(x) || x.version !== 1 || !Array.isArray(x.history)) return fail();
-  const history: QuizAttempt[] = [];
+  const history: QuizAttempt[] = [],
+    ids = new Set<string>();
   for (const a of x.history) {
     if (
       !obj(a) ||
@@ -177,7 +178,7 @@ export function parseStudy(x: unknown): NonNullable<Progress["study"]> {
       a.questions.length > 50 ||
       a.total !== a.questions.length ||
       !Number.isInteger(a.score) ||
-      history.some((h) => h.id === a.id)
+      ids.has(a.id)
     )
       return fail();
     const questions: AnswerSnapshot[] = [];
@@ -219,6 +220,7 @@ export function parseStudy(x: unknown): NonNullable<Progress["study"]> {
       });
     }
     if (questions.filter((q) => q.correct).length !== a.score) return fail();
+    ids.add(a.id);
     history.push({
       id: a.id,
       lessonId: a.lessonId,

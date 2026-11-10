@@ -2,7 +2,17 @@
 
 更新时间：2026-11-09，维护者：Codex。本文为状态快照；每次接手以 Git、源码和同一 SHA 的 CI 实查更新，不以聊天或版本号猜测功能。
 
-## 当前阶段覆盖：V2.2-C（2026-11-10）
+## 当前阶段覆盖：V2.2-C.1（2026-11-10）
+
+最新结果：最终代码/测试提交 `51d2978e936ae5ade9a90348002d4150e9e55d36` 已推送。push CI [42756379694](https://github.com/dokiradokira/Cyberpath/actions/runs/42756379694) completed/success，typecheck、lint、unit、production build、浏览器回归、LAN 全部通过。同 SHA PR 运行 [42756386582](https://github.com/dokiradokira/Cyberpath/actions/runs/42756386582) 在浏览器回归失败，单独记录，不能表述为所有 CI 全部通过。详见 [V2.2_C_1_IMPLEMENTATION.md](V2.2_C_1_IMPLEMENTATION.md)。
+
+本轮接手时实际工作区是 `D:\cyberpath`，基线 `557dee1`，Codex 留下 5 个修改、4 个未跟踪文件；`D:\cyberpath-dsh` 是停在 `8b22cdd` 的旧克隆，不是半成品所在。README 的用户空格改动保留且未纳入提交。没有 reset/clean/stash/pull/rebase 或切换分支。
+
+实现：完整测验/复习历史迁到 IndexedDB `cyberpath.learning.v1`，记录按代存储，取消 100 条记录上限且不自动裁剪；旧 `cyberpath.v1` 保留为最近 20 条兼容快照并带 `historyStorage` 标记。首次迁移单事务写入行、原文备份和 head，校验行数后提交；中断回滚后可重试。导入先全量校验再替换，失败不改原档案；导出 v2 含完整历史；配额不足回滚并提示；IndexedDB 不可用时只读降级。成绩趋势按页查询完整记录，错题统计由增量聚合维护。schema 1、F01/F02/F03、词汇与课程进度保留。
+
+本地完整回归在获得本地全访问运行环境后执行：`npm run build`、107 个单元测试、74 个浏览器用例（Chromium + WebKit）、2 个 LAN 用例、typecheck、lint 全部通过；默认沙箱下 unit/build/e2e 的 `spawn EPERM` 仍如实记录。package 仍 `2.1.2`，V2.2 未发布；不合并 master、不部署、不打标签。真机与屏幕阅读器人工验收仍待完成；D 尚未开始，需另行授权。
+
+## 历史阶段记录：V2.2-C（2026-11-10）
 
 最新结果：7e70376 已推送，[push CI 42744976986](https://github.com/dokiradokira/Cyberpath/actions/runs/42744976986) 完整成功，含构建/浏览器/LAN。C 通过当前 push 自动化验收；同 SHA 的 PR 运行 42744981630 在本记录时尚未结束，不推断通过。详见 C 报告，本节以下“待 CI”为功能提交前历史快照。真机仍未验收，V2.2 未发布；结果文档的新 SHA 用 Git/CI 实查。
 

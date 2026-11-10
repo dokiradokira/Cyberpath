@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10 12:05 Asia/Shanghai（DSH，V2.2-C.1 接手补完）
+
+- Previous Agent: Codex（V2.2-C.1 中途额度耗尽，留下未提交半成品；没有 C.1 文档）。
+- Current Development Phase: V2.2-C.1 完整历史与 IndexedDB 持久存储。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: 51d2978（功能 `e9716a0`、测试等待 `1bae7f9`、WebKit 修复 `51d2978`；文档提交自身 SHA 用 Git 查）。
+- Working Tree Status: README 用户空格改动保留；本轮 C.1 报告、PROJECT_STATUS、本交接待提交。
+- Latest Completed Task: 移除 100 条记录上限；IndexedDB 迁移/回滚/兼容快照/导入导出/配额与分页补完；新增 101、1001、旧档案、镜像最近 20 条、导出排序测试。
+- Changed Files: `src/lib/history-backup.ts`、`src/lib/history-repository.ts`、`src/lib/study.ts`、`src/components/learning-provider.tsx`、`src/components/lessons/quiz.tsx`、`src/components/progress-view.tsx`、`src/components/study-dashboard.tsx`、`tests/history-backup.test.ts`、`tests/study.test.ts`、`tests/e2e/history-storage.spec.ts`、`tests/e2e/app.spec.ts`、`tests/e2e/study.spec.ts`、`tests/e2e/stability.spec.ts`、`tests/e2e/v2.spec.ts`、`tests/e2e/vocabulary-learning.spec.ts`。
+- Tests Actually Run: 本地 `npm run build`、`npm test`、`npx playwright test`、`npm run test:lan`、typecheck、lint；远端 push CI 全部步骤。
+- Test Results: 本地 107 单元、74 浏览器、2 LAN、build/typecheck/lint 通过；默认沙箱下 `npm test` 仍 `spawn EPERM`，已记录。push CI 全部成功；同 SHA PR CI 浏览器回归失败，未定位，不能写成全部通过。
+- CI Status: push [42756379694](https://github.com/dokiradokira/Cyberpath/actions/runs/42756379694)，51d2978，success；PR [42756386582](https://github.com/dokiradokira/Cyberpath/actions/runs/42756386582)，同 SHA，浏览器回归 failure。历史失败 `e9716a0`、`1bae7f9` 已在 `51d2978` 修正。
+- Uncommitted Changes: 三份 C.1 文档待提交；README 不暂存。
+- Unpushed Commits: 记录时无；文档提交待推送。
+- Known Issues: PR 运行浏览器回归失败原因未取得日志；localStorage 被禁用但 IndexedDB 可用的组合仍只读；浏览器清理站点数据会删除 IndexedDB；重置保留旧代作为本地回滚备份；旧版本只看到最近 20 条；真机未验收。
+- Remaining Tasks: 推送文档并核对新 SHA 的 push/PR CI；排查 PR 浏览器失败；真机/屏幕阅读器人工验收；获授权后再评估 D。
+- Next Recommended Action: 推送文档后核对新 SHA 的 push CI；单独排查同 SHA PR 浏览器失败，不把 push 成功当作 PR 通过；真机验收后再考虑 D。
+- Important Warnings: 不合并 master、不部署、不打标签、不强推；不改 ACL/完整性级别；不删除用户档案；README 用户改动保留。
+
 ### Agent Handoff — 2026-11-10（Codex，V2.2-C push CI 成功）
 
 - Previous Agent: Codex。

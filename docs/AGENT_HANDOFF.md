@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10（Codex，CI 失败复核）
+
+- Previous Agent: Codex，继续同一 V2.2-B 任务。
+- Current Development Phase: V2.2-B 浏览器回归失败，尚未完成验收。
+- Branch: `feature/v2.2-learning-experience`。
+- HEAD: `8b22cdd`，本次状态补记前基线，已与远端同步。
+- Working Tree Status: 进入时仅 README 用户空格改动；本轮补记三个状态文档，待独立提交。
+- Latest Completed Task: 读取 CI 最终结论，确认浏览器失败和日志访问障碍。
+- Changed Files: PROJECT_STATUS、AGENT_HANDOFF、V2.2_B_IMPLEMENTATION；不改业务代码或测试断言。
+- Tests Actually Run: 本轮仅 Git/远端 CI/API 只读核对及文档检查，没有重新运行本地业务测试。
+- Test Results: 8b22cdd 的远端 typecheck/lint/unit/build 成功，browser 失败，LAN skipped。
+- CI Status: [42632716848](https://github.com/dokiradokira/Cyberpath/actions/runs/42632716848)，completed/failure，对应完整 SHA 见实施报告。
+- Uncommitted Changes: 提交前上述三文档以及需保留的 README 用户改动；实际以 status 核对。
+- Unpushed Commits: 本轮开始无；本状态提交按现有 V2.2-B 授权正常推送。
+- Known Issues: 浏览器具体错误未知；未认证日志 API 403，凭据提取命令被自动审批拒绝；不绕过。
+- Remaining Tasks: 用户从正常登录的 GitHub 页面提供失败用例与 e2e.log 错误；再定位修复并重跑 CI。
+- Next Recommended Action: 打开该运行的 Browser regression 或 failure-reports 中 reports/e2e.log，提供错误文本，不提供秘密凭据。
+- Important Warnings: 不把单元/构建成功当浏览器通过；不删除测试、不改安全设置、不强推/合并/部署；README 用户改动仍需保留。
+
 ### Agent Handoff — 2026-11-09（Codex，V2.2-B 提交前快照）
 
 - Previous Agent: Codex；本轮继续开发，没有启动并发 Agent。

@@ -56,12 +56,19 @@ test("inline vocabulary has keyboard-accessible examples, favorites and immediat
   ).toBe(false);
   await page.goto("/vocabulary");
   await page.getByLabel("搜索词汇").fill("packet");
-  await expect(page.locator(".word-entry small")).toBeHidden();
-  await page.getByRole("button", { name: "解释 packet", exact: true }).click();
-  await expect(page.locator(".word-entry small")).toBeVisible();
+  // Search includes definitions: router/payload/routing also mention packets.
+  const packet = page.locator(".word-entry").filter({
+    has: page.getByRole("button", { name: "解释 packet", exact: true }),
+  });
+  await expect(packet).toHaveCount(1);
+  await expect(packet.locator("small")).toBeHidden();
+  await packet
+    .getByRole("button", { name: "解释 packet", exact: true })
+    .click();
+  await expect(packet.locator("small")).toBeVisible();
   await page.getByRole("button", { name: "切换英语挑战模式" }).click();
   await page.getByRole("button", { name: "切换英语挑战模式" }).click();
-  await expect(page.locator(".word-entry small")).toBeHidden();
+  await expect(packet.locator("small")).toBeHidden();
 });
 
 test("saved flashcards finish a round, restart and preserve mastery on reload", async ({

@@ -157,7 +157,9 @@ test("V2 inline Chinese hints and vocabulary search, cards, quiz, favorite and b
   await page.getByLabel("搜索词汇").fill("");
   await page.screenshot({
     path: testInfo.outputPath("vocabulary-v2.png"),
-    fullPage: true,
+    // A narrow viewport renders all 34 entries in one column; capture the
+    // viewport rather than exceeding WebKit's full-page bitmap limit.
+    fullPage: false,
   });
   await page.goto("/");
   await page.screenshot({

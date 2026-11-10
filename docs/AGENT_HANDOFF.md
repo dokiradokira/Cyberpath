@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10（Codex，定向浏览器修复提交前）
+
+- Previous Agent: Codex。
+- Current Development Phase: V2.2-B 两类浏览器失败的最小修复与 CI 验收。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: f2cdcb1，提交前基线，开始时较 origin 缓存领先一条合法报告提交。
+- Working Tree Status: 原有 README 用户空格改动保留，另有本修复两测试及三文档。
+- Latest Completed Task: 根据实际筛选/DOM 结构修复唯一定位；WebKit 长页截图改视口。
+- Changed Files: tests/e2e/vocabulary-learning.spec.ts、tests/e2e/v2.spec.ts、三个状态/报告文档。
+- Tests Actually Run: typecheck、lint、unit、格式检查与 Playwright 列举，结果以交付及新 CI 为准。
+- Test Results: 不把用例列举当执行；本地不重试已知 EPERM，生产浏览器待 CI。
+- CI Status: 原 8b22cdd 浏览器失败；修复提交尚未创建，未有新结果。
+- Uncommitted Changes: 本轮五文件以及不纳入提交的 README 改动。
+- Unpushed Commits: 开始时 f2cdcb1，授权将其与本修复正常推送。
+- Known Issues: 真机未验收、Windows EPERM；不得以旧 CI 结论替代新 SHA。
+- Remaining Tasks: 推送、查完整 CI，成功后补记实际验收结论。
+- Next Recommended Action: 按新 SHA 核查全部步骤；仅若失败根据新日志修复，不开发 C。
+- Important Warnings: 不更改真实列表内容、搜索逻辑或断言含义，不提交 README、不强推/合并/部署。
+
 ### Agent Handoff — 2026-11-10（Codex，CI 失败复核）
 
 - Previous Agent: Codex，继续同一 V2.2-B 任务。

@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-10（Codex，V2.2-C push CI 成功）
+
+- Previous Agent: Codex。
+- Current Development Phase: C 功能通过 push 自动化门禁，结果补记。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: 7e70376，结果文档提交前基线；本记录所属提交用 Git 实查。
+- Working Tree Status: 原有 README 用户改动保留；本轮只更新三份结果文档。
+- Latest Completed Task: 历史/错题/图表及兼容读取通过现有完整 push CI。
+- Changed Files: 本次仅 C 报告、PROJECT_STATUS、此交接。
+- Tests Actually Run: 本地 typecheck/lint/unit 98/AGENTS/diff；远端完整 push CI。
+- Test Results: push 测试步骤成功，配置保留 64 个浏览器用例；LAN 无网卡可 skip，真机待确认。
+- CI Status: [42744976986](https://github.com/dokiradokira/Cyberpath/actions/runs/42744976986)，7e70376，success；同 SHA PR 42744981630 记录时仍运行，不混淆。新文档 CI 待自身 SHA 核对。
+- Uncommitted Changes: 三文档待提交，README 不暂存。
+- Unpushed Commits: 进入补记时无，功能已推送。
+- Known Issues: 100 条历史容量、旧时间未知、Windows EPERM、真机未验收。
+- Remaining Tasks: 推送本结果文档并查新 SHA；PR 状态下次重新核对。
+- Next Recommended Action: 获用户授权后规划 D 的教学支架/实验任务、历史归档与移动人工验收。
+- Important Warnings: 不合并或部署，不强推，不提交 README；新旧备份先导出，禁止伪造旧历史。
+
 ### Agent Handoff — 2026-11-10（Codex，V2.2-C 提交前）
 
 - Previous Agent: Codex，继续同一工作区；不启动并发 Agent。

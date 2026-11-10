@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import type { AnswerSnapshot } from "../src/types";
 import { availableLessons } from "../src/content/lessons";
 import {
   initialProgress,
@@ -121,7 +122,7 @@ it("rejects invalid snapshot fields, future history version and timestamp types"
   Object.assign(p.lessons[l.id], { lastQuizAt: [] });
   expect(() => parseProgress(JSON.stringify(p))).toThrow();
 });
-it("does not silently discard history at capacity", () => {
+it("keeps the 101st attempt and parses history beyond the former 100-record cap", () => {
   const p = initialProgress();
   p.study = {
     version: 1,
@@ -129,13 +130,36 @@ it("does not silently discard history at capacity", () => {
       makeAttempt(l, answers, "quiz", String(i), "2026-11-10T01:00:00Z"),
     ),
   };
-  expect(() =>
-    saveAttempt(
-      p,
-      makeAttempt(l, answers, "quiz", "new", "2026-11-10T01:00:00Z"),
+  const next = saveAttempt(
+    p,
+    makeAttempt(l, answers, "quiz", "new", "2026-11-10T02:00:00Z"),
+  );
+  expect(next.study?.history).toHaveLength(101);
+  expect(next.study?.history.at(-1)?.id).toBe("new");
+  expect(parseProgress(JSON.stringify(next))).toEqual(next);
+});
+it("parses 1001 compact historical attempts without a count cap", () => {
+  const base = l.quiz[0],
+    q: AnswerSnapshot = {
+      ...base,
+      topicId: topicSections[base.id],
+      sectionId: topicSections[base.id],
+      selected: base.answer,
+      correct: true,
+    },
+    history = Array.from({ length: 1001 }, (_, i) =>
+      makeAttempt(
+        l,
+        { [q.id]: q.answer },
+        "quiz",
+        `h${i}`,
+        "2026-11-10T01:00:00Z",
+        [q],
+      ),
     ),
-  ).toThrow();
-  expect(p.study.history).toHaveLength(100);
+    p = initialProgress();
+  p.study = { version: 1, history };
+  expect(parseProgress(JSON.stringify(p)).study?.history).toHaveLength(1001);
 });
 it("handles empty and single points and differing question totals", () => {
   const a = makeAttempt(l, answers, "quiz", "a", "2026-11-10T01:00:00Z");

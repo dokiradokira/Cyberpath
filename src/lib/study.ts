@@ -47,13 +47,11 @@ export function makeAttempt(
     })),
   };
 }
+// The durable repository owns capacity; this model keeps every record it is
+// given and only guards against duplicate IDs.
 export function saveAttempt(p: Progress, a: QuizAttempt): Progress {
   const history = p.study?.history ?? [];
   if (history.some((x) => x.id === a.id)) return p;
-  if (history.length >= 100)
-    throw new Error(
-      "已达到 100 条历史记录上限。请先导出完整档案；记录不会自动删除。",
-    );
   const old = p.lessons[a.lessonId];
   return {
     ...p,
@@ -164,13 +162,7 @@ export function parseStudy(x: unknown): NonNullable<Progress["study"]> {
   const fail = () => {
     throw new Error("测验历史格式或版本不兼容，原始记录已保留。");
   };
-  if (
-    !obj(x) ||
-    x.version !== 1 ||
-    !Array.isArray(x.history) ||
-    x.history.length > 100
-  )
-    return fail();
+  if (!obj(x) || x.version !== 1 || !Array.isArray(x.history)) return fail();
   const history: QuizAttempt[] = [];
   for (const a of x.history) {
     if (

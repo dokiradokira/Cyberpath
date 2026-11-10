@@ -66,13 +66,15 @@ test("F03 practice queue advances from two to one and completes at zero", async 
   await page.getByRole("button", { name: "释义测验", exact: true }).click();
   await page.getByRole("button", { name: "数据包", exact: true }).click();
   await expect(page.locator(".meaning-options button:enabled")).toHaveCount(0);
-  expect(
-    await page.evaluate(
-      () =>
-        JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews.packet
-          .attempts,
-    ),
-  ).toBe(1);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews.packet
+            .attempts,
+      ),
+    )
+    .toBe(1);
   await expect(
     page.getByRole("button", { name: "下一个词", exact: true }),
   ).toBeEnabled();

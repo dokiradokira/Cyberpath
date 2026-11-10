@@ -1,21 +1,18 @@
 "use client";
 import { useRef, useState } from "react";
 import { useLearning } from "../learning-provider";
-import { makeAttempt, saveAttempt } from "../../lib/study";
+import { makeAttempt } from "../../lib/study";
 import type { Lesson } from "../../types";
 export function Quiz({ lesson }: { lesson: Lesson }) {
-  const { data, update, ready } = useLearning(),
+  const { recordAttempt, ready } = useLearning(),
     [answers, setAnswers] = useState<Record<string, number>>({}),
     [submitted, setSubmitted] = useState(false),
     [score, setScore] = useState(0);
   const submittedRef = useRef(false);
   const [error, setError] = useState("");
-  function submit() {
+  async function submit() {
     if (!ready || submittedRef.current) return;
-    if ((data.study?.history.length ?? 0) >= 100) {
-      setError("历史记录已满，请先导出档案。不会自动删除历史。");
-      return;
-    }
+    setError("");
     const result = makeAttempt(
       lesson,
       answers,
@@ -24,9 +21,14 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
       new Date().toISOString(),
     );
     submittedRef.current = true;
+    const saved = await recordAttempt(result);
+    if (!saved) {
+      submittedRef.current = false;
+      setError("历史未保存，测验未提交。请检查存储提示后重试。");
+      return;
+    }
     setScore(result.score);
     setSubmitted(true);
-    update((p) => saveAttempt(p, result));
   }
   return (
     <section className="panel" id="knowledge-check">

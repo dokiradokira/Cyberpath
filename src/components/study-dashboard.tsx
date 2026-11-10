@@ -1,17 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { availableLessons } from "../content/lessons";
 import type { AnswerSnapshot } from "../types";
-import {
-  completion,
-  makeAttempt,
-  saveAttempt,
-  scoreTrend,
-  weakTopics,
-  wrongQuestions,
-} from "../lib/study";
+import { completion, makeAttempt, scoreTrend } from "../lib/study";
 import { useLearning } from "./learning-provider";
+import { emptyAnalytics } from "../lib/history-backup";
 
 function RetryQuestion({
   lessonId,
@@ -20,7 +14,8 @@ function RetryQuestion({
   lessonId: string;
   question: AnswerSnapshot;
 }) {
-  const { data, update, ready } = useLearning();
+  const { recordAttempt, ready } = useLearning();
+  const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState<number | null>(null),
     [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -70,13 +65,10 @@ function RetryQuestion({
         </div>
       ) : (
         <button
-          disabled={selected === null || !ready}
-          onClick={() => {
+          disabled={selected === null || !ready || saving}
+          onClick={async () => {
             if (selected === null) return;
-            if ((data.study?.history.length ?? 0) >= 100) {
-              setError("历史已满，请先导出，记录不会自动删除。");
-              return;
-            }
+            setError("");
             const a = makeAttempt(
               lesson,
               { [q.id]: selected },
@@ -85,8 +77,11 @@ function RetryQuestion({
               new Date().toISOString(),
               [q],
             );
-            setSubmitted(true);
-            update((p) => saveAttempt(p, a));
+            setSaving(true);
+            const saved = await recordAttempt(a);
+            setSaving(false);
+            if (saved) setSubmitted(true);
+            else setError("复习历史未保存，请检查存储提示后重试。");
           }}
         >
           提交错题练习
@@ -97,13 +92,77 @@ function RetryQuestion({
   );
 }
 export function StudyDashboard() {
-  const { data } = useLearning();
+  const { data, repository, revision } = useLearning();
   const [course, setCourse] = useState("all"),
     [topic, setTopic] = useState("all"),
     [point, setPoint] = useState("");
-  const trend = scoreTrend(data, course),
-    topics = weakTopics(data, course),
-    wrong = wrongQuestions(data, course, topic),
+  const [page, setPage] = useState(0),
+    [history, setHistory] = useState<ReturnType<typeof scoreTrend>>([]),
+    [hasMore, setHasMore] = useState(false),
+    [recent, setRecent] = useState<ReturnType<typeof scoreTrend>>([]),
+    [queryError, setQueryError] = useState("");
+  const pageSize = 20;
+  useEffect(() => {
+    let active = true;
+    if (repository)
+      repository
+        .page(course, "quiz", page * pageSize, pageSize + 1)
+        .then((rows) => {
+          if (active) {
+            setHasMore(rows.length > pageSize);
+            setHistory(
+              rows
+                .slice(0, pageSize)
+                .reverse()
+                .map((a) => ({
+                  ...a,
+                  percent: Math.round((a.score / a.total) * 100),
+                })),
+            );
+            setQueryError("");
+          }
+        })
+        .catch(() => {
+          if (active)
+            setQueryError("历史读取失败，请重试或刷新；原始数据未删除。");
+        });
+    return () => {
+      active = false;
+    };
+  }, [repository, revision, course, page]);
+  useEffect(() => {
+    let active = true;
+    if (repository)
+      repository
+        .recent(pageSize)
+        .then((rows) => {
+          if (active)
+            setRecent(
+              rows.map((a) => ({
+                ...a,
+                percent: Math.round((a.score / a.total) * 100),
+              })),
+            );
+        })
+        .catch(() => {
+          if (active) setRecent([]);
+        });
+    return () => {
+      active = false;
+    };
+  }, [repository, revision]);
+  const analytics = repository?.info().analytics ?? emptyAnalytics();
+  const courseWrong = analytics.wrong.filter(
+    (w) => course === "all" || w.lessonId === course,
+  );
+  const trend = history,
+    topics = analytics.topics
+      .filter((t) => course === "all" || t.lessonId === course)
+      .slice()
+      .sort((a, b) => b.rate - a.rate),
+    wrong = courseWrong.filter(
+      (w) => topic === "all" || w.question.topicId === topic,
+    ),
     progress = completion(data);
   const plotted = trend.slice(-20),
     chosen = trend.find((a) => a.id === point) ?? trend[trend.length - 1];
@@ -118,7 +177,7 @@ export function StudyDashboard() {
       ?.sections.find((s) => s.id === id)?.title ?? id;
   const visits = Object.values(data.lessons)
     .flatMap((r) => (r.lastVisitedAt ? [r.lastVisitedAt] : []))
-    .concat((data.study?.history ?? []).map((a) => a.at))
+    .concat(recent.map((a) => a.at))
     .sort((a, b) => Date.parse(b) - Date.parse(a));
   return (
     <section className="study-dashboard" aria-label="学习数据与错题本">
@@ -149,6 +208,7 @@ export function StudyDashboard() {
             value={course}
             onChange={(e) => {
               setCourse(e.target.value);
+              setPage(0);
               setTopic("all");
               setPoint("");
             }}
@@ -167,9 +227,25 @@ export function StudyDashboard() {
       </section>
       <section className="panel">
         <h2>Quiz Score Trend</h2>
+        {queryError && <p role="alert">{queryError}</p>}
         <p>
-          正式测验正确率 · 纵轴 0–100%，横轴按真实提交时间排序。图示最近 20
-          次，明细保留全部记录。
+          完整历史共 {repository?.info().count ?? 0}{" "}
+          条（含错题练习）。当前每页最多 20 次正式测验。
+        </p>
+        <div className="step-controls">
+          <button disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+            较新记录
+          </button>
+          <button
+            disabled={!hasMore}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            更早记录
+          </button>
+        </div>
+        <p>
+          正式测验正确率 · 纵轴
+          0–100%，横轴按真实提交时间排序。图与明细显示当前页，可分页查询完整记录。
         </p>
         {!trend.length ? (
           <p>暂无真实测验历史，完成一次测验后即可查看趋势</p>
@@ -224,10 +300,10 @@ export function StudyDashboard() {
                 </g>
               ))}
               <text x="45" y="172">
-                第{trend.length - plotted.length + 1}次
+                第{page * pageSize + 1}次
               </text>
               <text x="235" y="172">
-                第{trend.length}次
+                第{page * pageSize + trend.length}次
               </text>
             </svg>
             {chosen && (
@@ -318,20 +394,16 @@ export function StudyDashboard() {
             onChange={(e) => setTopic(e.target.value)}
           >
             <option value="all">全部知识点</option>
-            {[
-              ...new Set(
-                wrongQuestions(data, course).map((r) => r.question.topicId),
+            {[...new Set(courseWrong.map((r) => r.question.topicId))].map(
+              (t) => (
+                <option key={t} value={t}>
+                  {topicName(
+                    courseWrong.find((r) => r.question.topicId === t)!.lessonId,
+                    t,
+                  )}
+                </option>
               ),
-            ].map((t) => (
-              <option key={t} value={t}>
-                {topicName(
-                  wrongQuestions(data, course).find(
-                    (r) => r.question.topicId === t,
-                  )!.lessonId,
-                  t,
-                )}
-              </option>
-            ))}
+            )}
           </select>
         </label>
         <p className="muted">

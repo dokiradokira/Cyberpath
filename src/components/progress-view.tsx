@@ -4,25 +4,30 @@ import Link from "next/link";
 import { Download, Upload, RotateCcw } from "lucide-react";
 import { availableLessons } from "../content/lessons";
 import { wordEntries as vocabulary } from "../content/vocabulary";
-import { initialProgress, parseProgress } from "../lib/storage";
+import { initialProgress } from "../lib/storage";
+import { decodeBackup, MAX_BACKUP_BYTES } from "../lib/history-backup";
 import { useLearning } from "./learning-provider";
 import { Vocabulary } from "./lessons/vocabulary";
 import { StudyDashboard } from "./study-dashboard";
 export function ProgressView() {
-  const { data, update, raw, replace } = useLearning(),
+  const { data, update, raw, replace, exportAll } = useLearning(),
     [message, setMessage] = useState(""),
     [importing, setImporting] = useState(false),
     file = useRef<HTMLInputElement>(null);
-  function exportData() {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "cyberpath-progress.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    setMessage("备份已导出。");
+  async function exportData() {
+    try {
+      const url = URL.createObjectURL(
+        new Blob([await exportAll()], { type: "application/json" }),
+      );
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cyberpath-progress.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      setMessage("备份已导出。");
+    } catch {
+      setMessage("导出失败，未生成完整备份。请检查存储后重试。");
+    }
   }
   return (
     <>
@@ -146,7 +151,7 @@ export function ProgressView() {
         <div className="data-actions">
           <button
             disabled={typeof raw !== "string"}
-            onClick={() => {
+            onClick={async () => {
               if (typeof raw !== "string") return;
               const url = URL.createObjectURL(
                 new Blob([raw], { type: "application/octet-stream" }),
@@ -169,14 +174,14 @@ export function ProgressView() {
           </button>
           <button
             className="danger"
-            onClick={() => {
+            onClick={async () => {
               if (
                 window.confirm(
                   "确定重置本机所有进度、成绩、词汇、笔记和偏好吗？",
                 )
               ) {
                 setMessage(
-                  replace(initialProgress())
+                  (await replace(initialProgress()))
                     ? "学习数据已重置。"
                     : "重置未完成，原始数据已保留，请检查存储提示。",
                 );
@@ -197,14 +202,18 @@ export function ProgressView() {
             if (!selected) return;
             setImporting(true);
             try {
-              if (selected.size > 1000000)
-                throw new Error("文件过大（最大 1 MB）。");
-              const parsed = parseProgress(await selected.text());
+              if (selected.size > MAX_BACKUP_BYTES)
+                throw new Error("文件过大（最大 64 MB）。");
+              const backup = decodeBackup(await selected.text());
+              const parsed = {
+                ...backup.profile,
+                study: { version: 1 as const, history: backup.history },
+              };
               if (
                 window.confirm("确定用此备份覆盖当前全部学习记录与偏好吗？")
               ) {
                 setMessage(
-                  replace(parsed)
+                  (await replace(parsed))
                     ? "备份导入成功。"
                     : "导入未完成，原始数据已保留，请检查存储提示。",
                 );

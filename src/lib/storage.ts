@@ -1,6 +1,8 @@
 import { wordEntries } from "../content/vocabulary";
 import { availableLessons } from "../content/lessons";
 import type { Progress, RecordEntry } from "../types";
+import { resolveSection } from "./reading";
+import { parseStudy } from "./study";
 export const STORAGE_KEY = "cyberpath.v1";
 export const emptyRecord = (): RecordEntry => ({
   completed: false,
@@ -13,6 +15,10 @@ export const emptyRecord = (): RecordEntry => ({
 });
 export const initialProgress = (): Progress => ({
   version: 1,
+  contentVersion: Math.max(
+    1,
+    ...availableLessons.map((l) => l.introducedIn ?? 1),
+  ),
   lessons: Object.fromEntries(
     availableLessons.map((l) => [l.id, emptyRecord()]),
   ),
@@ -35,16 +41,29 @@ export function parseProgress(text: string): Progress {
   if (
     !obj(x.lessons) ||
     !obj(x.notes) ||
-    !ids.includes(String(x.currentLesson)) ||
-    !["dark", "light"].includes(String(x.theme)) ||
-    !["learning", "challenge"].includes(String(x.mode)) ||
+    typeof x.currentLesson !== "string" ||
+    !ids.includes(x.currentLesson) ||
+    (x.theme !== "dark" && x.theme !== "light") ||
+    (x.mode !== "learning" && x.mode !== "challenge") ||
     !Array.isArray(x.favorites) ||
     !x.favorites.every((w) => typeof w === "string" && words.includes(w))
   )
     throw new Error("学习数据结构不合法。");
   const clean = initialProgress();
+  const contentVersion = x.contentVersion === undefined ? 1 : x.contentVersion;
+  if (
+    typeof contentVersion !== "number" ||
+    !Number.isSafeInteger(contentVersion) ||
+    contentVersion < 1 ||
+    contentVersion > (clean.contentVersion ?? 1)
+  )
+    throw new Error("不兼容的课程数据版本，原始记录已保留。");
   for (const lesson of availableLessons) {
     const r = x.lessons[lesson.id];
+    // Only a genuinely newer lesson may be absent in a valid older backup.
+    // Missing existing records remain an import error (F01 protection).
+    if (r === undefined && (lesson.introducedIn ?? 1) > contentVersion)
+      continue;
     const score = (s: unknown) =>
       s === null ||
       (typeof s === "number" &&
@@ -63,9 +82,12 @@ export function parseProgress(text: string): Progress {
       ) ||
       new Set(r.incorrect).size !== r.incorrect.length ||
       typeof r.section !== "string" ||
-      !(
-        r.section === "" || lesson.sections.some((s) => s.title === r.section)
-      ) ||
+      !(r.section === "" || resolveSection(lesson, r.section)) ||
+      (r.sectionProgress !== undefined &&
+        (typeof r.sectionProgress !== "number" ||
+          !Number.isFinite(r.sectionProgress) ||
+          r.sectionProgress < 0 ||
+          r.sectionProgress > 1)) ||
       typeof r.updated !== "string" ||
       (r.updated !== "" && !Number.isFinite(Date.parse(r.updated)))
     )
@@ -86,17 +108,32 @@ export function parseProgress(text: string): Progress {
       latest: r.latest as number | null,
       best: r.best as number | null,
       incorrect: [...r.incorrect] as string[],
-      section: r.section,
+      section: resolveSection(lesson, r.section)?.id ?? "",
+      ...(r.sectionProgress === undefined
+        ? {}
+        : { sectionProgress: r.sectionProgress as number }),
       updated: r.updated,
     };
+    for (const field of [
+      "lastVisitedAt",
+      "lastQuizAt",
+      "completedAt",
+    ] as const) {
+      const value = r[field];
+      if (value !== undefined) {
+        if (typeof value !== "string" || !Number.isFinite(Date.parse(value)))
+          throw new Error("学习事件时间不合法。");
+        clean.lessons[lesson.id][field] = value;
+      }
+    }
     const note = x.notes[lesson.id];
     if (note !== undefined && (typeof note !== "string" || note.length > 10000))
       throw new Error("笔记不合法（最多 10,000 字符）。");
     if (typeof note === "string") clean.notes[lesson.id] = note;
   }
-  clean.currentLesson = x.currentLesson as string;
-  clean.theme = x.theme as Progress["theme"];
-  clean.mode = x.mode as Progress["mode"];
+  clean.currentLesson = x.currentLesson;
+  clean.theme = x.theme;
+  clean.mode = x.mode;
   clean.favorites = [...new Set(x.favorites)] as string[];
   if (x.reviews !== undefined) {
     if (!obj(x.reviews)) throw new Error("词汇复习数据格式错误。");
@@ -120,22 +157,32 @@ export function parseProgress(text: string): Progress {
       };
     }
   }
+  if (x.study !== undefined) clean.study = parseStudy(x.study);
   return clean;
 }
-export function readProgress(storage: Pick<Storage, "getItem">): {
+export type ReadResult = {
   data: Progress;
   warning: string;
-} {
+  raw: string | null | undefined;
+  status: "first-use" | "loaded" | "read-error";
+};
+export function readProgress(storage: Pick<Storage, "getItem">): ReadResult {
+  let raw: string | null | undefined;
   try {
-    const text = storage.getItem(STORAGE_KEY);
+    raw = storage.getItem(STORAGE_KEY);
     return {
-      data: text ? parseProgress(text) : initialProgress(),
+      data: raw === null ? initialProgress() : parseProgress(raw),
       warning: "",
+      raw,
+      status: raw === null ? "first-use" : "loaded",
     };
   } catch {
     return {
       data: initialProgress(),
-      warning: "本机数据无法读取，已使用初始记录。你可以导入备份恢复学习。",
+      raw,
+      status: "read-error",
+      warning:
+        "本机数据无法读取，原始记录已保护，暂用临时档案。请在学习进度页导出原始数据，确认前不会覆盖。",
     };
   }
 }

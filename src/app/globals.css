@@ -934,6 +934,9 @@ footer {
   color: var(--muted);
   margin: 10px 5px;
 }
+.vocab > .vocab-detail {
+  display: block;
+}
 .command {
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -1880,6 +1883,44 @@ details p {
   background: var(--soft);
   font-size: 14px;
 }
+.term-definition > span {
+  display: block;
+}
+.term-definition .term-example {
+  margin: 8px 0;
+  color: var(--muted);
+}
+.term-definition .term-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.term-actions button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--raised);
+  font: inherit;
+}
+.inline-term > button {
+  min-height: 28px;
+}
+.term-definition {
+  overflow-wrap: anywhere;
+  position: static;
+}
+.review-progress {
+  color: var(--muted);
+}
+.flashcard .step-controls {
+  flex-wrap: wrap;
+}
+.word-meta {
+  flex-wrap: wrap;
+  align-items: center;
+}
 .vocab-filters {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -1920,6 +1961,14 @@ select {
   font-weight: 400;
   letter-spacing: 0;
 }
+.word-title {
+  font: inherit;
+  color: var(--primary);
+  background: transparent;
+  border: 0;
+  padding: 2px 0;
+  min-height: 32px;
+}
 .word-entry p {
   font-size: 14px;
 }
@@ -1942,6 +1991,51 @@ select {
   padding: 30px;
   background: var(--raised);
   border-radius: 12px;
+}
+.study-dashboard {
+  min-width: 0;
+}
+.score-chart {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 16px auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+.score-chart [role="button"] {
+  cursor: pointer;
+}
+.score-chart [role="button"]:focus {
+  outline: 2px solid var(--primary);
+}
+.topic-bars {
+  list-style: none;
+  padding: 0;
+}
+.topic-bars li {
+  margin: 20px 0;
+  overflow-wrap: anywhere;
+}
+.topic-bar {
+  height: 12px;
+  background: var(--soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.topic-bar span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+.study-dashboard progress {
+  width: 100%;
+  accent-color: var(--primary);
+}
+.study-dashboard ol {
+  padding-left: 22px;
+  overflow-wrap: anywhere;
 }
 .flashcard > h2 {
   font-size: 32px;
@@ -2073,4 +2167,111 @@ button[aria-pressed="true"] {
   background: var(--soft);
   color: var(--text);
   font-size: 13px;
+}
+
+/* Reading room: stable chapter navigation without changing the application shell. */
+.mobile-chapters {
+  display: none;
+}
+.lesson-toc h2 {
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.lesson-toc nav a,
+.mobile-chapters nav a {
+  display: flex;
+  gap: 10px;
+  padding: 9px 10px;
+  border-left: 2px solid transparent;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13px;
+}
+.lesson-toc nav a[aria-current="location"],
+.mobile-chapters nav a[aria-current="location"] {
+  border-color: var(--primary);
+  background: var(--soft);
+  color: var(--text);
+}
+.chapter-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.chapter-controls > span {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.chapter-controls button {
+  flex-shrink: 0;
+}
+.reading-section {
+  scroll-margin-top: 96px;
+}
+.reading-section > div > p[lang="en"] {
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.95;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.reading-section h2 {
+  max-width: 32ch;
+  font-size: 26px;
+  line-height: 1.4;
+}
+.reading-section[data-active="true"] > div > .eyebrow {
+  color: var(--primary);
+}
+.command-code {
+  margin: 0;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+@media (max-width: 1150px) {
+  .mobile-chapters {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 0 0 16px;
+    background: var(--surface);
+  }
+  .mobile-chapters summary {
+    color: var(--text);
+    font-size: 14px;
+    padding: 4px;
+  }
+  .mobile-chapters nav {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .chapter-controls > span {
+    display: none;
+  }
+  .chapter-controls button {
+    font-size: 12px;
+  }
+  .reading-section > div > p[lang="en"] {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+  .reading-section h2 {
+    font-size: 23px;
+  }
+  .mobile-chapters nav a {
+    padding: 12px 8px;
+  }
 }

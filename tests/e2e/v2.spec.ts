@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { initialProgress } from "../../src/lib/storage";
+import { readPersistedProfile } from "../support/persisted-profile";
 const routes = [
   "/",
   "/courses",
@@ -16,6 +17,9 @@ test("V2 Chinese navigation and actual global theme colors persist on every rout
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await page.getByRole("button", { name: "切换深浅主题" }).click();
+  await expect
+    .poll(async () => (await readPersistedProfile(page))?.theme)
+    .toBe("light");
   for (const route of routes) {
     await page.goto(route);
     await expect(
@@ -31,6 +35,9 @@ test("V2 Chinese navigation and actual global theme colors persist on every rout
     );
   }
   await page.getByRole("button", { name: "切换深浅主题" }).click();
+  await expect
+    .poll(async () => (await readPersistedProfile(page))?.theme)
+    .toBe("dark");
   await page.getByRole("link", { name: "学习首页", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
@@ -148,6 +155,15 @@ test("V2 inline Chinese hints and vocabulary search, cards, quiz, favorite and b
   await page.getByRole("button", { name: "释义测验", exact: true }).click();
   await page.getByRole("button", { name: "数据包", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("回答正确");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews.packet
+            ?.known,
+      ),
+    )
+    .toBe(true);
   await page.reload();
   await expect(page.getByRole("heading", { name: "1 个已掌握" })).toBeVisible();
   await page.getByLabel("搜索词汇").fill("数据包");
@@ -157,7 +173,9 @@ test("V2 inline Chinese hints and vocabulary search, cards, quiz, favorite and b
   await page.getByLabel("搜索词汇").fill("");
   await page.screenshot({
     path: testInfo.outputPath("vocabulary-v2.png"),
-    fullPage: true,
+    // A narrow viewport renders all 34 entries in one column; capture the
+    // viewport rather than exceeding WebKit's full-page bitmap limit.
+    fullPage: false,
   });
   await page.goto("/");
   await page.screenshot({

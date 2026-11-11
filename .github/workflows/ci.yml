@@ -1,0 +1,62 @@
+name: CyberPath CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Prepare logs
+        run: mkdir -p reports
+      - name: Install dependencies
+        run: npm ci 2>&1 | tee reports/install.log
+      - name: TypeScript
+        run: npm run typecheck 2>&1 | tee reports/typecheck.log
+      - name: ESLint
+        run: npm run lint 2>&1 | tee reports/lint.log
+      - name: Unit tests
+        run: npm test 2>&1 | tee reports/unit.log
+      - name: Production build
+        run: npm run build 2>&1 | tee reports/build.log
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit 2>&1 | tee reports/browsers.log
+      - name: Browser regression
+        run: npm run test:e2e -- --reporter=list,html 2>&1 | tee reports/e2e.log
+      - name: Network origin regression
+        run: npm run test:lan 2>&1 | tee reports/lan.log
+      - name: Preserve failure reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: failure-reports-${{ github.run_attempt }}
+          path: |
+            reports/
+            playwright-report/
+            test-results/
+            test-results-lan/
+          if-no-files-found: ignore
+          retention-days: 7

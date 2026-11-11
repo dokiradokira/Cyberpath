@@ -1,40 +1,43 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLearning } from "../learning-provider";
-import { gradeQuiz } from "../../lib/quiz";
+import { makeAttempt } from "../../lib/study";
 import type { Lesson } from "../../types";
 export function Quiz({ lesson }: { lesson: Lesson }) {
-  const { update } = useLearning(),
+  const { recordAttempt, ready } = useLearning(),
     [answers, setAnswers] = useState<Record<string, number>>({}),
     [submitted, setSubmitted] = useState(false),
     [score, setScore] = useState(0);
-  function submit() {
-    const result = gradeQuiz(lesson.quiz, answers);
+  const submittedRef = useRef(false);
+  const [error, setError] = useState("");
+  async function submit() {
+    if (!ready || submittedRef.current) return;
+    setError("");
+    const result = makeAttempt(
+      lesson,
+      answers,
+      "quiz",
+      `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      new Date().toISOString(),
+    );
+    submittedRef.current = true;
+    const saved = await recordAttempt(result);
+    if (!saved) {
+      submittedRef.current = false;
+      setError("历史未保存，测验未提交。请检查存储提示后重试。");
+      return;
+    }
     setScore(result.score);
     setSubmitted(true);
-    update((p) => {
-      const old = p.lessons[lesson.id];
-      return {
-        ...p,
-        lessons: {
-          ...p.lessons,
-          [lesson.id]: {
-            ...old,
-            latest: result.score,
-            best: Math.max(old.best ?? 0, result.score),
-            incorrect: result.incorrect,
-            updated: new Date().toISOString(),
-          },
-        },
-      };
-    });
   }
   return (
     <section className="panel" id="knowledge-check">
       <p className="eyebrow">检验理解</p>
       <h2>知识测验</h2>
+      {error && <p role="alert">{error}</p>}
       <p className="muted">
-        共 5 道英文题目，按自己的节奏作答。最近与最高成绩分别保存 。
+        共 {lesson.quiz.length}{" "}
+        道英文题目，最近、最高成绩与真实作答历史分别保存。
       </p>
       <form
         onSubmit={(e) => {
@@ -79,6 +82,7 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
               type="button"
               onClick={() => {
                 setSubmitted(false);
+                submittedRef.current = false;
                 setAnswers({});
               }}
             >
@@ -89,7 +93,9 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
           <button
             className="primary"
             type="submit"
-            disabled={Object.keys(answers).length !== lesson.quiz.length}
+            disabled={
+              !ready || Object.keys(answers).length !== lesson.quiz.length
+            }
           >
             提交测验
           </button>

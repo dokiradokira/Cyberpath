@@ -1,6 +1,6 @@
 {
   "name": "cyberpath",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack --hostname 0.0.0.0",

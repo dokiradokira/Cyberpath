@@ -23,5 +23,5 @@ export default async function Page({
   const { slug } = await params;
   const lesson = availableLessons.find((l) => l.id === slug);
   if (!lesson) notFound();
-  return <LessonView lesson={lesson} />;
+  return <LessonView key={lesson.id} lesson={lesson} />;
 }

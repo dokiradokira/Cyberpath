@@ -4,24 +4,30 @@ import Link from "next/link";
 import { Download, Upload, RotateCcw } from "lucide-react";
 import { availableLessons } from "../content/lessons";
 import { wordEntries as vocabulary } from "../content/vocabulary";
-import { initialProgress, parseProgress } from "../lib/storage";
+import { initialProgress } from "../lib/storage";
+import { decodeBackup, MAX_BACKUP_BYTES } from "../lib/history-backup";
 import { useLearning } from "./learning-provider";
 import { Vocabulary } from "./lessons/vocabulary";
+import { StudyDashboard } from "./study-dashboard";
 export function ProgressView() {
-  const { data, update } = useLearning(),
+  const { data, update, raw, replace, exportAll } = useLearning(),
     [message, setMessage] = useState(""),
     [importing, setImporting] = useState(false),
     file = useRef<HTMLInputElement>(null);
-  function exportData() {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "cyberpath-progress.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    setMessage("备份已导出。");
+  async function exportData() {
+    try {
+      const url = URL.createObjectURL(
+        new Blob([await exportAll()], { type: "application/json" }),
+      );
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cyberpath-progress.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      setMessage("备份已导出。");
+    } catch {
+      setMessage("导出失败，未生成完整备份。请检查存储后重试。");
+    }
   }
   return (
     <>
@@ -33,7 +39,8 @@ export function ProgressView() {
         <h2>学习档案</h2>
         <p className="muted">
           {availableLessons.filter((l) => data.lessons[l.id].completed).length}{" "}
-          / 3 节开放课程已完成，测验满分为 5 分。
+          / {availableLessons.length}{" "}
+          节开放课程已完成，测验分数按各课题目数记录。
         </p>
         <div className="table-scroll">
           <table>
@@ -68,6 +75,7 @@ export function ProgressView() {
           </table>
         </div>
       </section>
+      <StudyDashboard />
       <section className="panel">
         <h2>错题复习</h2>
         {availableLessons.flatMap((l) =>
@@ -141,6 +149,23 @@ export function ProgressView() {
           JSON 导入迁移。
         </p>
         <div className="data-actions">
+          <button
+            disabled={typeof raw !== "string"}
+            onClick={async () => {
+              if (typeof raw !== "string") return;
+              const url = URL.createObjectURL(
+                new Blob([raw], { type: "application/octet-stream" }),
+              );
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "cyberpath-raw-backup.txt";
+              a.click();
+              URL.revokeObjectURL(url);
+              setMessage("原始数据已导出，请妥善保存。");
+            }}
+          >
+            导出原始数据
+          </button>
           <button onClick={exportData}>
             <Download size={16} /> 导出 JSON
           </button>
@@ -149,14 +174,17 @@ export function ProgressView() {
           </button>
           <button
             className="danger"
-            onClick={() => {
+            onClick={async () => {
               if (
                 window.confirm(
                   "确定重置本机所有进度、成绩、词汇、笔记和偏好吗？",
                 )
               ) {
-                update(() => initialProgress());
-                setMessage("学习数据已重置。");
+                setMessage(
+                  (await replace(initialProgress()))
+                    ? "学习数据已重置。"
+                    : "重置未完成，原始数据已保留，请检查存储提示。",
+                );
               }
             }}
           >
@@ -174,14 +202,21 @@ export function ProgressView() {
             if (!selected) return;
             setImporting(true);
             try {
-              if (selected.size > 1000000)
-                throw new Error("文件过大（最大 1 MB）。");
-              const parsed = parseProgress(await selected.text());
+              if (selected.size > MAX_BACKUP_BYTES)
+                throw new Error("文件过大（最大 64 MB）。");
+              const backup = decodeBackup(await selected.text());
+              const parsed = {
+                ...backup.profile,
+                study: { version: 1 as const, history: backup.history },
+              };
               if (
                 window.confirm("确定用此备份覆盖当前全部学习记录与偏好吗？")
               ) {
-                update(() => parsed);
-                setMessage("备份导入成功。");
+                setMessage(
+                  (await replace(parsed))
+                    ? "备份导入成功。"
+                    : "导入未完成，原始数据已保留，请检查存储提示。",
+                );
               } else setMessage("已取消导入，当前记录已保留。");
             } catch (error) {
               setMessage(`导入失败： ${(error as Error).message}`);

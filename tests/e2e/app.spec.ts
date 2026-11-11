@@ -47,6 +47,13 @@ test("quiz, completion, vocabulary, notes, and theme persist", async ({
     .fill("A router forwards packets.");
   await page.getByRole("button", { name: "切换深浅主题" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => JSON.parse(localStorage.getItem("cyberpath.v1")!).theme,
+      ),
+    )
+    .toBe("light");
   await page.reload();
   await expect(
     page.getByRole("button", { name: "已完成", exact: true }),

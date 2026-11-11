@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-11（Codex，V2.2 冻结与发布准备）
+
+- Previous Agent: DSH 完成 C.1，Codex 本轮只做冻结核查。
+- Current Development Phase: V2.2 A/B/C/C.1 冻结，待负责人确认 Merge；D 延期，V2.3-A 暂停。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: 41cd5d2，本文提交前基线；最终文档 SHA 用 Git 实查。
+- Working Tree Status: 进入时仅 README 用户空格改动；本轮三个发布文档，不暂存 README。
+- Latest Completed Task: 核对 PR #1、稳定基线双 CI、数据兼容源码及敏感文件，整理发布说明。
+- Changed Files: V2.2_RELEASE_NOTES、PROJECT_STATUS、AGENT_HANDOFF；无源码/测试/版本号修改。
+- Tests Actually Run: 本地 typecheck/lint/unit、diff/文档检查；只读 API 核对双 CI 各步骤。
+- Test Results: 单元 12 文件 107，通过；build/e2e 本轮本地未执行，稳定基线远端成功，真机待办。
+- CI Status: 41cd5d2 Push 42757091257、PR 42757097933 success；新文档提交不能预填通过。
+- Uncommitted Changes: 提交前三文档及需保留的 README 原改动。
+- Unpushed Commits: 进入时无，功能基线与 origin/PR head 一致。
+- Known Issues: 真机/屏幕阅读器/生产环境待验收，package 2.1.2 未正式改号，Windows EPERM；完整历史受配额/64 MB 备份上限约束，无云同步。
+- Remaining Tasks: 文档独立提交推送，检查最新 head 双 CI/PR；等待用户确认 Merge，不自行合并。
+- Next Recommended Action: 经审阅并明确授权后使用普通 Merge commit 保留阶段历史；正式发布另行确认版本号与验收。
+- Important Warnings: 不强推、merge、部署、标签；不合并 Curriculum 3.0，不启动 V2.3；保留 README，避免用历史 PR 失败覆盖当前成功结论。
+
 ### Agent Handoff — 2026-11-10 12:05 Asia/Shanghai（DSH，V2.2-C.1 接手补完）
 
 - Previous Agent: Codex（V2.2-C.1 中途额度耗尽，留下未提交半成品；没有 C.1 文档）。

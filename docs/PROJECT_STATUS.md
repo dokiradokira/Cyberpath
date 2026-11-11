@@ -1,5 +1,11 @@
 # CyberPath 项目状态
 
+## 当前冻结状态（2026-11-11）
+
+V2.2 最终范围为 A/B/C/C.1，V2.2-D 实验增强延期，非本版门禁；V2.3-A 暂停。本次为发布准备，不代表正式发布。稳定基线 41cd5d2 已在远端，Push 42757091257 与 PR 42757097933 均成功；PR #1 open、非 draft、mergeable=true/clean，base master/ef48f53。下文旧 PR 失败及 D 规划为历史快照，最新以 [发布说明](V2.2_RELEASE_NOTES.md) 为准。
+
+本轮重新执行 typecheck/lint/unit，107 单元通过；build/e2e 核对真实远端运行，本地未重跑。真机、屏幕阅读器、生产 HTTPS/部署仍待验收。package 保持 2.1.2，正式发版改号需另行确认。README 用户空格改动保留且排除提交。当前仅授权文档提交/普通 push；新文档 HEAD 的 Push/PR CI 必须在合并前重新核对，等待用户确认 Merge，不启动 V2.3、不合并 Curriculum 3.0。
+
 更新时间：2026-11-09，维护者：Codex。本文为状态快照；每次接手以 Git、源码和同一 SHA 的 CI 实查更新，不以聊天或版本号猜测功能。
 
 ## 当前阶段覆盖：V2.2-C.1（2026-11-10）

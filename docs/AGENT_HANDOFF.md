@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-11（Codex，2.2.0 最终收尾）
+
+- Previous Agent: Codex。
+- Current Development Phase: V2.2 冻结，统一 2.2.0 与人工验收状态，等待 Merge 授权。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: f122c4e，本次提交前基线，远端/PR head 核实为 41cd5d2，无其他 Agent 新远端提交。
+- Working Tree Status: 原有 README 用户空格修改保留；本轮版本文件及四份文档。
+- Latest Completed Task: package/lock 2.2.0，无依赖升级；更新真实设备体验确认与专项/生产验收的区别。
+- Changed Files: package.json、package-lock.json、CHANGELOG、V2.2_RELEASE_NOTES、PROJECT_STATUS、AGENT_HANDOFF；README 不暂存。
+- Tests Actually Run: 本轮按实际命令/新 CI 记录；不把先前 41cd5d2 结果当新提交通过。
+- Test Results: 待新提交验证，不预填。
+- CI Status: 新 HEAD 待 push 后分别核查 Push、PR 两类运行。
+- Uncommitted Changes: 提交前上述文件与 README 用户改动。
+- Unpushed Commits: 开始时 dd979d6、f122c4e；本次正常 push 一并同步，最终结果实查。
+- Known Issues: 屏幕阅读器专项尚未确认；生产验收尚未进行，部署时完成；用户真实设备体验检查已完成、未发现明显异常，非全面专业认证。
+- Remaining Tasks: 新 HEAD 双 CI 及 PR 目标/冲突/检查复核；等待明确授权合并。
+- Next Recommended Action: 符合条件后用户可授权普通 Merge commit，未授权不执行。
+- Important Warnings: D 已延期，非门禁；不强推/合并/部署/标签，不启动 V2.3、不改 Curriculum 3.0、不提交 README。
+
 ### 2026-11-11 发布文档推送障碍补记
 
 dd979d6 已保存发布资料；首次普通 push 报 Recv failure: Connection was reset，重试报 Failed to connect to github.com:443。API 仍可读，PR #1 head=41cd5d2、open/mergeable=true/clean，Push 42757091257 与 PR 42757097933 success。本地文档提交未推送，此补记也仅保存为本地提交；用 `git log --oneline '@{upstream}..HEAD'` 查完整待推送清单，不丢弃它们。README 原修改保持未提交。恢复网络后正常 push 当前功能分支，等新 head 双 CI 后由用户决定 Merge。当前停止，不合并、不部署、不启动 V2.3。

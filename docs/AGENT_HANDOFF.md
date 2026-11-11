@@ -77,6 +77,10 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### 2026-11-11 发布文档推送障碍补记
+
+dd979d6 已保存发布资料；首次普通 push 报 Recv failure: Connection was reset，重试报 Failed to connect to github.com:443。API 仍可读，PR #1 head=41cd5d2、open/mergeable=true/clean，Push 42757091257 与 PR 42757097933 success。本地文档提交未推送，此补记也仅保存为本地提交；用 `git log --oneline '@{upstream}..HEAD'` 查完整待推送清单，不丢弃它们。README 原修改保持未提交。恢复网络后正常 push 当前功能分支，等新 head 双 CI 后由用户决定 Merge。当前停止，不合并、不部署、不启动 V2.3。
+
 ### Agent Handoff — 2026-11-11（Codex，V2.2 冻结与发布准备）
 
 - Previous Agent: DSH 完成 C.1，Codex 本轮只做冻结核查。

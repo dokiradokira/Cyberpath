@@ -2,6 +2,8 @@
 
 ## 当前冻结状态（2026-11-11）
 
+本轮同步障碍：发布文档已提交为 dd979d6，但两次普通 push 分别连接重置、连接 github.com:443 失败。随后只读 API 仍确认 PR head=41cd5d2、clean、双 CI success。发布文档尚未上传，不宣称最新本地 HEAD 已通过 CI；本障碍补记也保存在本地。人工恢复时在本功能分支执行 `git push origin feature/v2.2-learning-experience`，再核对新 head 双 CI。README 原改动保留。
+
 V2.2 最终范围为 A/B/C/C.1，V2.2-D 实验增强延期，非本版门禁；V2.3-A 暂停。本次为发布准备，不代表正式发布。稳定基线 41cd5d2 已在远端，Push 42757091257 与 PR 42757097933 均成功；PR #1 open、非 draft、mergeable=true/clean，base master/ef48f53。下文旧 PR 失败及 D 规划为历史快照，最新以 [发布说明](V2.2_RELEASE_NOTES.md) 为准。
 
 本轮重新执行 typecheck/lint/unit，107 单元通过；build/e2e 核对真实远端运行，本地未重跑。真机、屏幕阅读器、生产 HTTPS/部署仍待验收。package 保持 2.1.2，正式发版改号需另行确认。README 用户空格改动保留且排除提交。当前仅授权文档提交/普通 push；新文档 HEAD 的 Push/PR CI 必须在合并前重新核对，等待用户确认 Merge，不启动 V2.3、不合并 Curriculum 3.0。

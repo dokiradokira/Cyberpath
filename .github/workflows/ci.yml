@@ -49,6 +49,10 @@ jobs:
         run: npm test 2>&1 | tee reports/unit.log
       - name: Production build
         run: npm run build 2>&1 | tee reports/build.log
+      - name: Install Playwright browsers
+        # Only for non-image runs; the pinned image already has browsers/deps.
+        if: ${{ env.PLAYWRIGHT_BROWSERS_PATH != '/ms-playwright' }}
+        run: npx playwright install --with-deps chromium webkit 2>&1 | tee reports/browsers.log
       - name: Verify container browsers
         run: |
           node --version

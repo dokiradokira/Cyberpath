@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-11（Codex，最后两项回归定向修复）
+
+- Previous Agent: Codex。
+- Current Development Phase: V2.2 发布前测试同步修复。
+- Branch: feature/v2.2-learning-experience。
+- HEAD: c9e2482，提交前基线；新提交用 Git 实查。
+- Working Tree Status: README 用户改动保留；本轮仅测试与此处简短状态记录。
+- Latest Completed Task: F03 等待主档案中 packet.attempts；主题硬导航前等待 IndexedDB theme 提交。
+- Changed Files: 两个失败测试、tests/support/persisted-profile.ts、PROJECT_STATUS、AGENT_HANDOFF。
+- Tests Actually Run: 定向 Playwright 后全量回归，typecheck/lint/unit；沿用既有生产构建。
+- Test Results: 定向 4、浏览器 74、单元 107 通过，静态检查通过；LAN 以本次交付结果为准。
+- CI Status: 新提交尚未推送，按用户要求推送后给链接、不等结束。
+- Uncommitted Changes: 本轮五文件及排除的 README 用户修改。
+- Unpushed Commits: c9e2482 合法报告提交随本修复正常推送。
+- Known Issues: 新 CI 尚待验证，不能写成全绿。
+- Remaining Tasks: 普通 push 最多一次尝试，失败停止；不合并。
+- Next Recommended Action: 用户查看新 HEAD 双 CI。
+- Important Warnings: 未改业务/存储/迁移/完整备份，不放宽 F03 或主题断言，不改 README、不部署/标签/V2.3。
+
 ### 2026-11-11 最终收尾 CI 阻塞记录
 
 50604a8 版本/验收更新及 dd979d6、f122c4e 已推送，本地 typecheck/lint/107 unit 通过，锁文件结构比较确认仅根版本变更。Push [42982447755](https://github.com/dokiradokira/Cyberpath/actions/runs/42982447755) success；PR [42982455392](https://github.com/dokiradokira/Cyberpath/actions/runs/42982455392) 的 Browser regression failure，LAN skipped，其他静态/单元/构建步骤成功。PR #1 open、master、mergeable=true 但 unstable；具体失败用例未知，公开注释只有 exit code 1。结果补记本身产生新 SHA，不能预填新检查通过。停止合并准备动作，等待失败报告/明确下一步；不合并、不打标签、不部署。README 原有修改保留。本记录不是“全部通过”结论。

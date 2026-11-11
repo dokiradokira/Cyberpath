@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { initialProgress } from "../../src/lib/storage";
+import { readPersistedProfile } from "../support/persisted-profile";
 const routes = [
   "/",
   "/courses",
@@ -16,6 +17,9 @@ test("V2 Chinese navigation and actual global theme colors persist on every rout
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await page.getByRole("button", { name: "切换深浅主题" }).click();
+  await expect
+    .poll(async () => (await readPersistedProfile(page))?.theme)
+    .toBe("light");
   for (const route of routes) {
     await page.goto(route);
     await expect(
@@ -31,6 +35,9 @@ test("V2 Chinese navigation and actual global theme colors persist on every rout
     );
   }
   await page.getByRole("button", { name: "切换深浅主题" }).click();
+  await expect
+    .poll(async () => (await readPersistedProfile(page))?.theme)
+    .toBe("dark");
   await page.getByRole("link", { name: "学习首页", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS(
     "background-color",

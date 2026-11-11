@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { initialProgress } from "../../src/lib/storage";
 import { wordEntries } from "../../src/content/vocabulary";
+import { readPersistedProfile } from "../support/persisted-profile";
 test("F02 raw recovery survives reading, refresh, cancelled reset and exports inert text", async ({
   page,
 }) => {
@@ -67,12 +68,8 @@ test("F03 practice queue advances from two to one and completes at zero", async 
   await page.getByRole("button", { name: "数据包", exact: true }).click();
   await expect(page.locator(".meaning-options button:enabled")).toHaveCount(0);
   await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          JSON.parse(localStorage.getItem("cyberpath.v1")!).reviews.packet
-            .attempts,
-      ),
+    .poll(
+      async () => (await readPersistedProfile(page))?.reviews.packet?.attempts,
     )
     .toBe(1);
   await expect(

@@ -4,13 +4,29 @@ import { LearningProvider } from "../components/learning-provider";
 import { Shell } from "../components/layout/shell";
 import "./globals.css";
 export const metadata: Metadata = {
+  applicationName: "CyberPath",
   title: {
     default: "CyberPath — Network Security Learning",
     template: "%s | CyberPath",
   },
   description:
     "中文界面、英文教材、中文词汇注释与互动实验，边学网络安全边积累英语。",
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
   appleWebApp: { capable: true, title: "CyberPath", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 export const viewport: Viewport = {
   width: "device-width",

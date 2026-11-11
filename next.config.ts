@@ -10,7 +10,12 @@ const config: NextConfig = {
   poweredByHeader: false,
   agentRules: false,
   allowedDevOrigins: ["127.0.0.1", hostname(), ...localHosts],
-  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next-v2",
+  // Vercel reads the standard .next output; local/CI keep the isolated build.
+  distDir: process.env.VERCEL
+    ? ".next"
+    : process.env.NODE_ENV === "development"
+      ? ".next-dev"
+      : ".next-v2",
   experimental: { webpackBuildWorker: false, cpus: 1 },
   async headers() {
     return [

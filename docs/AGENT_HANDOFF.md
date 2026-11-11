@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-11 17:00 Asia/Shanghai（DSH，V2.3-A 在线访问准备）
+
+- Previous Agent: Codex（额度不足；已确认无 Git 锁、近半小时无源码写入，仅余 Codex 应用/服务进程）。
+- Current Development Phase: V2.3-A Personal Online Access 代码准备。
+- Branch: feature/v2.3-a-online-access，基于 `origin/master` 的 `ce6da4e`。
+- HEAD: `ce6da4e`（本轮提交前基线；本次提交 SHA 用 Git 实查）。
+- Working Tree Status: README.md 用户空格改动保留；本轮新增/修改见下，全部随本次提交。
+- Latest Completed Task: Vercel 配置、Manifest/iPhone 图标元数据、HTTPS 兼容性核查和自动化测试。
+- Changed Files: `vercel.json`、`.vercelignore`、`next.config.ts`、`src/app/manifest.ts`、`src/app/layout.tsx`、`public/apple-touch-icon.png`、`tests/online-access.test.ts`、`tests/e2e/online-access.spec.ts`、`docs/V2.3_A_ONLINE_ACCESS.md`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: 本地 typecheck、lint、`npm test`、`npm run build`、`VERCEL=1 npm run build`、`npm run test:e2e`、`npm run test:lan`。
+- Test Results: typecheck/lint 通过；单元 13 文件 111 项通过；两种构建通过且 Vercel 模式生成 `.next/BUILD_ID`；Playwright 76 项通过；LAN 2 项通过。未执行真实部署/生产 HTTPS/真机安装。
+- CI Status: 尚未触发；本轮普通推送后须按新 SHA 查询，不能沿用 V2.2 或旧运行的绿色结果。
+- Uncommitted Changes: 本轮代码/测试/文档待提交；README 用户空格改动不暂存。
+- Unpushed Commits: 记录时无；提交后普通推送功能分支。
+- Known Issues: Vercel Preview 与真机主屏幕尚未验收；HTTPS 与旧 HTTP/LAN 是不同 origin，存储不自动迁移；无 Service Worker 离线能力。
+- Remaining Tasks: 普通推送并核对新 SHA 的 CI；人工完成 Vercel Preview 与 iPhone 主屏幕验收。
+- Next Recommended Action: 部署 Preview 后检查 Manifest、图标、课程/词汇/测验和刷新后的 IndexedDB 进度；确认通过后再评估合并。
+- Important Warnings: 不合并 master、不部署生产、不打标签、不强推；不改 ACL/完整性级别；README 用户改动保留。
+
 ### Agent Handoff — 2026-11-11（Codex，最后两项回归定向修复）
 
 - Previous Agent: Codex。

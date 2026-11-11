@@ -1,0 +1,6 @@
+.next/
+.next-dev/
+.next-v2/
+test-results/
+test-results-lan/
+playwright-report/

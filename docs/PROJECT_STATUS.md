@@ -1,5 +1,15 @@
 # CyberPath 项目状态
 
+## 当前阶段：V2.3-A Personal Online Access 代码准备（2026-11-11）
+
+V2.2 已合并到 `origin/master`（合并提交 `ce6da4e`）。本轮从该提交创建 `feature/v2.3-a-online-access`，保留 README 的用户空格改动，不 reset/clean/覆盖。
+
+已完成：Vercel 配置与标准 `.next` 输出适配、`.vercelignore`、Manifest 的 `id/scope/lang/categories`、192/512 图标、180px Apple touch icon、Apple/标准 web-app-capable 标记和 iPhone 元数据。IndexedDB、课程、词汇、测验的数据结构和 schema 未改；未加云同步、账号或 Service Worker。
+
+验证：typecheck、lint 通过；单元 13 文件 111 项通过；`npm run build` 与 `VERCEL=1 npm run build` 通过（后者生成 `.next/BUILD_ID`）；Playwright 76 项通过（Chromium + WebKit iPhone 模拟）；LAN 2 项通过。真实 Vercel/HTTPS 部署与真机主屏幕安装尚未执行。CI 未在本轮持续等待，推送后的新 SHA 结果需按 GitHub 实查，不能沿用旧运行。
+
+本轮只授权普通推送到功能分支；不合并 master、不部署生产、不打标签。详见 [V2.3_A_ONLINE_ACCESS.md](V2.3_A_ONLINE_ACCESS.md)。
+
 ## 2026-11-11 定向同步修复
 
 仅修复 F03 与主题回归测试的持久化同步：从 IndexedDB 已提交 head/profile 轮询，不依赖异步 localStorage 镜像；主题在硬导航前等待实际落盘。无业务/迁移逻辑变更，无固定 sleep/跳过/删除断言。定向双引擎 4 项、全量浏览器 74 项、单元 107 项、typecheck/lint 均通过（浏览器使用现有生产构建，未重新 build）。新提交 Push/PR CI 待正常推送后生成，不在本次等待结果；旧 PR 失败记录保留为历史。README 原修改不提交，不合并/部署。

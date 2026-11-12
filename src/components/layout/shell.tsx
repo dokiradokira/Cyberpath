@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
   LibraryBig,
 } from "lucide-react";
 import { useLearning } from "../learning-provider";
+import { reveal, cancelMotion } from "../../lib/motion";
 import { APP_VERSION } from "../../lib/version";
 const links = [
   { href: "/", label: "学习首页", icon: LayoutDashboard },
@@ -26,6 +27,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [feedback, setFeedback] = useState("");
   const path = usePathname(),
     { data, update, warning, ready } = useLearning();
+  const main = useRef<HTMLElement>(null);
+  const previousPath = useRef(path);
+  const activeNav = links.findIndex((l) =>
+    l.href === "/" ? path === "/" : path.startsWith(l.href),
+  );
+  useLayoutEffect(() => {
+    // SSR content is already visible: animate client route changes, never fade it out on hydration.
+    if (previousPath.current === path) return;
+    previousPath.current = path;
+    const heading = main.current?.querySelector(".page-heading") ?? null;
+    reveal(heading);
+    return () => cancelMotion(heading);
+  }, [path]);
   return (
     <div className="app-shell" data-theme={data.theme}>
       <a className="skip" href="#main">
@@ -39,7 +53,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
           CyberPath<span className="version">V{APP_VERSION}</span>
         </Link>
         <p className="nav-label">你的学习空间</p>
-        <nav aria-label="主导航">
+        <nav
+          className="primary-nav"
+          aria-label="主导航"
+          style={
+            {
+              "--nav-index": Math.max(0, activeNav),
+              "--nav-visible": activeNav >= 0 ? 1 : 0,
+            } as CSSProperties
+          }
+        >
           {links.map(({ href, label, icon: Icon }) => (
             <Link
               prefetch={false}
@@ -113,7 +136,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </header>
-        <main id="main" tabIndex={-1}>
+        <main ref={main} id="main" tabIndex={-1}>
           {feedback && (
             <div className="action-feedback" role="log" aria-live="polite">
               {feedback}

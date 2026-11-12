@@ -1,5 +1,15 @@
 # CyberPath 项目状态
 
+## 当前阶段：Motion & Interaction Quality Upgrade（2026-11-12）
+
+基线 `origin/master e06d959` 已包含 DNS 修复 `50b135c`（PR #4）；本轮独立分支 `feature/motion-interaction-quality`，保留 README 用户改动，不包含在提交中。没有 merge/部署/标签，package 保持 2.2.0，课程/词汇内容与 IndexedDB schema 未改。
+
+实现五类实际交互：底部导航共享移动指示条与 Shell 连续性；课程卡片按压/聚焦、可中断目录展开与章节标题揭示；词汇浮层 presence 进退、即时 inert 与焦点恢复；DNS 因果路径回放、缓存有效/过期/负缓存状态与稳定观察区；测验忙碌态、保存期间锁定输入、真实保存后结果揭示及焦点。共享 motion tokens 和 WAAPI 取消/reduce 管理，无新依赖或常驻动效。
+
+typecheck/lint、126 单元、审批后的 production build、新场景定向 10 项、最终完整浏览器 **94/94** 及 LAN **2/2** 均通过。迁移/101 次保存原用例双引擎各重复三次 6/6 通过。默认 build 仍有 EPERM，未修改安全设置。Safari `.22s` 已转换为 220ms；radio 在恢复前禁用且按压不移动命中区；no-JS 用例已跟随隔离 baseURL，原断言保留。浮层抽样阅读区高度差 0、结束后运行中动画 0，未测真机 FPS。新 SHA CI 尚未触发，不沿用旧绿色结果。
+
+本地测试使用 `PLAYWRIGHT_PORT=3114` 避开另一个目录现存的 3100 服务，未终止它；CI 默认 3100 不变。录像/抽样位于忽略的 test-results，真机手感、VoiceOver 与生产验收待用户完成。详见 [Motion 实施与验收记录](MOTION_INTERACTION_UPGRADE.md)。
+
 ## 当前阶段：DNS Sample Integration & Reading Polish（2026-11-12）
 
 本节覆盖下文快照。本轮起点 `f1747ed`，继续 `feature/curriculum-3-dns-sample`。fetch 核实 `origin/master = 13cc786`，PR #3 已合并初版 DNS 样板，与本轮起点源码相同；本轮没有再次 merge。Production 上线为用户确认的背景，本轮不部署。

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   initialDns,
   queryDns,
@@ -8,6 +8,9 @@ import {
 } from "../../lib/dns-workshop";
 import { dnsWorkshop } from "../../content/lessons/dns-workshop";
 import { AnnotatedText } from "./annotated-text";
+import { AnimatedDetails } from "../animated-details";
+import { cachePhase, dnsTrace } from "../../lib/dns-motion";
+import { playFrames, cancelMotion } from "../../lib/motion";
 import { Vocabulary } from "./vocabulary";
 import { wordEntries } from "../../content/vocabulary";
 export function DnsGoals() {
@@ -83,7 +86,7 @@ function Exercise({ index }: { index: number }) {
         ))}
       </div>
       {choice !== null && (
-        <p role="status" lang="en">
+        <p key={choice} className="motion-reveal" role="status" lang="en">
           {choice === q.answer ? "Correct" : "Try again"} ·{" "}
           <AnnotatedText text={q.feedback[choice]} />
         </p>
@@ -104,6 +107,24 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
     setPrediction("");
     setFeedback("");
   };
+  const marker = useRef<SVGCircleElement>(null);
+  useLayoutEffect(() => {
+    if (!s.source || s.queries === 0) return;
+    const points = dnsTrace(s.source),
+      element = marker.current;
+    playFrames(
+      element,
+      points.map(([x, y], i) => ({
+        transform: `translate(${x}px, ${y}px)`,
+        opacity: i === 0 || i === points.length - 1 ? 0 : 1,
+        offset: i / (points.length - 1),
+      })),
+      s.source === "cache" ? "state" : "scene",
+      s.source === "cache" ? 1 : 3,
+    );
+    return () => cancelMotion(element);
+  }, [s.queries, s.source]);
+  const phase = cachePhase(s);
   const remaining = s.cache ? Math.max(0, s.cache.expires - s.now) : 0;
   const nodes = ["Client", "Resolver", "Root", "TLD", "Authority"];
   const positions = [
@@ -124,6 +145,24 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
         <p lang="en">
           <AnnotatedText text="Predict the answer before each query. Change one variable, observe the source, then explain why the answer changed or stayed the same." />
         </p>
+        <div className="dns-replay-caption">
+          <span
+            key={phase}
+            className="cache-badge motion-reveal"
+            data-state={phase}
+          >
+            缓存：
+            {
+              {
+                empty: "空",
+                positive: "有效 A 记录",
+                negative: "NXDOMAIN",
+                expired: "已到期",
+              }[phase]
+            }
+          </span>
+          <span>上次查询回放 · 数值即时更新 · 动效不代表真实耗时</span>
+        </div>
         <svg
           viewBox="0 0 360 210"
           style={{ width: "100%", height: "auto" }}
@@ -163,6 +202,17 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
               </text>
             </g>
           ))}
+          <circle
+            ref={marker}
+            className="dns-trace"
+            data-source={s.source ?? "none"}
+            cx="0"
+            cy="0"
+            r="4"
+            fill="var(--primary)"
+            opacity="0"
+            aria-hidden="true"
+          />
         </svg>
         <p lang="en">
           <AnnotatedText
@@ -173,11 +223,20 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
             }
           />
         </p>
-        <p className="lab-observation" aria-live="polite" aria-atomic="true">
-          状态：t={s.now}s · 权威名称 {s.authority ?? "不存在"} · 递归缓存{" "}
-          {s.cache ? (s.cache.answer ?? "NXDOMAIN") : "空"} · 剩余 TTL{" "}
-          {remaining}s · 已查询 {s.queries} 次
-        </p>
+        <dl className="lab-observation" aria-live="polite" aria-atomic="true">
+          {[
+            ["模拟时间", `t=${s.now}s`],
+            ["权威名称", s.authority ?? "不存在"],
+            ["递归缓存", s.cache ? (s.cache.answer ?? "NXDOMAIN") : "空"],
+            ["剩余 TTL", `${remaining}s`],
+            ["已查询", `${s.queries} 次`],
+          ].map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="device-buttons">
           <button onClick={() => alter((v) => changeDns(v, "192.0.2.20"))}>
             权威地址改为 .20
@@ -219,13 +278,18 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
           执行 DNS 查询
         </button>
         <div className="lab-feedback" aria-live="polite">
-          {feedback && <p role="status">{feedback}</p>}
+          {feedback ? (
+            <p key={s.queries} className="motion-reveal" role="status">
+              {feedback}
+            </p>
+          ) : (
+            <p className="muted">选择预测后执行查询，结果会显示在这里。</p>
+          )}
         </div>
         <p className="muted" lang="en">
           <AnnotatedText text="Model limits: one recursive cache, one name and only A queries. Positive TTL is 60s; SOA-derived negative TTL is fixed at 30s. Every cache miss depicts a cold delegation path; real cached referrals may shorten it. Browser/OS caches, CNAME, DNSSEC, outages and serve-stale are not simulated. No packets leave your browser." />
         </p>
-        <details>
-          <summary>实验任务与证据检查</summary>
+        <AnimatedDetails summary="实验任务与证据检查">
           <ol>
             <li>
               重置 → 预测 .10 并查询 → 修改权威为 .20 → 前进 30 秒 → 预测 .10
@@ -240,7 +304,7 @@ export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
               limitation。练习状态只在本页面保留；笔记和原五题测验继续按现有机制保存，不自动标记课程完成。
             </li>
           </ol>
-        </details>
+        </AnimatedDetails>
       </section>
     </>
   );

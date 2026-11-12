@@ -1,6 +1,6 @@
 # Agent Handoff
 
-适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 Curriculum 3.0 DNS 样板任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
+适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 Motion & Interaction 任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
 
 先读 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md)、[安全工作流](SECURE_DEVELOPMENT_WORKFLOW.md)。历史报告只作对应时间/SHA 的证据；实际 Git、源码和同一 SHA 的 CI 优先核实。不得仅凭聊天重做已有功能。
 
@@ -76,6 +76,25 @@ git push origin feature/v2.2-learning-experience
 绝不修改 ACL、完整性级别、关闭安全机制或删除工作区来获得 Git 写入权限。工具正规逐命令审批可用时按授权使用；不支持则由人类执行。
 
 ## 交接记录
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion & Interaction）
+
+- Previous Agent: Codex（DNS 修整 50b135c）。
+- Current Development Phase: Motion & Interaction Quality Upgrade。
+- Branch: `feature/motion-interaction-quality`。
+- HEAD: 提交前基线 `e06d959`；交接提交用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。master 已包含 DNS PR #4，未在本轮合并。
+- Working Tree Status: 提交前为本轮源码/测试/文档及原 README 用户改动；README 排除提交。
+- Latest Completed Task: Motion tokens；导航、卡片/目录、词汇浮层、DNS 回放、测验保存/结果五类接入；WebKit CSS 秒/毫秒解析修复。
+- Changed Files: globals.css；Shell、AnnotatedText、ChapterNavigation、DnsWorkshop、Quiz、use-reading；新增 motion/dns-motion 工具、presence hook、AnimatedDetails；两个单元文件和 motion e2e；Playwright 可选端口；Motion 报告/PROJECT_STATUS/AGENT_HANDOFF。
+- Tests Actually Run: typecheck、lint、126 unit、production build、新场景定向 10 项、SSR/导航定向 4 项、迁移原用例重复 6 项、最终完整浏览器 94 项、LAN 2 项；格式/链接/diff/敏感文件与产物范围检查。
+- Test Results: 最终上述均通过，完整 94/94、LAN 2/2，无 lint warning。默认 build 的 `.next-v2/server/app/labs` mkdir EPERM 保留记录；构建/浏览器按正规单命令审批执行，未改系统权限。首轮 WebKit 动效因 CSS 时间单位过快、后续 no-JS 固定端口、radio 恢复/按压命中问题均如实记录并修复；未删/跳过/放宽旧断言。浮层高度差 0、结束后运行中动画 0，原始 JSON/录像位于 test-results。
+- CI Status: 新提交尚未创建，CI 未触发；推送后按最终 SHA 查询 [Actions](https://github.com/dokiradokira/Cyberpath/actions)，不持续等待、不预填成功。
+- Uncommitted Changes: 本轮提交后应只余 README 用户空格修改，以交付时 git status 核实。
+- Unpushed Commits: 提交前本阶段无新 commit；本轮已获准普通 push 新 Motion 分支，最终同步以远端 SHA 核实。
+- Known Issues: 默认 Windows build EPERM；真实 iPhone/VoiceOver/生产环境尚未验收，不把 WebKit 模拟或无头抽样当作 FPS 认证。3100 为独立 D:\cyberpath-dsh Next 服务占用，未停止或写入其目录，本轮改用 3114。
+- Remaining Tasks: 提交/push 和新 SHA CI 状态核对，用户真机观感、VoiceOver 与生产验收。
+- Next Recommended Action: 在手机切换底栏、目录快速反向展开、Enter/Escape 重开词汇、观察 DNS miss/hit/负缓存、提交并重做测验；开关系统 Reduce Motion 比较。
+- Important Warnings: 保留 README；不改词汇/课程数据、规划、schema 和正式版本号；不 merge/部署/打标签/强推。录像与性能抽样属于忽略的测试产物，不提交。换 Agent 前确认本工作区已停止写入。
 
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 整合与阅读修整）
 

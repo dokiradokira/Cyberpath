@@ -51,21 +51,24 @@ test("V2 Chinese navigation and actual global theme colors persist on every rout
 });
 test("V2 server-rendered content remains readable without JavaScript", async ({
   browser,
+  baseURL,
 }) => {
   const context = await browser.newContext({
+    baseURL,
     javaScriptEnabled: false,
     viewport: { width: 390, height: 844 },
   });
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:3100/");
+  await page.goto("/");
   await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
   await expect(page.getByText("Opening your learning space")).toHaveCount(0);
   await page.getByRole("link", { name: "课程目录", exact: true }).click();
   await expect(page.getByText("即将推出", { exact: true })).toHaveCount(5);
-  await page.goto("http://127.0.0.1:3100/courses/network-foundations");
+  await page.goto("/courses/network-foundations");
   await expect(
     page.getByRole("heading", { name: "What is a computer network?" }),
   ).toBeVisible();
+  await expect(page.locator("#knowledge-check input").first()).toBeDisabled();
   await context.close();
 });
 test("V2 failed app scripts show recovery instead of a blank loading screen", async ({

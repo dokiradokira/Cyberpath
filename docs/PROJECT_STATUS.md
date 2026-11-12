@@ -1,5 +1,15 @@
 # CyberPath 项目状态
 
+## 当前阶段：DNS Sample Integration & Reading Polish（2026-11-12）
+
+本节覆盖下文快照。本轮起点 `f1747ed`，继续 `feature/curriculum-3-dns-sample`。fetch 核实 `origin/master = 13cc786`，PR #3 已合并初版 DNS 样板，与本轮起点源码相同；本轮没有再次 merge。Production 上线为用户确认的背景，本轮不部署。
+
+本轮增量：共享词汇由 36 增至 91 条（新增 55，旧 ID 保留），词形和短语匹配，先修/目标/正文/实验/反馈统一注释；非模态语境释义浮层；课程与实验中心共享 `DnsCacheLab`；语义分段、独立目标区块、系统字体和手机阅读规范；版本标签从 package 读取 2.2.0。IndexedDB/schema、测验历史和完整备份不变，README 用户修改不提交。
+
+typecheck/lint、117 单元通过；默认 build 的 EPERM 已如实记录，经正规单命令审批的构建通过。完整浏览器首轮 83/84，发现真实浮层遮挡手机导航，修复后定向 10/10、完整 84/84、LAN 2/2。末尾仅两处文案/释义微调后再跑单元、lint、build、定向 10/10 与 LAN 2/2，均通过。已查看手机/桌面截图，真机、生产和屏幕阅读器专项仍待人工验收。新提交 CI 尚未触发，按交付 SHA 查实，不沿用旧绿色状态。
+
+详见 [本轮整合记录](DNS_SAMPLE_READING_POLISH.md)。本轮授权普通 push 当前分支；不 merge、部署、打标签。下一步先人工检查辅助密度、触屏浮层和课程节奏。
+
 ## 当前阶段：Curriculum 3.0 DNS 样板（2026-11-12）
 
 本节覆盖下文旧快照。已 fetch 最新 master，从 `2d0cddf`（V2.3-A 合并提交）创建 `feature/curriculum-3-dns-sample`；用户报告 V2.3-A 已上线，本轮未另行验收生产环境。package 保持 2.2.0，不把 Curriculum 3.0 样板称为正式 3.0 发布。

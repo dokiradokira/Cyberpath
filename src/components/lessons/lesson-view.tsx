@@ -84,7 +84,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     }));
   }
   return (
-    <>
+    <div className="lesson-reader">
       <Link prefetch={false} className="back-link" href="/courses">
         <ArrowLeft size={15} /> 课程目录
       </Link>
@@ -97,7 +97,6 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           {lesson.zh} <span className="dot">·</span> 预计 {lesson.minutes} 分钟
         </p>
       </header>
-      {lesson.id === "dns-tcp-web" && <DnsGoals />}
       <ChapterNavigation lesson={lesson} active={active} onSelect={go} mobile />
       <nav className="chapter-controls" aria-label="章节切换">
         <button
@@ -116,18 +115,23 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       </nav>
       <div className="lesson-layout">
         <article>
-          <section className="panel">
-            <p className="eyebrow">本课目标</p>
-            <h2>你将学到</h2>
-            <ul className="objectives" lang="en">
-              {lesson.objectives.map((o) => (
-                <li key={o}>
-                  <Check size={17} />
-                  {o}
-                </li>
-              ))}
-            </ul>
-          </section>
+          {lesson.id === "dns-tcp-web" && <DnsGoals />}
+          {lesson.id !== "dns-tcp-web" && (
+            <section className="panel">
+              <p className="eyebrow">本课目标</p>
+              <h2>你将学到</h2>
+              <ul className="objectives" lang="en">
+                {lesson.objectives.map((o) => (
+                  <li key={o}>
+                    <Check size={17} />
+                    <span>
+                      <AnnotatedText text={o} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           {record.section && (
             <a
               className="resume-section"
@@ -154,9 +158,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   {String(i + 1).padStart(2, "0")} / 概念
                 </p>
                 <h2 lang="en">{s.title}</h2>
-                <p lang="en">
-                  <AnnotatedText text={s.text} />
-                </p>
+                {s.text.split(/\n\s*\n/).map((paragraph, index) => (
+                  <p key={index} lang="en">
+                    <AnnotatedText text={paragraph} />
+                  </p>
+                ))}
                 <button className="text-button" onClick={() => track(s.id)}>
                   {record.section === s.id ? "已保存章节书签" : "保存章节书签"}
                 </button>
@@ -268,6 +274,6 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         </article>
         <ChapterNavigation lesson={lesson} active={active} onSelect={go} />
       </div>
-    </>
+    </div>
   );
 }

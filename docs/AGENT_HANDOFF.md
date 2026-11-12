@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 整合与阅读修整）
+
+- Previous Agent: Codex（DNS 样板 f1747ed，本轮用户继续交付修整任务）。
+- Current Development Phase: DNS Sample Integration & Reading Experience Polish。
+- Branch: `feature/curriculum-3-dns-sample`。
+- HEAD: 提交前 `f1747ed`；交接提交用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。fetch 后 master 为 `13cc786`（已包含初版样板，无源码差异）。
+- Working Tree Status: 提交前为本轮增量文件和用户 README 空格改动；README 不暂存。
+- Latest Completed Task: 共享词库覆盖、语境浮层、实验中心入口与共享模拟器、语义分段与手机排版、真实版本标签。
+- Changed Files: content 的 dns-vocabulary/vocabulary/DNS 正文；lib 的 terms/version/labs；AnnotatedText、DnsWorkshop、LessonView、Shell、Overview、labs/page、globals.css；新增 reading-polish unit/e2e、旧 DNS e2e 语义定位；本轮实施记录与状态/交接文档。
+- Tests Actually Run: typecheck、lint、117 unit、production build、定向浏览器、完整回归 84 项、LAN 2 项；末尾两处文字校正后再跑 unit/lint/build、定向 10 项、LAN 2 项，均通过；文档链接、格式和敏感文件检查通过。
+- Test Results: 静态/单元通过，审批后的 build 通过。首轮完整 83/84，发现手机浮层遮挡底部导航，真实修复后定向 10/10、完整 84/84、LAN 2/2。默认 build EPERM 不隐瞒、不修改安全设置。首轮定向旧 DNS 按钮索引失效，修正为选项完整名称，保留原断言。
+- CI Status: 新 SHA 尚不存在，CI 未触发；推送后从 [Actions](https://github.com/dokiradokira/Cyberpath/actions) 按 SHA 查询，不持续等待，不预填成功。
+- Uncommitted Changes: 本轮提交后应仅余用户 README；交付时重新 git status 核实。
+- Unpushed Commits: 提交前无新增提交；本轮获准普通 push 当前 DNS 分支，最终 SHA 和同步状态在交付核实。
+- Known Issues: 术语是选择性辅助而非全文翻译；非模态释义浮层可关闭/点击外部关闭；实验状态仍仅当前页面保留。新词备份向旧应用反向导入不作保证，旧档案在新应用保持兼容。
+- Remaining Tasks: 提交推送和新 SHA CI 状态核对，用户真实 iPhone/屏幕阅读器与新内容生产验收。
+- Next Recommended Action: 人工试读、收藏新词、从课程与实验中心完成 TTL/负缓存实验；再决定后续课程。
+- Important Warnings: README 用户修改保留；不改 IDB/schema/旧 ID；不合并规划、master，不部署、不打标签、不强推。交接前确认当前 Agent 停止写入。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 样板）
 
 - Previous Agent: DSH（现有最近交接记录）；本轮由用户交给 Codex。

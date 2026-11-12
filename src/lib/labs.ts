@@ -5,3 +5,11 @@ export const labInfo = {
   nat: { title: "NAT/PAT 模拟器", tag: "04 / 地址转换" },
 };
 export type LabId = keyof typeof labInfo;
+// Keep existing LabId values and their original simulators stable.
+export const dnsCacheInfo = {
+  id: "dns-cache",
+  title: "DNS 缓存与诊断",
+  goal: "预测缓存答案，计算 TTL，并区分地址变更与 NXDOMAIN 负缓存",
+  introduction:
+    "改变权威记录与模拟时间，观察答案来源，用证据解释结果。与第二课共享同一实验，无真实网络请求。",
+};

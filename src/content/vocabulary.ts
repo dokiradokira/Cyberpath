@@ -1,9 +1,11 @@
 import { availableLessons } from "./lessons";
 import type { Vocabulary } from "../types";
+import { dnsVocabulary } from "./dns-vocabulary";
 export type WordEntry = Vocabulary & {
   readonly id: string;
   lessonId: string;
   example: string;
+  aliases?: string[];
 };
 // Explicit examples avoid silently replacing a usage example with a definition.
 const courseExamples: Record<string, string> = {
@@ -174,7 +176,7 @@ const extras: [number, string, string, string, string][] = [
     3,
     "private",
     "私有的",
-    "Used within a private network rather than globally routed.",
+    "Restricted to a person or group; for IP addresses, used within private networks rather than globally routed.",
     "192.168.1.100 is a private IPv4 address.",
   ],
   [
@@ -186,9 +188,11 @@ const extras: [number, string, string, string, string][] = [
   ],
 ];
 export const wordEntries: WordEntry[] = [
+  ...dnsVocabulary,
   {
     id: "ttl",
     word: "ttl",
+    aliases: ["time to live"],
     zh: "生存时间",
     definition:
       "The maximum time a DNS record may be kept in a cache before it expires.",
@@ -209,6 +213,7 @@ export const wordEntries: WordEntry[] = [
   ...availableLessons.flatMap((l) =>
     l.vocabulary.map((v) => ({
       ...v,
+      aliases: v.word === "resolver" ? ["recursive resolver"] : undefined,
       id: v.word,
       lessonId: l.id,
       example: courseExamples[v.word],
@@ -217,6 +222,7 @@ export const wordEntries: WordEntry[] = [
   ...extras.map(([number, word, zh, definition, example]) => ({
     id: word,
     word,
+    aliases: word === "cache" ? ["cached", "caching"] : undefined,
     zh,
     definition,
     example,

@@ -37,7 +37,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, "Microsoft YaHei", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
   font-size: 14px;
   line-height: 1.65;
 }
@@ -2273,5 +2275,228 @@ button[aria-pressed="true"] {
   }
   .mobile-chapters nav a {
     padding: 12px 8px;
+  }
+}
+
+/* Shared reading rhythm: authored paragraphs, compact goals, accessible touch controls. */
+.lesson-reader {
+  --reading-size: 17px;
+  --reading-leading: 1.85;
+}
+.lesson-reader article {
+  max-width: 72ch;
+  min-width: 0;
+}
+.lesson-reader .reading-section {
+  margin-block: 42px;
+}
+.lesson-reader .reading-section > div > p[lang="en"],
+.lesson-reader .learning-block p,
+.lesson-reader .learning-block li {
+  font-size: var(--reading-size);
+  line-height: var(--reading-leading);
+  font-weight: 400;
+  max-width: 66ch;
+  overflow-wrap: anywhere;
+}
+.lesson-reader .reading-section > div > p[lang="en"] {
+  margin-block: 0 1.15em;
+}
+.lesson-reader h2 {
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+.learning-brief {
+  display: grid;
+  gap: 28px;
+  margin-block: 8px 36px;
+}
+.learning-block {
+  min-width: 0;
+}
+.learning-brief .learning-block {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+.learning-brief h2 {
+  font-size: 22px;
+  margin: 0 0 16px;
+}
+.learning-brief ul {
+  padding-left: 22px;
+  margin: 0;
+}
+.learning-brief li + li {
+  margin-top: 12px;
+}
+.reading-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-block: 20px;
+}
+.reading-links a:not(.button) {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.dns-cache-lab {
+  scroll-margin-top: 96px;
+}
+.dns-cache-lab .device-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-block: 20px;
+}
+.dns-cache-lab .device-buttons button {
+  min-height: 44px;
+  font-size: 14px;
+}
+.dns-cache-lab label {
+  display: grid;
+  gap: 8px;
+  margin-block: 18px 12px;
+}
+.dns-cache-lab select {
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 10px;
+}
+.lab-observation {
+  border-left: 2px solid var(--primary);
+  padding: 12px;
+  background: var(--soft);
+  font-variant-numeric: tabular-nums;
+}
+.lab-feedback {
+  min-height: 5em;
+}
+.term-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: none;
+}
+.term-overlay .term-definition {
+  pointer-events: auto;
+  position: static;
+  width: min(100%, 36rem);
+  max-height: 70dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--primary);
+  border-radius: 14px;
+  padding: 22px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  box-shadow: 0 12px 48px #0004;
+}
+.term-definition strong {
+  font-size: 20px;
+}
+.term-definition .term-context {
+  border-left: 2px solid var(--line);
+  padding-left: 12px;
+  margin-block: 14px;
+  color: var(--muted);
+}
+.term-overlay .term-actions {
+  position: sticky;
+  bottom: -22px;
+  background: var(--surface);
+  padding-block: 12px;
+}
+.term-translation {
+  font-weight: 400;
+  font-size: 0.84em;
+}
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+button,
+.button,
+.sidebar nav a,
+.mobile-chapters a,
+.lesson-toc a {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+button:not(:disabled):active,
+.button:active {
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+.dns-cache-lab svg g,
+.dns-cache-lab svg path {
+  transition: opacity 160ms ease;
+}
+@media (max-width: 600px) {
+  .lesson-reader {
+    --reading-size: 17px;
+    --reading-leading: 1.85;
+  }
+  .lesson-reader .reading-section {
+    margin-block: 32px;
+  }
+  .lesson-reader .reading-section h2 {
+    font-size: 23px;
+    margin-bottom: 18px;
+  }
+  .learning-brief {
+    gap: 24px;
+  }
+  .learning-brief h2 {
+    font-size: 20px;
+  }
+  .term-overlay {
+    bottom: calc(70px + env(safe-area-inset-bottom));
+    padding: 12px;
+  }
+  .term-overlay .term-definition {
+    padding: 18px;
+    max-height: min(72dvh, calc(100dvh - 160px - env(safe-area-inset-bottom)));
+  }
+  .term-overlay .term-actions {
+    bottom: -18px;
+  }
+}
+@media (min-width: 601px) {
+  .term-overlay {
+    left: 180px;
+  }
+}
+@media (min-width: 851px) {
+  .term-overlay {
+    left: 240px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .button,
+  .sidebar nav a,
+  .mobile-chapters a,
+  .lesson-toc a,
+  .dns-cache-lab svg g,
+  .dns-cache-lab svg path {
+    transition: none;
   }
 }

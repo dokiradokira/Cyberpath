@@ -1,5 +1,13 @@
 # CyberPath 项目状态
 
+## 当前阶段：Motion 真机反馈定向修整（2026-11-12）
+
+基线 `07a0bba`，继续 `feature/motion-interaction-quality`；已 fetch 核实 origin Motion/master 无新增，master 仍为 `e06d959`。用户已在真实 iPhone Safari 体验上一轮并提出退出闪烁、反馈偏弱及栏目切换慢，本轮不是重新设计或发布。
+
+已复现并修复退出 WAAPI 默认 fill:none 在 React 卸载前恢复 opacity=1 的结束帧问题；保留透明末帧并正确管理取消/重开。增强共用位移/缩放、底栏与 DNS 反馈，不增加时长；五个主栏目预取及真实 pending 即时提示，标题保持可读的轻切换。数据/schema/版本/课程不变，README 用户修改排除提交。
+
+本地 typecheck/lint、127 单元、审批后的 production build、新增定向 6 项、相关修正定向 6 项、最终完整浏览器 **100/100** 及 LAN **2/2** 通过。首轮 98/100，分别修正 WebKit 硬替换文档中断预取的导航测试路径、收藏筛选早于档案恢复的同步；保留全部断言。详见 [Motion 定向修整](MOTION_REFINEMENT.md)。受控 RSC +150ms、每组 3 次：点击至内容提交中位数 Chromium 210.3→61.2ms，WebKit 382→199ms；不是真机 FPS 结论。此轮真机/VoiceOver 尚待复验，新提交 CI 未触发；不 merge、部署或打标签。
+
 ## 当前阶段：Motion & Interaction Quality Upgrade（2026-11-12）
 
 基线 `origin/master e06d959` 已包含 DNS 修复 `50b135c`（PR #4）；本轮独立分支 `feature/motion-interaction-quality`，保留 README 用户改动，不包含在提交中。没有 merge/部署/标签，package 保持 2.2.0，课程/词汇内容与 IndexedDB schema 未改。

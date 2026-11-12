@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion 定向修整）
+
+- Previous Agent: Codex（同任务续作，07a0bba）；当前唯一写入者继续 Codex。
+- Current Development Phase: Motion 真机反馈定向修整，不进入其他阶段。
+- Branch: `feature/motion-interaction-quality`。
+- HEAD: 提交前基线 `07a0bba`；最终交接提交通过 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 查询，未预填不存在 SHA。
+- Working Tree Status: 本轮源码/测试/文档与原 README 用户修改；README 不暂存。
+- Latest Completed Task: 退出结束帧闪烁复现/修复；主栏目预取、即时 pending；加强位移/缩放/底栏与 DNS 反馈；分阶段导航对照采样。
+- Changed Files: motion.ts、globals.css、Shell、NavFeedback；motion-runtime 单元、motion-refinement e2e、app 导航 e2e、vocabulary-learning 档案恢复同步；MOTION_REFINEMENT、PROJECT_STATUS、AGENT_HANDOFF。
+- Tests Actually Run: typecheck、lint、127 unit、审批后 production build、定向浏览器 6 项、LAN 2 项、完整浏览器回归；diff/敏感文件/产物范围检查在提交前执行。
+- Test Results: 静态/127 单元/build/新增定向 6 项/LAN 2 项均通过；最终完整回归 **100/100**，5.9 分钟。首轮 98/100，WebKit 硬替换文档中断预取产生访问控制误报、收藏筛选早于档案恢复造成点击位置变化；分别改为实际课程入口及等待真实收藏数据，保留全部断言，不过滤异常。修复两用例及退出期间快速重开双引擎定向 6/6。基线双引擎已复现结束帧 opacity=1，修复后为 0。
+- CI Status: 本轮新提交尚未创建，未触发；推送后按最终 SHA 在 [Actions](https://github.com/dokiradokira/Cyberpath/actions) 查询，不持续等待、不沿用旧绿色记录。
+- Uncommitted Changes: 提交前为上述本轮文件及 README；本轮提交后应只余用户 README，以最终 git status 核实。
+- Unpushed Commits: 本轮提交尚未创建；基线已与 origin 同步；已获准普通 push 当前 Motion 分支。
+- Known Issues: 默认沙箱 EPERM 未重新排查；本轮 build/browser 走正规单命令审批，无安全设置变更。WebKit 模拟不代表真实 iPhone Safari 合成/触感验收；无 FPS 声称。
+- Remaining Tasks: 提交/普通 push、按新 SHA 查询 CI；用户真机复验。
+- Next Recommended Action: iPhone Safari 连续开关/切换词汇、滚动后关闭、快速重开；首次/重复点底栏，观察即时反馈；卡片及 DNS 查询/TTL/负缓存，比较 Reduce Motion。
+- Important Warnings: 保留 README；不改课程/词汇内容、IndexedDB/备份格式和正式版本号；不合并/部署/标签/强推。3114 为本轮隔离测试端口，未停止独立 DSH 目录服务。交接前停止本工作区写入。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion & Interaction）
 
 - Previous Agent: Codex（DNS 修整 50b135c）。

@@ -4,11 +4,13 @@
   --motion-state: 220ms;
   --motion-scene: 320ms;
   --motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --motion-distance: 8px;
-  --motion-enter-scale: 0.985;
+  --motion-distance: 14px;
+  --motion-enter-scale: 0.965;
   --motion-hidden-opacity: 0;
-  --motion-lift: 3px;
-  --motion-press-scale: 0.98;
+  --motion-lift: 5px;
+  --motion-press-scale: 0.965;
+  --motion-route-opacity: 0.8;
+  --motion-route-distance: 4px;
   --bg: #0b1220;
   --surface: #111d2e;
   --raised: #162438;
@@ -2745,5 +2747,76 @@ button,
   :root {
     --motion-lift: 0px;
     --motion-hidden-opacity: 1;
+  }
+}
+
+/* Refinement: visible intent while Next loads; the actual current-page state stays truthful. */
+.nav-feedback {
+  display: contents;
+}
+.nav-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.primary-nav a::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 2px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px;
+  opacity: 0;
+  transform: scaleX(0);
+  transition:
+    transform var(--motion-press) var(--motion-ease),
+    opacity var(--motion-press) var(--motion-ease);
+  pointer-events: none;
+}
+.primary-nav a:has([data-nav-pending="true"]) {
+  color: var(--primary);
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+.primary-nav a:has([data-nav-pending="true"])::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+@media (max-width: 600px) {
+  .primary-nav::before {
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+}
+@keyframes motion-emphasis {
+  from {
+    opacity: 0.5;
+    transform: translateY(var(--motion-lift)) scale(var(--motion-enter-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.cache-badge.motion-reveal,
+.lab-feedback .motion-reveal {
+  animation-name: motion-emphasis;
+  transform-origin: left center;
+}
+.lab-feedback {
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+  transition: border-color var(--motion-state) var(--motion-ease);
+}
+.lab-feedback:has([role="status"]) {
+  border-left-color: var(--primary);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-route-opacity: 1;
+    --motion-route-distance: 0px;
   }
 }

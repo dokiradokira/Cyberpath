@@ -37,6 +37,19 @@ it("never starts WAAPI when reduced motion is requested", () => {
   ).toBeNull();
   expect(animate).not.toHaveBeenCalled();
 });
+it("retains a finished exit until removal and cancels that retained effect on reopen", async () => {
+  setup(false);
+  const exit = { finished: Promise.resolve(), cancel: vi.fn() };
+  const enter = { finished: Promise.resolve(), cancel: vi.fn() };
+  const animate = vi.fn().mockReturnValueOnce(exit).mockReturnValueOnce(enter);
+  const element = { animate } as unknown as Element;
+  playFrames(element, [{ opacity: 1 }, { opacity: 0 }], "state", 1, "forwards");
+  expect(animate.mock.calls[0][1].fill).toBe("forwards");
+  await exit.finished;
+  await Promise.resolve();
+  playFrames(element, [{ opacity: 0 }, { opacity: 1 }]);
+  expect(exit.cancel).toHaveBeenCalledOnce();
+});
 it("replaces interrupted animations, handles cancellation and finishes immediately on reduced-motion changes", async () => {
   const { media, change } = setup(false);
   const create = () => {

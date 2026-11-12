@@ -11,13 +11,18 @@ export const reducedMotion = () =>
   typeof window === "undefined" ||
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 export function cancelMotion(element: Element | null) {
-  if (element) running.get(element)?.cancel();
+  if (element) {
+    const animation = running.get(element);
+    running.delete(element);
+    animation?.cancel();
+  }
 }
 export function playFrames(
   element: Element | null,
   frames: Keyframe[],
   phase: MotionPhase = "state",
   multiplier = 1,
+  fill: FillMode = "none",
 ) {
   if (!element) return null;
   cancelMotion(element);
@@ -30,6 +35,7 @@ export function playFrames(
   const animation = element.animate(frames, {
     duration: duration * multiplier,
     easing: style.getPropertyValue("--motion-ease").trim() || "ease-out",
+    fill,
   });
   running.set(element, animation);
   const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -37,12 +43,18 @@ export function playFrames(
     if (media.matches) animation.finish();
   };
   media.addEventListener("change", finishReduced);
-  const cleanup = () => {
+  const cleanup = (cancelled: boolean) => {
     media.removeEventListener("change", finishReduced);
-    if (running.get(element) === animation) running.delete(element);
+    // A finished exit must hold its final frame through the React commit boundary.
+    // Keep ownership so rapid reopen/unmount can cancel that retained effect.
+    if ((fill === "none" || cancelled) && running.get(element) === animation)
+      running.delete(element);
   };
   // Cancellation is expected on rapid input / unmount, never an unhandled rejection.
-  animation.finished.then(cleanup, cleanup);
+  animation.finished.then(
+    () => cleanup(false),
+    () => cleanup(true),
+  );
   return animation;
 }
 export function reveal(
@@ -68,5 +80,23 @@ export function reveal(
           current ?? { opacity: 1, transform: "translateY(0) scale(1)" },
           hidden,
         ],
+    "state",
+    1,
+    direction === "out" ? "forwards" : "none",
+  );
+}
+export function revealRoute(element: Element | null) {
+  if (!element) return null;
+  const style = getComputedStyle(element);
+  return playFrames(
+    element,
+    [
+      {
+        opacity: Number(style.getPropertyValue("--motion-route-opacity")),
+        transform: `translateY(${style.getPropertyValue("--motion-route-distance").trim()})`,
+      },
+      { opacity: 1, transform: "translateY(0)" },
+    ],
+    "press",
   );
 }

@@ -14,7 +14,8 @@ import {
   LibraryBig,
 } from "lucide-react";
 import { useLearning } from "../learning-provider";
-import { reveal, cancelMotion } from "../../lib/motion";
+import { revealRoute, cancelMotion } from "../../lib/motion";
+import { NavFeedback } from "./nav-feedback";
 import { APP_VERSION } from "../../lib/version";
 const links = [
   { href: "/", label: "学习首页", icon: LayoutDashboard },
@@ -37,7 +38,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     if (previousPath.current === path) return;
     previousPath.current = path;
     const heading = main.current?.querySelector(".page-heading") ?? null;
-    reveal(heading);
+    revealRoute(heading);
     return () => cancelMotion(heading);
   }, [path]);
   return (
@@ -65,17 +66,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
         >
           {links.map(({ href, label, icon: Icon }) => (
             <Link
-              prefetch={false}
+              prefetch={true}
               key={href}
               href={href}
+              aria-label={label}
               aria-current={
                 (href === "/" ? path === href : path.startsWith(href))
                   ? "page"
                   : undefined
               }
             >
-              <Icon size={19} />
-              <span>{label}</span>
+              <NavFeedback label={label}>
+                <Icon size={19} />
+                <span>{label}</span>
+              </NavFeedback>
             </Link>
           ))}
         </nav>

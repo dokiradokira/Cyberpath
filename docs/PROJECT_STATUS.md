@@ -1,5 +1,15 @@
 # CyberPath 项目状态
 
+## 当前阶段：Curriculum 3.0 DNS 样板（2026-11-12）
+
+本节覆盖下文旧快照。已 fetch 最新 master，从 `2d0cddf`（V2.3-A 合并提交）创建 `feature/curriculum-3-dns-sample`；用户报告 V2.3-A 已上线，本轮未另行验收生产环境。package 保持 2.2.0，不把 Curriculum 3.0 样板称为正式 3.0 发布。
+
+查阅规划分支五份文档但未合并。已有第二课包含 DNS 概览，因此在 `dns-tcp-web` 增强为缓存与诊断样板：先修/Technical/English Goals、五章深入教学、三层反馈练习、可操作的 TTL/NXDOMAIN 实验和响应式 SVG、两条词汇。仍为三节可学课程；原章节、题目、课程 ID 与 IndexedDB/完整备份结构保持。实验为临时状态，证据可写入既有笔记。
+
+本轮 typecheck/lint/build 通过；单元 114 项通过；DNS 定向浏览器最终 2 项通过，完整浏览器 78 项及 LAN 2 项通过。新 SHA 的 CI 尚未触发，不沿用基线绿色结果。README 原用户改动保留且不纳入提交；提交前基线为 `2d0cddf`，最终 SHA 通过 Git 查询解析。
+
+下一步先由用户验收教学节奏、英文难度与真机 SVG/触屏/键盘体验，再选择下一节；不在本轮批量扩课、改 schema、引入同步或部署。详见 [DNS 样板实施记录](CURRICULUM_3_DNS_SAMPLE.md)。
+
 ## 当前阶段：V2.3-A Personal Online Access 代码准备（2026-11-11）
 
 V2.2 已合并到 `origin/master`（合并提交 `ce6da4e`）。本轮从该提交创建 `feature/v2.3-a-online-access`，保留 README 的用户空格改动，不 reset/clean/覆盖。

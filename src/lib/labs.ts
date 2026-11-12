@@ -3,6 +3,9 @@ export const labInfo = {
   dns: { title: "DNS 解析探索", tag: "02 / 域名解析" },
   subnet: { title: "IPv4 子网计算器", tag: "03 / 地址规划" },
   nat: { title: "NAT/PAT 模拟器", tag: "04 / 地址转换" },
+  cpu: { title: "CPU 指令执行模拟", tag: "05 / 处理器" },
+  os: { title: "进程调度模拟器", tag: "06 / 操作系统" },
+  terminal: { title: "安全 Linux 终端", tag: "07 / 命令行" },
 };
 export type LabId = keyof typeof labInfo;
 // Keep existing LabId values and their original simulators stable.

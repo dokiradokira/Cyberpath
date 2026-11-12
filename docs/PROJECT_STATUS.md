@@ -1,5 +1,25 @@
 # CyberPath 项目状态
 
+## 当前阶段：Foundations × Motion 合并整合（2026-11-12）
+
+本节覆盖下文各快照。`origin/master` 已含 Motion PR #5（合并提交 `00c2f02`，包含 `07a0bba` 与修复 `a91f3b3`）。本轮在 `feature/curriculum-3-foundations` 合入 `origin/master`：保留 Motion 的导航预取与 pending 反馈、词汇浮层退出修复、动效 tokens 与 AnimatedDetails，以及三节基础课程（04–06）、三个共享实验、词汇、三层练习与测验；旧课程/实验/测验 ID、IndexedDB schema 与 `contentVersion` 均未变。
+
+冲突仅出现在 `docs/PROJECT_STATUS.md` 与 `docs/AGENT_HANDOFF.md`：按两侧记录逐段合并并新增本节，未使用 ours/theirs 整树覆盖。源码自动合并后逐项核对共享文件：`lesson-view.tsx` 的三课目标/练习/实验深链、`labs.tsx` 与 `labs.ts` 的 cpu/os/terminal 注册、`overview.tsx` 与 `courses/page.tsx` 的计数、`vocabulary.ts` 的 example 回退、`storage.ts` 与 `history-repository.ts` 的旧档案补齐与升级备份均保留；Motion 对 `annotated-text`、`quiz`、`chapter-navigation`、`shell` 的改动及其用例未见行为回归。
+
+唯一兼容修正：`tests/e2e/profile-upgrade.spec.ts` 在两次硬导航前等待 Motion 预取完成，避免 WebKit 把被中断的 `_rsc` 预取记为页面错误；该错误与档案升级无关，属测试时序调整，不是产品行为变更。
+
+验证：typecheck、lint、build 通过；单元 21 文件 147 项通过；完整浏览器 Chromium + WebKit iPhone **114/114**；LAN **2/2**（首次与完整浏览器并行运行时 WebKit 主题恢复出现一次时序失败，单独重跑通过，未放宽断言）。未等待或轮询远程 CI；不 merge master、不部署、不打标签。
+
+下一步：用户在真机 Safari 复验三课实验、Motion 导航与词汇浮层；后续课程扩展另开分支。
+
+### CI 修复：实验室控件在水合前禁用（2026-11-12）
+
+CI 唯一失败为 WebKit 的 `controls-v211`：`/labs` 的静态 HTML 已把「下一步」渲染为可点，但 React 向该子树附加处理器之前，自动化/触屏的首次点击会被丢弃，`step` 停在 0，因此「重置模拟」保持 disabled（进度仍显示初始 `1 / 4`）。同样机制在完整回归中还造成 CPU 实验首个输入被水合覆盖。
+
+修复：新增 `useLabReady()`，以学习档案 provider 的 `ready`（水合与档案恢复完成后为真）作为门槛；TCP/DNS 的 Stepper、CPU、调度与终端实验的输入、选择与按钮在就绪前禁用，使首次操作必然发生在 React 就绪之后。不改实验业务逻辑、课程内容、记录结构或 schema。
+
+验证：typecheck、lint、build 通过；单元 147 项；完整浏览器 **116/116**（新增 `lab-controls-hydration`，无 JS 上下文断言 SSR 控件禁用，恢复 JS 后验证步进与重置）；LAN **2/2**。原 `controls-v211` 断言未改动。
+
 ## 当前阶段：Motion 真机反馈定向修整（2026-11-12）
 
 基线 `07a0bba`，继续 `feature/motion-interaction-quality`；已 fetch 核实 origin Motion/master 无新增，master 仍为 `e06d959`。用户已在真实 iPhone Safari 体验上一轮并提出退出闪烁、反馈偏弱及栏目切换慢，本轮不是重新设计或发布。
@@ -17,6 +37,17 @@
 typecheck/lint、126 单元、审批后的 production build、新场景定向 10 项、最终完整浏览器 **94/94** 及 LAN **2/2** 均通过。迁移/101 次保存原用例双引擎各重复三次 6/6 通过。默认 build 仍有 EPERM，未修改安全设置。Safari `.22s` 已转换为 220ms；radio 在恢复前禁用且按压不移动命中区；no-JS 用例已跟随隔离 baseURL，原断言保留。浮层抽样阅读区高度差 0、结束后运行中动画 0，未测真机 FPS。新 SHA CI 尚未触发，不沿用旧绿色结果。
 
 本地测试使用 `PLAYWRIGHT_PORT=3114` 避开另一个目录现存的 3100 服务，未终止它；CI 默认 3100 不变。录像/抽样位于忽略的 test-results，真机手感、VoiceOver 与生产验收待用户完成。详见 [Motion 实施与验收记录](MOTION_INTERACTION_UPGRADE.md)。
+## 当前阶段：Curriculum 3.0 首批基础课程（2026-11-12）
+
+本节覆盖下文快照。从 `e06d9597e380b75cd4ac5b88452c67e0b356611f`（`origin/master`，PR #4 合并提交）创建 `feature/curriculum-3-foundations`；未使用 Codex 的 Motion 分支，未进入 `D:\cyberpath` 工作区。
+
+本轮新增三节可学课程，编号 04–06：How Computers Work、Operating Systems Basics、Linux and the Command Line。旧 01–03 的 ID、题号、稳定记录与 IndexedDB 结构保持不变；原 5 节预告顺延为 07–11（ID/标题不变，仍为 unavailable）。三课均含 Technical/English Goals、完整章节、五题测验、Understand/Apply/Reason 三层练习（每个错误选项独立反馈）、可操作实验与重点词汇；实验 `cpu`/`os`/`terminal` 统一注册进实验中心，与课程入口共用同一组件实现。
+
+新增独立模拟器与回归：`cpu-sim`（取指/译码/执行、预测校验）、`os-sim`（FCFS/RR、时间片、等待时间）、`terminal-sim`（无真实进程的受限文件系统与 4 个任务）。`HistoryRepository.open()` 现会把旧档案归一到当前课程版本（补充新课程空记录，保留既有成绩/笔记/错题）并写入升级备份；浏览器探针验证旧 head 缺少新课程记录时可自动恢复。
+
+验证：typecheck、lint、build 通过；单元 19 文件 137 项全通过；Playwright Chromium + WebKit iPhone 98 项全通过（含新增 foundations 6×2、旧档案升级 1×2，以及既有全部用例）。未等待或轮询远程 CI；不 merge、不部署、不打标签。
+
+下一步：由用户验收英文难度、练习反馈与三课实验的真机触屏体验；后续按 Curriculum 3.0 模块继续扩展，不在本轮批量加课。
 
 ## 当前阶段：DNS Sample Integration & Reading Polish（2026-11-12）
 

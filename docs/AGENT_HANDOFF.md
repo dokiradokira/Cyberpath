@@ -77,6 +77,44 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，WebKit 实验室控件修复）
+
+- Previous Agent: DeepSeek Harness（合并提交 `863080e`）。
+- Current Development Phase: 仅修复 CI 唯一失败 `controls-v211`，不新增课程或重构。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修复前 `863080e`；本记录随独立修复提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 修复前干净；README 无未提交改动。
+- Latest Completed Task: 静态 HTML 的实验室控件在 React 水合前可点击，早期点击被丢弃导致 `step` 不变、重置保持 disabled。新增 `useLabReady()`（provider `ready` 为真后才启用），覆盖 TCP/DNS Stepper、CPU、调度与终端实验的输入与按钮。
+- Changed Files: 新增 `src/components/labs/use-lab-ready.ts`、`tests/e2e/lab-controls-hydration.spec.ts`；修改 `labs.tsx`、`cpu-lab.tsx`、`os-lab.tsx`、`terminal-lab.tsx`；更新本文件与 `docs/PROJECT_STATUS.md`。
+- Tests Actually Run: typecheck、lint、unit、build、定向 `controls-v211`/`lab-controls-hydration`/`foundations`/`app`、完整 e2e、LAN。
+- Test Results: 全部通过；单元 147、完整浏览器 **116/116**、LAN **2/2**。原断言未删除、跳过或放宽。
+- CI Status: 上一 SHA `863080e` 的 CI 失败；本次新提交推送后只查询一次状态，不持续轮询。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: 推送后为 0，以远端 SHA 核实。
+- Known Issues: WebKit 模拟不等于真机；其余实验的交互未改动。
+- Remaining Tasks: 推送后确认新 HEAD 的 CI。
+- Next Recommended Action: 若 CI 通过即可交用户真机复验；后续课程另开分支。
+- Important Warnings: 不要删除 `useLabReady` 门槛，否则冷启动 WebKit 仍可能丢失首次点击；不改课程/记录/schema。
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Foundations × Motion 合并）
+
+- Previous Agent: Codex（Motion 定向修整 `a91f3b3`，已随 PR #5 合入 master）。
+- Current Development Phase: Curriculum 3.0 Foundations 与 Motion 的整合，不新增课程。
+- Branch: `feature/curriculum-3-foundations`（原课程功能分支）。
+- HEAD: 合并前 `b3b387b`；合并目标 `origin/master` `00c2f02`（含 `a91f3b3`）。合并提交 SHA 用 `git log -1 --format="%H %s"` 查询，不预填。
+- Working Tree Status: 合并前干净；合并中仅文档冲突，代码自动合并；提交前含本记录与测试时序修正。
+- Latest Completed Task: 把 master 合入课程分支并逐项核对共享文件；保留 Motion 导航/浮层/动效与三课内容、实验、词汇、测验、旧档案升级。
+- Changed Files: 合并带入 Motion 的 `globals.css`、`shell`、`nav-feedback`、`motion`/`dns-motion`、`AnimatedDetails`、`annotated-text`、`quiz`、`chapter-navigation`、`dns-workshop`、Playwright 端口与 Motion 文档/测试；本分支保留 31 个课程/实验/存储/测试文件；冲突仅 `docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`；`tests/e2e/profile-upgrade.spec.ts` 增加预取等待。
+- Tests Actually Run: `npm run typecheck`、`npm run lint`、`npm test`、`npm run build`、`npm run test:e2e`、`npm run test:lan`。
+- Test Results: typecheck/lint/build 通过；单元 21 文件 147 项通过；完整浏览器 **114/114**；LAN **2/2**。首次 LAN 与完整浏览器并行时 WebKit 主题恢复失败一次，单独重跑通过，未删除或放宽断言。
+- CI Status: 本轮未等待/轮询远程 CI；推送后按合并提交 SHA 在 Actions 查询，不沿用旧绿色结果。
+- Uncommitted Changes: 提交后应为 0；以 `git status -sb` 核实。
+- Unpushed Commits: 合并提交推送后应为 0；以远端 SHA 核实。
+- Known Issues: WebKit 为模拟环境，真机 Safari 手感/VoiceOver 仍待用户验收；Motion 预取在 WebKit 硬导航中断时会产生控制台/页面错误噪声，产品 UI 不受影响，本轮仅在测试时序上规避。
+- Remaining Tasks: 用户真机复验三课实验与 Motion 交互；后续课程按模块另开分支。
+- Next Recommended Action: 合并提交普通 push 到课程分支，查询 CI；真机检查 04–06 实验、底部导航、词汇浮层层退出与 Reduce Motion。
+- Important Warnings: 不改旧课程/实验/测验 ID，不回退 `contentVersion` 与旧档案升级备份；不要用 ours/theirs 合并；不 merge master、不部署、不打标签、不强推。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion 定向修整）
 
 - Previous Agent: Codex（同任务续作，07a0bba）；当前唯一写入者继续 Codex。
@@ -114,6 +152,24 @@ git push origin feature/v2.2-learning-experience
 - Remaining Tasks: 提交/push 和新 SHA CI 状态核对，用户真机观感、VoiceOver 与生产验收。
 - Next Recommended Action: 在手机切换底栏、目录快速反向展开、Enter/Escape 重开词汇、观察 DNS miss/hit/负缓存、提交并重做测验；开关系统 Reduce Motion 比较。
 - Important Warnings: 保留 README；不改词汇/课程数据、规划、schema 和正式版本号；不 merge/部署/打标签/强推。录像与性能抽样属于忽略的测试产物，不提交。换 Agent 前确认本工作区已停止写入。
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Curriculum 3.0 基础三课）
+
+- Previous Agent: Codex（Motion & Interaction Upgrade，独立工作区 `D:\cyberpath`；本轮未读取、未修改）。
+- Current Development Phase: Curriculum 3.0 首批基础课程（Foundations A/B/C）。
+- Branch: `feature/curriculum-3-foundations`（从 `origin/master` 创建）。
+- HEAD: 提交前基线 `e06d9597e380b75cd4ac5b88452c67e0b356611f`；本记录随代码提交，其 SHA 用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。
+- Working Tree Status: 本轮提交前工作区干净；提交后、推送前无未提交改动。
+- Latest Completed Task: 新增 04 How Computers Work、05 Operating Systems Basics、06 Linux and the Command Line；三层练习、词汇、CPU/调度/终端三个共享实验、课程注册与旧档案升级。
+- Changed Files: 新增 `src/content/lessons/foundations.ts`、`src/lib/{cpu-sim,os-sim,terminal-sim}.ts`、`src/components/labs/{cpu-lab,os-lab,terminal-lab}.tsx`、`src/components/lessons/{lesson-goals,lesson-practice}.tsx`、`tests/{foundations,cpu-sim,os-sim,terminal-sim}.test.ts`、`tests/e2e/{foundations,profile-upgrade}.spec.ts`；修改 `src/types/index.ts`、`src/content/lessons/index.ts`、`src/content/vocabulary.ts`、`src/content/course-summaries.ts`、`src/components/lessons/lesson-view.tsx`、`src/components/labs/labs.tsx`、`src/lib/labs.ts`、`src/lib/storage.ts`、`src/lib/history-repository.ts`、`src/lib/study.ts`、`src/app/courses/page.tsx`、`src/components/overview.tsx`、`tests/{quiz,study}.test.ts`。
+- Tests Actually Run: `npm run typecheck`、`npm run lint`、`npm test`、`npm run build`、`npm run test:e2e`（Chromium + WebKit iPhone）。
+- Test Results: typecheck 通过；lint 通过；单元 19 文件 137 项通过；build 通过（6 条课程静态路径）；e2e 98 项通过（0 失败，未 skip）。
+- CI Status: 本轮按要求未等待或轮询远程 CI；push 后需按实际 SHA 在 GitHub Actions 重新核实，不能沿用旧运行结果。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: 推送后应为 0；以 `git status -sb` 与远端 SHA 为准。
+- Known Issues: 三个实验均为教学简化模型（单核、无流水线/缓存、无 I/O 与上下文切换开销）；WebKit 仅为模拟，真机触屏仍待人工验收；旧 DNS 实验仍为临时状态。
+- Remaining Tasks: 用户验收三课英文难度、反馈质量与手机实验操作；后续按 MOD-CF-03 / MOD-OS-01 / MOD-LNX-01 继续扩展。
+- Next Recommended Action: 先人工检查 390px 下终端输入、CPU 单步与调度时间轴，再决定下一批课程；保持「5 题测验 + 三层练习 + 实验双入口」契约。
+- Important Warnings: 共享文件 `lesson-view.tsx`、`labs.tsx`、`lib/labs.ts`、`overview.tsx`、`courses/page.tsx`、`vocabulary.ts`、`storage.ts`、`history-repository.ts`、`study.ts`、`course-summaries.ts` 与 Codex 分支存在冲突可能；合并时保留双方改动，不覆盖实验注册与档案升级逻辑，不改旧课程 ID/题号，不回退 `contentVersion`。
 
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 整合与阅读修整）
 

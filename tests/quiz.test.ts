@@ -1,8 +1,8 @@
 import { it, expect } from "vitest";
 import { availableLessons, lessons } from "../src/content/lessons";
 import { gradeQuiz } from "../src/lib/quiz";
-it("provides three complete lessons and five metadata previews", () => {
-  expect(availableLessons).toHaveLength(3);
+it("provides six complete lessons and five metadata previews", () => {
+  expect(availableLessons).toHaveLength(6);
   expect(lessons.filter((l) => !l.available)).toHaveLength(5);
   for (const l of availableLessons) {
     expect(l.sections.length).toBeGreaterThanOrEqual(6);
@@ -15,7 +15,7 @@ it("provides three complete lessons and five metadata previews", () => {
     }
   }
 });
-it("scores all three quizzes and identifies mistakes", () => {
+it("scores every quiz and identifies mistakes", () => {
   for (const l of availableLessons) {
     const answers = Object.fromEntries(l.quiz.map((q) => [q.id, q.answer]));
     expect(gradeQuiz(l.quiz, answers)).toEqual({ score: 5, incorrect: [] });

@@ -1,5 +1,5 @@
 import type { Progress, QuizAttempt } from "../types";
-import { initialProgress, parseProgress, STORAGE_KEY } from "./storage";
+import { initialProgress, parseProgress, STORAGE_KEY, upgradeProgress } from "./storage";
 import { saveAttempt, wrongQuestions, parseStudy } from "./study";
 import {
   aggregateAttempt,
@@ -79,8 +79,19 @@ export class HistoryRepository {
     this.expectedRaw = localStorage.getItem(STORAGE_KEY);
     this.raw = this.expectedRaw;
     if (existing) {
-      parseProgress(JSON.stringify(existing.profile));
       this.head = existing;
+      // A content revision may add lessons after this profile was saved. Normalize
+      // before anything reads data.lessons, otherwise the reader sees undefined
+      // records for the new lessons.
+      const upgraded = profileOnly(upgradeProgress(existing.profile));
+      if (JSON.stringify(upgraded) !== JSON.stringify(existing.profile)) {
+        try {
+          await this.commitUpgrade(upgraded);
+        } catch {
+          // Keep the normalized profile in memory; the next write persists it.
+          this.head = { ...existing, profile: upgraded };
+        }
+      }
       const backupTx = this.db.transaction("backups", "readonly");
       const backup = await request<{ raw: string } | undefined>(
         backupTx.objectStore("backups").get("legacy-source"),
@@ -103,6 +114,26 @@ export class HistoryRepository {
       true,
     );
     return this.view();
+  }
+  /** Persist a content-revision upgrade without touching stored quiz history. */
+  private async commitUpgrade(profile: Progress) {
+    const current = this.head;
+    const tx = this.db.transaction(["meta", "backups"], "readwrite");
+    const done = complete(tx);
+    tx.objectStore("backups").put({
+      id: `upgrade/${current.generation}/${current.revision}`,
+      head: current,
+      createdAt: new Date().toISOString(),
+    });
+    const next: Head = {
+      ...current,
+      profile,
+      revision: current.revision + 1,
+    };
+    tx.objectStore("meta").put(next);
+    await done;
+    this.head = next;
+    await this.mirror();
   }
   private view(): Progress {
     return { ...this.head.profile };

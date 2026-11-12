@@ -1,5 +1,6 @@
 import type { Lesson } from "../../types";
 import { dnsWorkshop } from "./dns-workshop";
+import { foundationsLessons } from "./foundations";
 export const lessons: Lesson[] = [
   {
     id: "network-foundations",
@@ -483,10 +484,14 @@ const previews = [
     "Connect your knowledge in a guided defensive scenario.",
   ],
 ];
+// Content revision 2 adds computing foundations after the published network
+// introduction. Existing IDs, numbers and questions are untouched; previews
+// keep their metadata and move behind the new available lessons.
+lessons.push(...foundationsLessons);
 previews.forEach(([id, title, zh, description], i) =>
   lessons.push({
     id,
-    number: i + 4,
+    number: i + 7,
     title,
     zh,
     description,

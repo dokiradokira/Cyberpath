@@ -1,4 +1,26 @@
-export type Vocabulary = { word: string; zh: string; definition: string };
+export type Vocabulary = {
+  word: string;
+  zh: string;
+  definition: string;
+  /** Optional usage sentence shown in the shared vocabulary detail panel. */
+  example?: string;
+  /** Alternate surface forms matched by the shared reading highlighter. */
+  aliases?: string[];
+};
+export type Exercise = {
+  level: "Understand" | "Apply" | "Reason";
+  prompt: string;
+  options: string[];
+  answer: number;
+  /** One targeted explanation per option, indexed like options. */
+  feedback: string[];
+};
+export type LessonBrief = {
+  prerequisites: string[];
+  technicalGoals: string[];
+  englishGoals: string[];
+  completion: string;
+};
 export type Question = {
   id: string;
   prompt: string;
@@ -16,6 +38,12 @@ export type Lesson = {
   available: boolean;
   /** Content revision where this lesson first became available; defaults to 1. */
   introducedIn?: number;
+  /** Display label for the course family shown in the reader header. */
+  category?: string;
+  brief?: LessonBrief;
+  exercises?: Exercise[];
+  /** Platform label and instructions for the hands-on command panel. */
+  practice?: { label: string; intro: string };
   objectives: string[];
   sections: {
     id: string;

@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { calculateSubnet } from "../../lib/subnet";
 import { labInfo, type LabId } from "../../lib/labs";
+import type { ComponentType } from "react";
+import { CpuLab } from "./cpu-lab";
+import { OsLab } from "./os-lab";
+import { TerminalLab } from "./terminal-lab";
+import { useLabReady } from "./use-lab-ready";
 export type { LabId } from "../../lib/labs";
 const tcpSteps = [
   "准备连接，尚未建立连接。",
@@ -36,11 +41,14 @@ function Stepper({
   max: number;
   setStep: (n: number) => void;
 }) {
+  // Static HTML renders these controls before React and the profile are ready.
+  // Keep them disabled until then so an early tap cannot be dropped.
+  const ready = useLabReady();
   return (
     <div className="step-controls">
       <button
         aria-label="上一步"
-        disabled={step === 0}
+        disabled={!ready || step === 0}
         onClick={() => setStep(step - 1)}
       >
         <ArrowLeft size={16} /> 上一步
@@ -50,14 +58,14 @@ function Stepper({
       </span>
       <button
         aria-label="下一步"
-        disabled={step === max}
+        disabled={!ready || step === max}
         onClick={() => setStep(step + 1)}
       >
         下一步 <ArrowRight size={16} />
       </button>
       <button
         aria-label="重置模拟"
-        disabled={step === 0}
+        disabled={!ready || step === 0}
         onClick={() => setStep(0)}
       >
         <RotateCcw size={16} /> 重置
@@ -314,7 +322,18 @@ export function NatLab() {
     </div>
   );
 }
+const labComponents = {
+  tcp: TcpLab,
+  dns: DnsLab,
+  subnet: SubnetLab,
+  nat: NatLab,
+  cpu: CpuLab,
+  os: OsLab,
+  terminal: TerminalLab,
+} satisfies Record<LabId, ComponentType<{ id?: string }>>;
+
 export function Lab({ id }: { id: LabId }) {
+  const Component = labComponents[id];
   return (
     <section className="panel lab-panel" id={`lab-${id}`}>
       <div className="section-heading">
@@ -324,15 +343,7 @@ export function Lab({ id }: { id: LabId }) {
         </div>
         <span className="badge">可交互</span>
       </div>
-      {id === "tcp" ? (
-        <TcpLab />
-      ) : id === "dns" ? (
-        <DnsLab />
-      ) : id === "subnet" ? (
-        <SubnetLab />
-      ) : (
-        <NatLab />
-      )}
+      <Component />
     </section>
   );
 }

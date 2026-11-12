@@ -186,6 +186,26 @@ const extras: [number, string, string, string, string][] = [
   ],
 ];
 export const wordEntries: WordEntry[] = [
+  {
+    id: "ttl",
+    word: "ttl",
+    zh: "生存时间",
+    definition:
+      "The maximum time a DNS record may be kept in a cache before it expires.",
+    example:
+      "At t=30, a record cached at t=0 with TTL 60 has 30 seconds remaining.",
+    lessonId: "dns-tcp-web",
+  },
+  {
+    id: "nxdomain",
+    word: "nxdomain",
+    zh: "名称不存在",
+    definition:
+      "A DNS response code indicating that the queried name does not exist.",
+    example:
+      "A cached NXDOMAIN response can persist briefly after a name is created.",
+    lessonId: "dns-tcp-web",
+  },
   ...availableLessons.flatMap((l) =>
     l.vocabulary.map((v) => ({
       ...v,

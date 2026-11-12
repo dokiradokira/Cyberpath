@@ -1,4 +1,5 @@
 import type { Lesson } from "../../types";
+import { dnsWorkshop } from "./dns-workshop";
 export const lessons: Lesson[] = [
   {
     id: "network-foundations",
@@ -499,5 +500,9 @@ previews.forEach(([id, title, zh, description], i) =>
     quiz: [],
   }),
 );
+// Upgrade the existing course; never rename its published IDs or re-use questions.
+const dnsSample = lessons.find((l) => l.id === "dns-tcp-web")!;
+dnsSample.sections.push(...dnsWorkshop.sections);
+dnsSample.minutes = 70;
 export const availableLessons = lessons.filter((l) => l.available);
 export const vocabulary = availableLessons.flatMap((l) => l.vocabulary);

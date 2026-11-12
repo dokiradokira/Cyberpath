@@ -12,6 +12,7 @@ import { Lab, type LabId } from "../labs/labs";
 import { useReading } from "../../hooks/use-reading";
 import { resolveSection } from "../../lib/reading";
 import { ChapterNavigation } from "./chapter-navigation";
+import { DnsGoals, DnsWorkshop } from "./dns-workshop";
 function Command({
   command,
   explanation,
@@ -96,6 +97,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           {lesson.zh} <span className="dot">·</span> 预计 {lesson.minutes} 分钟
         </p>
       </header>
+      {lesson.id === "dns-tcp-web" && <DnsGoals />}
       <ChapterNavigation lesson={lesson} active={active} onSelect={go} mobile />
       <nav className="chapter-controls" aria-label="章节切换">
         <button
@@ -172,9 +174,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               ))}
             </div>
           </section>
-          {lesson.labs.map((id) => (
-            <Lab key={id} id={id as LabId} />
-          ))}
+          {lesson.id === "dns-tcp-web" && <DnsWorkshop />}
+          {lesson.labs
+            .filter((id) => !(lesson.id === "dns-tcp-web" && id === "dns"))
+            .map((id) => (
+              <Lab key={id} id={id as LabId} />
+            ))}
           <section className="panel" id="practical-experiment">
             <p className="eyebrow">WINDOWS / 实践指导</p>
             <h2>动手实践</h2>

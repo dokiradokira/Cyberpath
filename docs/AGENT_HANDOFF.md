@@ -1,6 +1,6 @@
 # Agent Handoff
 
-适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 V2.2-B 词汇任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
+适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 Curriculum 3.0 DNS 样板任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
 
 先读 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md)、[安全工作流](SECURE_DEVELOPMENT_WORKFLOW.md)。历史报告只作对应时间/SHA 的证据；实际 Git、源码和同一 SHA 的 CI 优先核实。不得仅凭聊天重做已有功能。
 
@@ -76,6 +76,25 @@ git push origin feature/v2.2-learning-experience
 绝不修改 ACL、完整性级别、关闭安全机制或删除工作区来获得 Git 写入权限。工具正规逐命令审批可用时按授权使用；不支持则由人类执行。
 
 ## 交接记录
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 样板）
+
+- Previous Agent: DSH（现有最近交接记录）；本轮由用户交给 Codex。
+- Current Development Phase: Curriculum 3.0 首个高质量样板，增强现有 DNS 课程而非重复建课。
+- Branch: `feature/curriculum-3-dns-sample`。
+- HEAD: 提交前基线 `2d0cddf`；交接提交以 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。
+- Working Tree Status: 提交前为本轮 8 个源码/测试文件、3 个文档和用户 README 改动；README 不暂存。
+- Latest Completed Task: 阅读五份远端课程规划；五章正文、目标、三层练习、TTL/负缓存状态机及 SVG、两条新词接入原课程。
+- Changed Files: `src/components/lessons/{dns-workshop.tsx,lesson-view.tsx}`、`src/content/lessons/{dns-workshop.ts,index.ts}`、`src/content/vocabulary.ts`、`src/lib/dns-workshop.ts`、`tests/dns-workshop.test.ts`、`tests/e2e/dns-workshop.spec.ts`、`docs/{CURRICULUM_3_DNS_SAMPLE,PROJECT_STATUS,AGENT_HANDOFF}.md`。
+- Tests Actually Run: typecheck、lint、114 个单元、production build、DNS 定向 Chromium/WebKit 2 项、完整浏览器 78 项、LAN 2 项、Prettier 与文档路径/diff 检查，最终均通过。
+- Test Results: 上述已完成检查通过；定向首次 WebKit 未等待档案初始化而失败，等待现有 data-hydrated 后最终 2/2 通过。默认浏览器启动受阻未开始用例，后续走正规单命令审批，不修改安全设置。
+- CI Status: 提交前基线 `2d0cddf`；本轮 SHA 尚不存在，CI 未触发。推送后从 [Actions](https://github.com/dokiradokira/Cyberpath/actions) 按最终 SHA 查询，不预填通过。
+- Uncommitted Changes: 提交前包括上列本轮文件；交付后应仅保留用户 README 表格空格变更，重新执行 git status 核实。
+- Unpushed Commits: 提交前无本轮 commit；本次获准正常 push 新功能分支，实际结果以交付及远端 SHA 核实。
+- Known Issues: 实验固定 TTL、单 A 查询与单缓存，未模拟故障/serve-stale/DNSSEC；实验状态不跨刷新保存。真实手机、屏幕阅读器与新内容教学难度待人工验收。
+- Remaining Tasks: 核对推送后 CI，人工体验样板。
+- Next Recommended Action: 用户试做正缓存与负缓存两条实验，提交英文证据笔记后反馈课程节奏；再决定下一主题。
+- Important Warnings: 不合并规划分支、不改历史 schema/旧 ID；不覆盖或提交 README 用户改动；不 merge、部署、打标签。下一阶段须另获授权，切换前确认当前 Agent 停止写入。
 
 ### Agent Handoff — 2026-11-11 17:00 Asia/Shanghai（DSH，V2.3-A 在线访问准备）
 

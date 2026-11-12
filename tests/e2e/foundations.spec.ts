@@ -102,6 +102,13 @@ test("terminal lab completes the missions without running real commands", async 
   await page.goto("/courses/linux-command-line");
   const lab = page.locator("#lab-terminal");
   const input = lab.getByLabel("输入命令");
+  await lab
+    .getByRole("group", { name: "预测主目录" })
+    .getByRole("button", { name: "/home/student", exact: true })
+    .click();
+  await expect(lab.getByRole("status")).toContainText(
+    "Now run pwd to check your prediction",
+  );
   const commands = [
     "pwd",
     "ls -la",
@@ -116,6 +123,7 @@ test("terminal lab completes the missions without running real commands", async 
   }
   await expect(lab).toContainText("4 / 4 个任务完成");
   await expect(lab.getByRole("log")).toContainText("hello");
+  await expect(lab.getByRole("status")).toContainText("Correct: ~ expands");
   await lab.getByRole("button", { name: "重置实验" }).click();
   await expect(lab).toContainText("0 / 4 个任务完成");
 });

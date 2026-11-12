@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useRef, useState } from "react";
 import {
   createTerminal,
@@ -11,6 +11,8 @@ import {
 export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
   const [term, setTerm] = useState<TerminalState>(createTerminal);
   const [input, setInput] = useState("");
+  const [predicted, setPredicted] = useState("");
+  const [pwdRan, setPwdRan] = useState(false);
   const output = useRef<HTMLPreElement>(null);
   const missions = terminalMissions(term);
 
@@ -18,6 +20,7 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
     const line = input;
     setInput("");
     setTerm((current) => runCommand(current, line));
+    if (line.trim() === "pwd") setPwdRan(true);
     requestAnimationFrame(() => {
       if (output.current) output.current.scrollTop = output.current.scrollHeight;
     });
@@ -32,6 +35,29 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
         starts a real process or touches your computer. Complete the four
         missions with pwd, ls, mkdir, echo, cat and chmod.
       </p>
+
+      <div className="device-buttons" role="group" aria-label="预测主目录">
+        <span>先预测：在这个 shell 里，~ 指向哪个绝对路径？</span>
+        {["/", "/home/student", "/var/log"].map((option) => (
+          <button
+            key={option}
+            aria-pressed={predicted === option}
+            className={predicted === option ? "selected" : ""}
+            onClick={() => setPredicted(option)}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+      {predicted !== "" && (
+        <p role="status" lang="en">
+          {pwdRan
+            ? predicted === "/home/student"
+              ? "Correct: ~ expands to the home directory /home/student, which is why pwd prints that path."
+              : `Not quite: pwd printed /home/student, so ~ expands to /home/student rather than ${predicted}.`
+            : "Now run pwd to check your prediction."}
+        </p>
+      )}
 
       <pre
         ref={output}
@@ -97,6 +123,8 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
           onClick={() => {
             setTerm(createTerminal());
             setInput("");
+            setPredicted("");
+            setPwdRan(false);
           }}
         >
           重置实验

@@ -1,5 +1,34 @@
 # CyberPath 项目状态
 
+## 当前阶段：Foundations × Motion 合并整合（2026-11-12）
+
+本节覆盖下文各快照。`origin/master` 已含 Motion PR #5（合并提交 `00c2f02`，包含 `07a0bba` 与修复 `a91f3b3`）。本轮在 `feature/curriculum-3-foundations` 合入 `origin/master`：保留 Motion 的导航预取与 pending 反馈、词汇浮层退出修复、动效 tokens 与 AnimatedDetails，以及三节基础课程（04–06）、三个共享实验、词汇、三层练习与测验；旧课程/实验/测验 ID、IndexedDB schema 与 `contentVersion` 均未变。
+
+冲突仅出现在 `docs/PROJECT_STATUS.md` 与 `docs/AGENT_HANDOFF.md`：按两侧记录逐段合并并新增本节，未使用 ours/theirs 整树覆盖。源码自动合并后逐项核对共享文件：`lesson-view.tsx` 的三课目标/练习/实验深链、`labs.tsx` 与 `labs.ts` 的 cpu/os/terminal 注册、`overview.tsx` 与 `courses/page.tsx` 的计数、`vocabulary.ts` 的 example 回退、`storage.ts` 与 `history-repository.ts` 的旧档案补齐与升级备份均保留；Motion 对 `annotated-text`、`quiz`、`chapter-navigation`、`shell` 的改动及其用例未见行为回归。
+
+唯一兼容修正：`tests/e2e/profile-upgrade.spec.ts` 在两次硬导航前等待 Motion 预取完成，避免 WebKit 把被中断的 `_rsc` 预取记为页面错误；该错误与档案升级无关，属测试时序调整，不是产品行为变更。
+
+验证：typecheck、lint、build 通过；单元 21 文件 147 项通过；完整浏览器 Chromium + WebKit iPhone **114/114**；LAN **2/2**（首次与完整浏览器并行运行时 WebKit 主题恢复出现一次时序失败，单独重跑通过，未放宽断言）。未等待或轮询远程 CI；不 merge master、不部署、不打标签。
+
+下一步：用户在真机 Safari 复验三课实验、Motion 导航与词汇浮层；后续课程扩展另开分支。
+
+## 当前阶段：Motion 真机反馈定向修整（2026-11-12）
+
+基线 `07a0bba`，继续 `feature/motion-interaction-quality`；已 fetch 核实 origin Motion/master 无新增，master 仍为 `e06d959`。用户已在真实 iPhone Safari 体验上一轮并提出退出闪烁、反馈偏弱及栏目切换慢，本轮不是重新设计或发布。
+
+已复现并修复退出 WAAPI 默认 fill:none 在 React 卸载前恢复 opacity=1 的结束帧问题；保留透明末帧并正确管理取消/重开。增强共用位移/缩放、底栏与 DNS 反馈，不增加时长；五个主栏目预取及真实 pending 即时提示，标题保持可读的轻切换。数据/schema/版本/课程不变，README 用户修改排除提交。
+
+本地 typecheck/lint、127 单元、审批后的 production build、新增定向 6 项、相关修正定向 6 项、最终完整浏览器 **100/100** 及 LAN **2/2** 通过。首轮 98/100，分别修正 WebKit 硬替换文档中断预取的导航测试路径、收藏筛选早于档案恢复的同步；保留全部断言。详见 [Motion 定向修整](MOTION_REFINEMENT.md)。受控 RSC +150ms、每组 3 次：点击至内容提交中位数 Chromium 210.3→61.2ms，WebKit 382→199ms；不是真机 FPS 结论。此轮真机/VoiceOver 尚待复验，新提交 CI 未触发；不 merge、部署或打标签。
+
+## 当前阶段：Motion & Interaction Quality Upgrade（2026-11-12）
+
+基线 `origin/master e06d959` 已包含 DNS 修复 `50b135c`（PR #4）；本轮独立分支 `feature/motion-interaction-quality`，保留 README 用户改动，不包含在提交中。没有 merge/部署/标签，package 保持 2.2.0，课程/词汇内容与 IndexedDB schema 未改。
+
+实现五类实际交互：底部导航共享移动指示条与 Shell 连续性；课程卡片按压/聚焦、可中断目录展开与章节标题揭示；词汇浮层 presence 进退、即时 inert 与焦点恢复；DNS 因果路径回放、缓存有效/过期/负缓存状态与稳定观察区；测验忙碌态、保存期间锁定输入、真实保存后结果揭示及焦点。共享 motion tokens 和 WAAPI 取消/reduce 管理，无新依赖或常驻动效。
+
+typecheck/lint、126 单元、审批后的 production build、新场景定向 10 项、最终完整浏览器 **94/94** 及 LAN **2/2** 均通过。迁移/101 次保存原用例双引擎各重复三次 6/6 通过。默认 build 仍有 EPERM，未修改安全设置。Safari `.22s` 已转换为 220ms；radio 在恢复前禁用且按压不移动命中区；no-JS 用例已跟随隔离 baseURL，原断言保留。浮层抽样阅读区高度差 0、结束后运行中动画 0，未测真机 FPS。新 SHA CI 尚未触发，不沿用旧绿色结果。
+
+本地测试使用 `PLAYWRIGHT_PORT=3114` 避开另一个目录现存的 3100 服务，未终止它；CI 默认 3100 不变。录像/抽样位于忽略的 test-results，真机手感、VoiceOver 与生产验收待用户完成。详见 [Motion 实施与验收记录](MOTION_INTERACTION_UPGRADE.md)。
 ## 当前阶段：Curriculum 3.0 首批基础课程（2026-11-12）
 
 本节覆盖下文快照。从 `e06d9597e380b75cd4ac5b88452c67e0b356611f`（`origin/master`，PR #4 合并提交）创建 `feature/curriculum-3-foundations`；未使用 Codex 的 Motion 分支，未进入 `D:\cyberpath` 工作区。

@@ -92,6 +92,11 @@ test("saved flashcards finish a round, restart and preserve mastery on reload", 
     }
   }, p);
   await page.goto("/vocabulary");
+  // The saved filter depends on the asynchronously restored profile. Wait for
+  // its actual data before changing a filter that otherwise moves the controls.
+  await expect(
+    page.getByRole("heading", { name: "2 个收藏", exact: true }),
+  ).toBeVisible();
   await page.getByLabel("学习状态", { exact: true }).selectOption("saved");
   await page.getByRole("button", { name: "闪卡复习", exact: true }).click();
   const card = page.getByRole("region", { name: "词汇复习卡片" });

@@ -1,6 +1,6 @@
 # Agent Handoff
 
-适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 Curriculum 3.0 DNS 样板任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
+适用于 Codex 与 DeepSeek Harness（DSH）交替维护同一个 CyberPath 仓库。当前写入者：Codex（本轮 Motion & Interaction 任务）；下一写入者待负责人指定。写入权由负责人确认移交，文档不是互斥锁，也不能证明另一工具已停止。
 
 先读 [AGENTS.md](../AGENTS.md)、[PROJECT_STATUS.md](PROJECT_STATUS.md)、[安全工作流](SECURE_DEVELOPMENT_WORKFLOW.md)。历史报告只作对应时间/SHA 的证据；实际 Git、源码和同一 SHA 的 CI 优先核实。不得仅凭聊天重做已有功能。
 
@@ -77,6 +77,62 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Foundations × Motion 合并）
+
+- Previous Agent: Codex（Motion 定向修整 `a91f3b3`，已随 PR #5 合入 master）。
+- Current Development Phase: Curriculum 3.0 Foundations 与 Motion 的整合，不新增课程。
+- Branch: `feature/curriculum-3-foundations`（原课程功能分支）。
+- HEAD: 合并前 `b3b387b`；合并目标 `origin/master` `00c2f02`（含 `a91f3b3`）。合并提交 SHA 用 `git log -1 --format="%H %s"` 查询，不预填。
+- Working Tree Status: 合并前干净；合并中仅文档冲突，代码自动合并；提交前含本记录与测试时序修正。
+- Latest Completed Task: 把 master 合入课程分支并逐项核对共享文件；保留 Motion 导航/浮层/动效与三课内容、实验、词汇、测验、旧档案升级。
+- Changed Files: 合并带入 Motion 的 `globals.css`、`shell`、`nav-feedback`、`motion`/`dns-motion`、`AnimatedDetails`、`annotated-text`、`quiz`、`chapter-navigation`、`dns-workshop`、Playwright 端口与 Motion 文档/测试；本分支保留 31 个课程/实验/存储/测试文件；冲突仅 `docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`；`tests/e2e/profile-upgrade.spec.ts` 增加预取等待。
+- Tests Actually Run: `npm run typecheck`、`npm run lint`、`npm test`、`npm run build`、`npm run test:e2e`、`npm run test:lan`。
+- Test Results: typecheck/lint/build 通过；单元 21 文件 147 项通过；完整浏览器 **114/114**；LAN **2/2**。首次 LAN 与完整浏览器并行时 WebKit 主题恢复失败一次，单独重跑通过，未删除或放宽断言。
+- CI Status: 本轮未等待/轮询远程 CI；推送后按合并提交 SHA 在 Actions 查询，不沿用旧绿色结果。
+- Uncommitted Changes: 提交后应为 0；以 `git status -sb` 核实。
+- Unpushed Commits: 合并提交推送后应为 0；以远端 SHA 核实。
+- Known Issues: WebKit 为模拟环境，真机 Safari 手感/VoiceOver 仍待用户验收；Motion 预取在 WebKit 硬导航中断时会产生控制台/页面错误噪声，产品 UI 不受影响，本轮仅在测试时序上规避。
+- Remaining Tasks: 用户真机复验三课实验与 Motion 交互；后续课程按模块另开分支。
+- Next Recommended Action: 合并提交普通 push 到课程分支，查询 CI；真机检查 04–06 实验、底部导航、词汇浮层层退出与 Reduce Motion。
+- Important Warnings: 不改旧课程/实验/测验 ID，不回退 `contentVersion` 与旧档案升级备份；不要用 ours/theirs 合并；不 merge master、不部署、不打标签、不强推。
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion 定向修整）
+
+- Previous Agent: Codex（同任务续作，07a0bba）；当前唯一写入者继续 Codex。
+- Current Development Phase: Motion 真机反馈定向修整，不进入其他阶段。
+- Branch: `feature/motion-interaction-quality`。
+- HEAD: 提交前基线 `07a0bba`；最终交接提交通过 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 查询，未预填不存在 SHA。
+- Working Tree Status: 本轮源码/测试/文档与原 README 用户修改；README 不暂存。
+- Latest Completed Task: 退出结束帧闪烁复现/修复；主栏目预取、即时 pending；加强位移/缩放/底栏与 DNS 反馈；分阶段导航对照采样。
+- Changed Files: motion.ts、globals.css、Shell、NavFeedback；motion-runtime 单元、motion-refinement e2e、app 导航 e2e、vocabulary-learning 档案恢复同步；MOTION_REFINEMENT、PROJECT_STATUS、AGENT_HANDOFF。
+- Tests Actually Run: typecheck、lint、127 unit、审批后 production build、定向浏览器 6 项、LAN 2 项、完整浏览器回归；diff/敏感文件/产物范围检查在提交前执行。
+- Test Results: 静态/127 单元/build/新增定向 6 项/LAN 2 项均通过；最终完整回归 **100/100**，5.9 分钟。首轮 98/100，WebKit 硬替换文档中断预取产生访问控制误报、收藏筛选早于档案恢复造成点击位置变化；分别改为实际课程入口及等待真实收藏数据，保留全部断言，不过滤异常。修复两用例及退出期间快速重开双引擎定向 6/6。基线双引擎已复现结束帧 opacity=1，修复后为 0。
+- CI Status: 本轮新提交尚未创建，未触发；推送后按最终 SHA 在 [Actions](https://github.com/dokiradokira/Cyberpath/actions) 查询，不持续等待、不沿用旧绿色记录。
+- Uncommitted Changes: 提交前为上述本轮文件及 README；本轮提交后应只余用户 README，以最终 git status 核实。
+- Unpushed Commits: 本轮提交尚未创建；基线已与 origin 同步；已获准普通 push 当前 Motion 分支。
+- Known Issues: 默认沙箱 EPERM 未重新排查；本轮 build/browser 走正规单命令审批，无安全设置变更。WebKit 模拟不代表真实 iPhone Safari 合成/触感验收；无 FPS 声称。
+- Remaining Tasks: 提交/普通 push、按新 SHA 查询 CI；用户真机复验。
+- Next Recommended Action: iPhone Safari 连续开关/切换词汇、滚动后关闭、快速重开；首次/重复点底栏，观察即时反馈；卡片及 DNS 查询/TTL/负缓存，比较 Reduce Motion。
+- Important Warnings: 保留 README；不改课程/词汇内容、IndexedDB/备份格式和正式版本号；不合并/部署/标签/强推。3114 为本轮隔离测试端口，未停止独立 DSH 目录服务。交接前停止本工作区写入。
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，Motion & Interaction）
+
+- Previous Agent: Codex（DNS 修整 50b135c）。
+- Current Development Phase: Motion & Interaction Quality Upgrade。
+- Branch: `feature/motion-interaction-quality`。
+- HEAD: 提交前基线 `e06d959`；交接提交用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。master 已包含 DNS PR #4，未在本轮合并。
+- Working Tree Status: 提交前为本轮源码/测试/文档及原 README 用户改动；README 排除提交。
+- Latest Completed Task: Motion tokens；导航、卡片/目录、词汇浮层、DNS 回放、测验保存/结果五类接入；WebKit CSS 秒/毫秒解析修复。
+- Changed Files: globals.css；Shell、AnnotatedText、ChapterNavigation、DnsWorkshop、Quiz、use-reading；新增 motion/dns-motion 工具、presence hook、AnimatedDetails；两个单元文件和 motion e2e；Playwright 可选端口；Motion 报告/PROJECT_STATUS/AGENT_HANDOFF。
+- Tests Actually Run: typecheck、lint、126 unit、production build、新场景定向 10 项、SSR/导航定向 4 项、迁移原用例重复 6 项、最终完整浏览器 94 项、LAN 2 项；格式/链接/diff/敏感文件与产物范围检查。
+- Test Results: 最终上述均通过，完整 94/94、LAN 2/2，无 lint warning。默认 build 的 `.next-v2/server/app/labs` mkdir EPERM 保留记录；构建/浏览器按正规单命令审批执行，未改系统权限。首轮 WebKit 动效因 CSS 时间单位过快、后续 no-JS 固定端口、radio 恢复/按压命中问题均如实记录并修复；未删/跳过/放宽旧断言。浮层高度差 0、结束后运行中动画 0，原始 JSON/录像位于 test-results。
+- CI Status: 新提交尚未创建，CI 未触发；推送后按最终 SHA 查询 [Actions](https://github.com/dokiradokira/Cyberpath/actions)，不持续等待、不预填成功。
+- Uncommitted Changes: 本轮提交后应只余 README 用户空格修改，以交付时 git status 核实。
+- Unpushed Commits: 提交前本阶段无新 commit；本轮已获准普通 push 新 Motion 分支，最终同步以远端 SHA 核实。
+- Known Issues: 默认 Windows build EPERM；真实 iPhone/VoiceOver/生产环境尚未验收，不把 WebKit 模拟或无头抽样当作 FPS 认证。3100 为独立 D:\cyberpath-dsh Next 服务占用，未停止或写入其目录，本轮改用 3114。
+- Remaining Tasks: 提交/push 和新 SHA CI 状态核对，用户真机观感、VoiceOver 与生产验收。
+- Next Recommended Action: 在手机切换底栏、目录快速反向展开、Enter/Escape 重开词汇、观察 DNS miss/hit/负缓存、提交并重做测验；开关系统 Reduce Motion 比较。
+- Important Warnings: 保留 README；不改词汇/课程数据、规划、schema 和正式版本号；不 merge/部署/打标签/强推。录像与性能抽样属于忽略的测试产物，不提交。换 Agent 前确认本工作区已停止写入。
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Curriculum 3.0 基础三课）
 
 - Previous Agent: Codex（Motion & Interaction Upgrade，独立工作区 `D:\cyberpath`；本轮未读取、未修改）。

@@ -7,6 +7,11 @@ test("older IndexedDB profiles gain records for the new lessons", async ({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/progress");
   await expect(page.locator("html")).toHaveAttribute("data-hydrated", "true");
+  // Let Motion's route prefetches settle: WebKit reports an aborted prefetch as a
+  // page error when the document is reloaded mid-flight, unrelated to the
+  // profile upgrade under test.
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(400);
   await page.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open("cyberpath.learning.v1", 1);
@@ -40,6 +45,8 @@ test("older IndexedDB profiles gain records for the new lessons", async ({
   });
   await page.reload();
   await expect(page.getByRole("heading", { name: "学习进度" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(400);
   await page.goto("/");
   await expect(page.locator(".path-list a")).toHaveCount(6);
   expect(errors).toEqual([]);

@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "../animated-details";
 import type { Lesson } from "../../types";
 
 export function ChapterNavigation({
@@ -31,10 +32,9 @@ export function ChapterNavigation({
     </nav>
   );
   return mobile ? (
-    <details className="mobile-chapters">
-      <summary>本课章节</summary>
+    <AnimatedDetails className="mobile-chapters" summary="本课章节">
       {links}
-    </details>
+    </AnimatedDetails>
   ) : (
     <aside className="lesson-toc">
       <h2>本课章节</h2>

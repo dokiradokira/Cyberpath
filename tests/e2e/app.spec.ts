@@ -8,16 +8,21 @@ test("navigation, real lessons, previews, and error-free console", async ({
   page.on("console", (msg) => {
     if (msg.type() === "error") errors.push(msg.text());
   });
+  const nav = page.getByRole("navigation", { name: "主导航" });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "学习概览" })).toBeVisible();
-  await page.getByRole("link", { name: "课程目录", exact: true }).click();
+  await nav.getByRole("link", { name: "课程目录", exact: true }).click();
   await expect(page.getByText("即将推出", { exact: true })).toHaveCount(5);
   for (const slug of slugs) {
-    await page.goto(`/courses/${slug}`);
+    // Exercise the real course navigation. Replacing the document while Next is
+    // prefetching makes WebKit report cancelled same-origin requests as page errors.
+    await page.locator(`.course-card a[href="/courses/${slug}"]`).click();
     await expect(
       page.getByRole("heading", { name: "知识测验", exact: true }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "提交测验" })).toBeDisabled();
+    if (slug !== slugs.at(-1))
+      await nav.getByRole("link", { name: "课程目录", exact: true }).click();
   }
   await page.getByRole("link", { name: "互动实验", exact: true }).click();
   await expect(page.getByRole("heading", { name: "互动实验" })).toBeVisible();

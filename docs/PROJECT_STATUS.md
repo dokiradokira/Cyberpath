@@ -12,6 +12,8 @@
 
 下一步：用户在真机 Safari 复验三课实验、Motion 导航与词汇浮层；后续课程扩展另开分支。
 
+课程开发与验收自本轮起统一遵循 [Curriculum Quality Standard 1.0](CURRICULUM_QUALITY_STANDARD.md)：新课程与改动课程须同时通过技术门（typecheck/lint/build/unit/e2e/LAN/存储兼容/移动端/CI）与教育门（准确性、深度、零基础可读性、英文注释、先修链、实验、测评），评分 ≥85 且无强制阻断项。
+
 ### CI 修复：实验室控件在水合前禁用（2026-11-12）
 
 CI 唯一失败为 WebKit 的 `controls-v211`：`/labs` 的静态 HTML 已把「下一步」渲染为可点，但 React 向该子树附加处理器之前，自动化/触屏的首次点击会被丢弃，`step` 停在 0，因此「重置模拟」保持 disabled（进度仍显示初始 `1 / 4`）。同样机制在完整回归中还造成 CPU 实验首个输入被水合覆盖。

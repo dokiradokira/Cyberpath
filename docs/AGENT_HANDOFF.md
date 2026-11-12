@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，课程质量标准归档）
+
+- Previous Agent: DeepSeek Harness（CI 修复 `0d36a35`）。
+- Current Development Phase: 纯文档归档 Curriculum Quality Standard 1.0，不改课程与业务代码。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 提交前基线 `0d36a35`；本记录随文档提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 提交前干净，无 README 修改。
+- Latest Completed Task: 新增 `docs/CURRICULUM_QUALITY_STANDARD.md`（ positioning、深度、支架、技术英语、课程结构、实验、测评、100 分评分、双门禁、持续改进，以及仓库落地映射/评审清单）；`AGENTS.md` 与 `PROJECT_STATUS.md` 增加强制阅读入口。
+- Changed Files: `docs/CURRICULUM_QUALITY_STANDARD.md`（新增）、`AGENTS.md`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: 文档链接/路径/标题结构检查；未跑业务测试（纯文档变更，未改代码）。
+- Test Results: 文档内相对链接与引用路径均存在；标题层级与评分表完整。
+- CI Status: 本阶段未推送，无新 CI；上一条修复提交的 CI 状态以 GitHub 实际结果为准。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: `0d36a35` 已推送；本次文档提交未获本阶段 push 授权，保持本地。
+- Known Issues: 标准是规范性文档，正式发布前仍需按技术门在 CI 验证。
+- Remaining Tasks: 用户确认后可普通 push 该文档提交；下一课程按标准执行并留评审记录。
+- Next Recommended Action: 新课程开工前先读标准附录 A，再按附录 B 双门禁准备证据。
+- Important Warnings: 标准不追溯改写已稳定课程；不得以“字数”替代教学深度；实验必须保留共享实现与简化模型说明。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，WebKit 实验室控件修复）
 
 - Previous Agent: DeepSeek Harness（合并提交 `863080e`）。

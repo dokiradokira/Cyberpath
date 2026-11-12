@@ -163,37 +163,37 @@ export const lessons: Lesson[] = [
       {
         id: "dns-records",
         title: "DNS: names to addresses",
-        text: "The Domain Name System (DNS) lets applications look up records for names such as example.com. A records contain IPv4 addresses and AAAA records contain IPv6 addresses. DNS also supports other records, including mail routing information. A domain name and a complete URL are different: a URL also includes a scheme and may include a port, path, and query. DNS does not download the web page.",
+        text: "The Domain Name System (DNS) lets applications look up records for names such as example.com. A records contain IPv4 addresses and AAAA records contain IPv6 addresses. DNS also supports other records, including mail routing information.\n\nA domain name and a complete URL are different: a URL also includes a scheme and may include a port, path, and query. DNS does not download the web page.",
       },
       {
         id: "dns-lookup",
         title: "Follow a DNS lookup",
-        text: "The browser and operating system may already have a cached answer. Otherwise, a recursive resolver checks its cache and, if needed, asks the DNS hierarchy. A root server refers it to a top-level domain (TLD) server; the TLD server refers it to an authoritative server. The authoritative server provides the relevant record, or a negative answer if it does not exist. The resolver returns the result and caches it according to its time to live (TTL). Cached answers can skip several of these steps. This is a simplified model; aliases and delegated zones can require extra queries.",
+        text: "The browser and operating system may already have a cached answer. Otherwise, a recursive resolver checks its cache and, if needed, asks the DNS hierarchy.\n\nA root server refers it to a top-level domain (TLD) server; the TLD server refers it to an authoritative server. The authoritative server provides the relevant record, or a negative answer if it does not exist.\n\nThe resolver returns the result and caches it according to its time to live (TTL). Cached answers can skip several of these steps. This is a simplified model; aliases and delegated zones can require extra queries.",
       },
       {
         id: "tcp-reliability",
         title: "TCP: an ordered byte stream",
-        text: "Transmission Control Protocol (TCP) provides a reliable, ordered byte stream between endpoints. Sequence numbers track bytes, acknowledgments indicate receipt, and lost data can be retransmitted. TCP also manages flow control and congestion. It cannot guarantee that a disconnected peer will return, and applications still need to handle errors. TCP is a transport mechanism, not encryption.",
+        text: "Transmission Control Protocol (TCP) provides a reliable, ordered byte stream between endpoints. Sequence numbers track bytes, acknowledgments indicate receipt, and lost data can be retransmitted.\n\nTCP also manages flow control and congestion. It cannot guarantee that a disconnected peer will return, and applications still need to handle errors. TCP is a transport mechanism, not encryption.",
       },
       {
         id: "tcp-handshake",
         title: "The three-way handshake",
-        text: "A client starts with SYN and an initial sequence number. The server responds with SYN-ACK, acknowledging the client's sequence number and proposing its own. The client replies with ACK. In the ordinary successful case, both sides can now exchange application data. SYN means synchronize; ACK means acknowledgment. The diagram here models connection setup only, not actual packets, retransmission timers, or all TCP states.",
+        text: "A client starts with SYN and an initial sequence number. The server responds with SYN-ACK, acknowledging the client's sequence number and proposing its own. The client replies with ACK. In the ordinary successful case, both sides can now exchange application data.\n\nSYN means synchronize; ACK means acknowledgment. The diagram here models connection setup only, not actual packets, retransmission timers, or all TCP states.",
       },
       {
         id: "udp-transport",
         title: "UDP and transport choices",
-        text: "User Datagram Protocol (UDP) sends individual datagrams without TCP's connection setup or built-in ordered retransmission. This can suit real-time media and protocols that implement their own control. UDP does not mean an application must be unreliable: QUIC implements reliability and congestion control over UDP. HTTP/1.1 and HTTP/2 generally use TCP; HTTP/3 uses QUIC over UDP. Protocol overhead alone does not determine real-world speed.",
+        text: "User Datagram Protocol (UDP) sends individual datagrams without TCP's connection setup or built-in ordered retransmission. This can suit real-time media and protocols that implement their own control.\n\nUDP does not mean an application must be unreliable: QUIC implements reliability and congestion control over UDP. HTTP/1.1 and HTTP/2 generally use TCP; HTTP/3 uses QUIC over UDP. Protocol overhead alone does not determine real-world speed.",
       },
       {
         id: "https-tls",
         title: "HTTP, HTTPS, and TLS",
-        text: "HTTP is an application protocol for exchanging requests and responses. HTTPS protects HTTP communication with TLS. TLS encrypts traffic, detects tampering, and normally authenticates a server using certificates and a trusted name check. It does not guarantee that the website is honest, free of malware, or safe to give personal information to. HTTP/3 integrates TLS 1.3 with QUIC, so its setup differs from a separate TCP handshake followed by TLS.",
+        text: "HTTP is an application protocol for exchanging requests and responses. HTTPS protects HTTP communication with TLS. TLS encrypts traffic, detects tampering, and normally authenticates a server using certificates and a trusted name check.\n\nIt does not guarantee that the website is honest, free of malware, or safe to give personal information to. HTTP/3 integrates TLS 1.3 with QUIC, so its setup differs from a separate TCP handshake followed by TLS.",
       },
       {
         id: "browser-request",
         title: "How a browser loads a website",
-        text: "For a fresh HTTPS request over HTTP/2, the browser resolves the name, establishes TCP, negotiates TLS, sends an HTTP request, and receives a response. It parses HTML and requests resources such as CSS, JavaScript, and images, then lays out and paints the page. Caches and reused connections can skip work; HTTP/3 uses QUIC instead of TCP. A page often requires many requests to multiple origins. Developer Tools can help you observe those requests.",
+        text: "For a fresh HTTPS request over HTTP/2, the browser resolves the name, establishes TCP, negotiates TLS, sends an HTTP request, and receives a response. It parses HTML and requests resources such as CSS, JavaScript, and images, then lays out and paints the page.\n\nCaches and reused connections can skip work; HTTP/3 uses QUIC instead of TCP. A page often requires many requests to multiple origins. Developer Tools can help you observe those requests.",
       },
     ],
     vocabulary: [

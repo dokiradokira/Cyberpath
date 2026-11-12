@@ -14,6 +14,7 @@ import {
   LibraryBig,
 } from "lucide-react";
 import { useLearning } from "../learning-provider";
+import { APP_VERSION } from "../../lib/version";
 const links = [
   { href: "/", label: "学习首页", icon: LayoutDashboard },
   { href: "/courses", label: "课程目录", icon: BookOpen },
@@ -35,7 +36,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span className="brand-icon">
             <ShieldCheck size={25} />
           </span>
-          CyberPath<span className="version">V2.1.1</span>
+          CyberPath<span className="version">V{APP_VERSION}</span>
         </Link>
         <p className="nav-label">你的学习空间</p>
         <nav aria-label="主导航">

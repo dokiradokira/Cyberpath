@@ -233,7 +233,7 @@ export function Overview() {
               <span>SERVER</span>
               <b>SYN →</b>
             </div>
-            <small>4 个交互模拟 · 无需安装环境</small>
+            <small>本地交互模拟 · 无需安装环境</small>
           </section>
           <section className="panel next-lesson">
             <p className="eyebrow">下一课</p>

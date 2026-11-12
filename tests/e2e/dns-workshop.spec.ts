@@ -36,11 +36,21 @@ test("DNS sample supports prediction, stale answers, expiry and negative caching
   await query("192.0.2.20");
   await expect(lab.getByRole("status")).toContainText("authority");
   const exercise = page.getByRole("region", { name: "Apply exercise" });
-  await exercise.getByRole("button").nth(0).click();
+  await exercise
+    .getByRole("button", {
+      name: "Only the new address, because updates push to all caches",
+      exact: true,
+    })
+    .click();
   await expect(exercise.getByRole("status")).toContainText(
     "does not invalidate",
   );
-  await exercise.getByRole("button").nth(1).click();
+  await exercise
+    .getByRole("button", {
+      name: "The old address with 30 seconds remaining",
+      exact: true,
+    })
+    .click();
   await expect(exercise.getByRole("status")).toContainText("Correct");
   await page.setViewportSize({ width: 375, height: 850 });
   expect(

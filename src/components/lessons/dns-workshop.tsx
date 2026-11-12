@@ -12,41 +12,53 @@ import { Vocabulary } from "./vocabulary";
 import { wordEntries } from "../../content/vocabulary";
 export function DnsGoals() {
   return (
-    <section className="panel">
-      <h2>Before you start</h2>
-      <ul>
-        {dnsWorkshop.prerequisites.map((t) => (
-          <li key={t} lang="en">
-            {t}
-          </li>
-        ))}
-      </ul>
-      <h2>Technical Goals</h2>
-      <ul>
-        {dnsWorkshop.technicalGoals.map((t) => (
-          <li key={t} lang="en">
-            {t}
-          </li>
-        ))}
-      </ul>
-      <h2>English Goals</h2>
-      <ul>
-        {dnsWorkshop.englishGoals.map((t) => (
-          <li key={t} lang="en">
-            {t}
-          </li>
-        ))}
-      </ul>
+    <div className="learning-brief">
+      {[
+        {
+          id: "prerequisites",
+          title: "Before you start",
+          items: dnsWorkshop.prerequisites,
+        },
+        {
+          id: "technical-goals",
+          title: "Technical Goals",
+          items: dnsWorkshop.technicalGoals,
+        },
+        {
+          id: "english-goals",
+          title: "English Goals",
+          items: dnsWorkshop.englishGoals,
+        },
+      ].map((group) => (
+        <section
+          className="learning-block"
+          key={group.id}
+          aria-labelledby={group.id}
+        >
+          <h2 id={group.id} lang="en">
+            {group.title}
+          </h2>
+          <ul>
+            {group.items.map((t) => (
+              <li key={t} lang="en">
+                <AnnotatedText text={t} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
       <p>
         完成标准：用时间和 TTL 解释两次地址不一致，再用英文写出一个不能从 DNS
         推断的结论。无需真实网络访问。
       </p>
-      {wordEntries
-        .filter((w) => ["ttl", "nxdomain"].includes(w.id))
-        .map((w) => (
-          <Vocabulary key={w.id} item={w} />
-        ))}
-    </section>
+      <div className="vocabulary-grid">
+        {wordEntries
+          .filter((w) => ["ttl", "nxdomain"].includes(w.id))
+          .map((w) => (
+            <Vocabulary key={w.id} item={w} />
+          ))}
+      </div>
+    </div>
   );
 }
 function Exercise({ index }: { index: number }) {
@@ -55,7 +67,9 @@ function Exercise({ index }: { index: number }) {
   return (
     <section className="panel" aria-label={`${q.level} exercise`}>
       <h3>{q.level}</h3>
-      <p lang="en">{q.prompt}</p>
+      <p lang="en">
+        <AnnotatedText text={q.prompt} />
+      </p>
       <div className="meaning-options">
         {q.options.map((o, i) => (
           <button
@@ -70,13 +84,14 @@ function Exercise({ index }: { index: number }) {
       </div>
       {choice !== null && (
         <p role="status" lang="en">
-          {choice === q.answer ? "Correct" : "Try again"} · {q.feedback[choice]}
+          {choice === q.answer ? "Correct" : "Try again"} ·{" "}
+          <AnnotatedText text={q.feedback[choice]} />
         </p>
       )}
     </section>
   );
 }
-export function DnsWorkshop() {
+export function DnsCacheLab({ id = "lab-dns" }: { id?: string }) {
   const [s, setState] = useState(initialDns),
     [prediction, setPrediction] = useState(""),
     [feedback, setFeedback] = useState("");
@@ -101,8 +116,8 @@ export function DnsWorkshop() {
   return (
     <>
       <section
-        className="panel"
-        id="lab-dns"
+        className="panel learning-block dns-cache-lab"
+        id={id}
         aria-label="DNS cache investigation"
       >
         <h2>DNS cache investigation</h2>
@@ -150,11 +165,15 @@ export function DnsWorkshop() {
           ))}
         </svg>
         <p lang="en">
-          {s.source === "cache"
-            ? "Cache hit: the resolver answers without contacting upstream servers."
-            : "Cold miss: the resolver asks Root, then TLD, then Authority. Each server replies to the resolver; Root and TLD return referrals, not the final A record."}
+          <AnnotatedText
+            text={
+              s.source === "cache"
+                ? "Cache hit: the resolver answers without contacting upstream servers."
+                : "Cache miss: the resolver asks Root, then TLD, then Authority. Each server replies to the resolver; Root and TLD return referrals, not the final A record."
+            }
+          />
         </p>
-        <p>
+        <p className="lab-observation" aria-live="polite" aria-atomic="true">
           状态：t={s.now}s · 权威名称 {s.authority ?? "不存在"} · 递归缓存{" "}
           {s.cache ? (s.cache.answer ?? "NXDOMAIN") : "空"} · 剩余 TTL{" "}
           {remaining}s · 已查询 {s.queries} 次
@@ -199,13 +218,11 @@ export function DnsWorkshop() {
         >
           执行 DNS 查询
         </button>
-        {feedback && <p role="status">{feedback}</p>}
+        <div className="lab-feedback" aria-live="polite">
+          {feedback && <p role="status">{feedback}</p>}
+        </div>
         <p className="muted" lang="en">
-          Model limits: one recursive cache, one name and only A queries.
-          Positive TTL is 60s; SOA-derived negative TTL is fixed at 30s. Every
-          miss depicts a cold delegation path; real cached referrals may shorten
-          it. Browser/OS caches, CNAME, DNSSEC, outages and serve-stale are not
-          simulated. No packets leave your browser.
+          <AnnotatedText text="Model limits: one recursive cache, one name and only A queries. Positive TTL is 60s; SOA-derived negative TTL is fixed at 30s. Every cache miss depicts a cold delegation path; real cached referrals may shorten it. Browser/OS caches, CNAME, DNSSEC, outages and serve-stale are not simulated. No packets leave your browser." />
         </p>
         <details>
           <summary>实验任务与证据检查</summary>
@@ -225,6 +242,17 @@ export function DnsWorkshop() {
           </ol>
         </details>
       </section>
+    </>
+  );
+}
+
+export function DnsWorkshop() {
+  return (
+    <>
+      <p className="reading-links">
+        <a href="/labs#lab-dns-cache">在互动实验中心打开此实验</a>
+      </p>
+      <DnsCacheLab />
       {dnsWorkshop.exercises.map((q, i) => (
         <Exercise key={q.level} index={i} />
       ))}

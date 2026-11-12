@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Lesson, Progress, RecordEntry } from "../types";
+import { reveal } from "../lib/motion";
 import { resolveSection } from "../lib/reading";
 
 const TOP = 96;
@@ -59,6 +60,7 @@ export function useReading(
       window.history.replaceState(null, "", `#${section.id}`);
       remember(section.id, 0);
       element.focus({ preventScroll: true });
+      reveal(element.querySelector("h2"));
       requestAnimationFrame(() => {
         programmatic.current = false;
       });

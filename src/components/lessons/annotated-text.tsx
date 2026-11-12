@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
+import { useMotionPresence } from "../../hooks/use-motion-presence";
 import { type WordEntry } from "../../content/vocabulary";
 import { useLearning } from "../learning-provider";
 import { createPortal } from "react-dom";
@@ -16,14 +17,13 @@ function Term({
   initialHint: boolean;
   context: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const { open, present, panel, show, hide } = useMotionPresence();
   const { data, update, ready } = useLearning();
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
-  const panel = useRef<HTMLSpanElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const close = () => {
-    setOpen(false);
+    hide();
     trigger.current?.focus({ preventScroll: true });
   };
   useEffect(() => {
@@ -35,7 +35,7 @@ function Term({
         !panel.current?.contains(event.target) &&
         !trigger.current?.contains(event.target)
       )
-        setOpen(false);
+        hide();
     };
     document.addEventListener("pointerdown", dismissOutside);
     document.addEventListener("focusin", dismissOutside);
@@ -43,7 +43,7 @@ function Term({
       document.removeEventListener("pointerdown", dismissOutside);
       document.removeEventListener("focusin", dismissOutside);
     };
-  }, [open]);
+  }, [open, hide, panel]);
   const saved = data.favorites.includes(entry.id);
   return (
     <span className="inline-term">
@@ -56,10 +56,10 @@ function Term({
         onKeyDown={(e) => {
           if (e.key === "Escape" && open) {
             e.preventDefault();
-            setOpen(false);
+            hide();
           }
         }}
-        onClick={() => setOpen(!open)}
+        onClick={() => (open ? hide() : show())}
       >
         {text}
       </button>
@@ -68,10 +68,12 @@ function Term({
           （{entry.zh}）
         </span>
       )}
-      {open &&
+      {present &&
         createPortal(
           <span
             className="term-overlay"
+            aria-hidden={!open}
+            inert={!open}
             role="dialog"
             aria-modal="false"
             aria-label="词汇详情"

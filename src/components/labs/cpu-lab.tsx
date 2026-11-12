@@ -9,6 +9,7 @@ import {
   runCpu,
   stepCpu,
 } from "../../lib/cpu-sim";
+import { useLabReady } from "./use-lab-ready";
 
 const mono = {
   fontFamily:
@@ -21,6 +22,7 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
   const [cpu, setCpu] = useState(() => initialCpu(7, 5));
   const [prediction, setPrediction] = useState("");
   const [checked, setChecked] = useState(false);
+  const ready = useLabReady();
 
   const finished = cpuFinished(cpu);
   const result = cpu.memory[CPU_RESULT_CELL];
@@ -62,6 +64,7 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
           Memory[10]
           <input
             aria-label="Memory cell 10 value"
+            disabled={!ready}
             type="number"
             min={0}
             max={99}
@@ -73,6 +76,7 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
           Memory[11]
           <input
             aria-label="Memory cell 11 value"
+            disabled={!ready}
             type="number"
             min={0}
             max={99}
@@ -84,6 +88,7 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
           Predict memory[12]
           <input
             aria-label="Predict the stored result"
+            disabled={!ready}
             type="number"
             value={prediction}
             onChange={(e) => setPrediction(e.target.value)}
@@ -180,7 +185,7 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
       <div className="device-buttons">
         <button
           onClick={() => setCpu((s) => stepCpu(s))}
-          disabled={finished}
+          disabled={!ready || finished}
         >
           单步执行
         </button>
@@ -190,11 +195,13 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
             setCpu((s) => runCpu(s));
             setChecked(true);
           }}
-          disabled={finished}
+          disabled={!ready || finished}
         >
           运行到结束
         </button>
-        <button onClick={() => reset()}>重置模拟</button>
+        <button onClick={() => reset()} disabled={!ready}>
+          重置模拟
+        </button>
       </div>
 
       <p className="lab-observation" aria-live="polite">

@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，WebKit 实验室控件修复）
+
+- Previous Agent: DeepSeek Harness（合并提交 `863080e`）。
+- Current Development Phase: 仅修复 CI 唯一失败 `controls-v211`，不新增课程或重构。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修复前 `863080e`；本记录随独立修复提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 修复前干净；README 无未提交改动。
+- Latest Completed Task: 静态 HTML 的实验室控件在 React 水合前可点击，早期点击被丢弃导致 `step` 不变、重置保持 disabled。新增 `useLabReady()`（provider `ready` 为真后才启用），覆盖 TCP/DNS Stepper、CPU、调度与终端实验的输入与按钮。
+- Changed Files: 新增 `src/components/labs/use-lab-ready.ts`、`tests/e2e/lab-controls-hydration.spec.ts`；修改 `labs.tsx`、`cpu-lab.tsx`、`os-lab.tsx`、`terminal-lab.tsx`；更新本文件与 `docs/PROJECT_STATUS.md`。
+- Tests Actually Run: typecheck、lint、unit、build、定向 `controls-v211`/`lab-controls-hydration`/`foundations`/`app`、完整 e2e、LAN。
+- Test Results: 全部通过；单元 147、完整浏览器 **116/116**、LAN **2/2**。原断言未删除、跳过或放宽。
+- CI Status: 上一 SHA `863080e` 的 CI 失败；本次新提交推送后只查询一次状态，不持续轮询。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: 推送后为 0，以远端 SHA 核实。
+- Known Issues: WebKit 模拟不等于真机；其余实验的交互未改动。
+- Remaining Tasks: 推送后确认新 HEAD 的 CI。
+- Next Recommended Action: 若 CI 通过即可交用户真机复验；后续课程另开分支。
+- Important Warnings: 不要删除 `useLabReady` 门槛，否则冷启动 WebKit 仍可能丢失首次点击；不改课程/记录/schema。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Foundations × Motion 合并）
 
 - Previous Agent: Codex（Motion 定向修整 `a91f3b3`，已随 PR #5 合入 master）。

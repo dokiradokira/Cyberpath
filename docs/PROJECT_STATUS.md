@@ -12,6 +12,14 @@
 
 下一步：用户在真机 Safari 复验三课实验、Motion 导航与词汇浮层；后续课程扩展另开分支。
 
+### CI 修复：实验室控件在水合前禁用（2026-11-12）
+
+CI 唯一失败为 WebKit 的 `controls-v211`：`/labs` 的静态 HTML 已把「下一步」渲染为可点，但 React 向该子树附加处理器之前，自动化/触屏的首次点击会被丢弃，`step` 停在 0，因此「重置模拟」保持 disabled（进度仍显示初始 `1 / 4`）。同样机制在完整回归中还造成 CPU 实验首个输入被水合覆盖。
+
+修复：新增 `useLabReady()`，以学习档案 provider 的 `ready`（水合与档案恢复完成后为真）作为门槛；TCP/DNS 的 Stepper、CPU、调度与终端实验的输入、选择与按钮在就绪前禁用，使首次操作必然发生在 React 就绪之后。不改实验业务逻辑、课程内容、记录结构或 schema。
+
+验证：typecheck、lint、build 通过；单元 147 项；完整浏览器 **116/116**（新增 `lab-controls-hydration`，无 JS 上下文断言 SSR 控件禁用，恢复 JS 后验证步进与重置）；LAN **2/2**。原 `controls-v211` 断言未改动。
+
 ## 当前阶段：Motion 真机反馈定向修整（2026-11-12）
 
 基线 `07a0bba`，继续 `feature/motion-interaction-quality`；已 fetch 核实 origin Motion/master 无新增，master 仍为 `e06d959`。用户已在真实 iPhone Safari 体验上一轮并提出退出闪烁、反馈偏弱及栏目切换慢，本轮不是重新设计或发布。

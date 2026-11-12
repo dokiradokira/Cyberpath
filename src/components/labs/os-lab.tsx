@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo, useState } from "react";
 import {
   defaultOsProcesses,
@@ -6,6 +6,7 @@ import {
   type OsAlgorithm,
   type OsProcess,
 } from "../../lib/os-sim";
+import { useLabReady } from "./use-lab-ready";
 
 const COLORS: Record<string, string> = {
   p1: "var(--primary)",
@@ -21,6 +22,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
   const [quantum, setQuantum] = useState(2);
   const [visible, setVisible] = useState(0);
   const [prediction, setPrediction] = useState("");
+  const ready = useLabReady();
 
   const result = useMemo(
     () => simulate(processes, algorithm, quantum),
@@ -64,6 +66,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
         <button
           aria-pressed={algorithm === "fcfs"}
           className={algorithm === "fcfs" ? "selected" : ""}
+          disabled={!ready}
           onClick={() => changeAlgorithm("fcfs")}
         >
           FCFS 先到先服务
@@ -71,6 +74,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
         <button
           aria-pressed={algorithm === "rr"}
           className={algorithm === "rr" ? "selected" : ""}
+          disabled={!ready}
           onClick={() => changeAlgorithm("rr")}
         >
           Round Robin 时间片
@@ -80,7 +84,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
           <select
             aria-label="时间片长度"
             value={quantum}
-            disabled={algorithm !== "rr"}
+            disabled={!ready || algorithm !== "rr"}
             onChange={(e) => {
               setQuantum(Number(e.target.value));
               setVisible(0);
@@ -101,6 +105,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
             {p.name} 需要
             <input
               aria-label={`${p.name} burst time`}
+              disabled={!ready}
               type="number"
               min={1}
               max={8}
@@ -160,14 +165,14 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
       <div className="device-buttons" style={{ marginTop: 12 }}>
         <button
           onClick={() => setVisible((v) => Math.min(total, v + 1))}
-          disabled={done}
+          disabled={!ready || done}
         >
           下一步
         </button>
         <button
           className="primary"
           onClick={() => setVisible(total)}
-          disabled={done}
+          disabled={!ready || done}
         >
           运行到结束
         </button>
@@ -179,6 +184,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
             setVisible(0);
             setPrediction("");
           }}
+          disabled={!ready}
         >
           重置实验
         </button>
@@ -196,6 +202,7 @@ export function OsLab({ id = "os-sim" }: { id?: string }) {
         预测：谁先完成？
         <select
           aria-label="预测先完成的进程"
+          disabled={!ready}
           value={prediction}
           onChange={(e) => setPrediction(e.target.value)}
         >

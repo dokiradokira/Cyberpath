@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useRef, useState } from "react";
 import {
   createTerminal,
@@ -7,12 +7,14 @@ import {
   terminalMissions,
   type TerminalState,
 } from "../../lib/terminal-sim";
+import { useLabReady } from "./use-lab-ready";
 
 export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
   const [term, setTerm] = useState<TerminalState>(createTerminal);
   const [input, setInput] = useState("");
   const [predicted, setPredicted] = useState("");
   const [pwdRan, setPwdRan] = useState(false);
+  const ready = useLabReady();
   const output = useRef<HTMLPreElement>(null);
   const missions = terminalMissions(term);
 
@@ -43,6 +45,7 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
             key={option}
             aria-pressed={predicted === option}
             className={predicted === option ? "selected" : ""}
+            disabled={!ready}
             onClick={() => setPredicted(option)}
           >
             {option}
@@ -98,6 +101,7 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
           <input
             id="terminal-command"
             aria-label="输入命令"
+            disabled={!ready}
             autoComplete="off"
             autoCapitalize="none"
             spellCheck={false}
@@ -112,7 +116,7 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
             onChange={(e) => setInput(e.target.value)}
             placeholder="pwd"
           />
-          <button type="submit" className="primary">
+          <button type="submit" className="primary" disabled={!ready}>
             执行
           </button>
         </div>
@@ -126,12 +130,19 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
             setPredicted("");
             setPwdRan(false);
           }}
+          disabled={!ready}
         >
           重置实验
         </button>
-        <button onClick={() => setInput("help")}>help</button>
-        <button onClick={() => setInput("ls -la")}>ls -la</button>
-        <button onClick={() => setInput("cd /var/log")}>cd /var/log</button>
+        <button onClick={() => setInput("help")} disabled={!ready}>
+          help
+        </button>
+        <button onClick={() => setInput("ls -la")} disabled={!ready}>
+          ls -la
+        </button>
+        <button onClick={() => setInput("cd /var/log")} disabled={!ready}>
+          cd /var/log
+        </button>
       </div>
 
       <h3 lang="en" style={{ marginTop: 18 }}>
@@ -168,6 +179,7 @@ export function TerminalLab({ id = "terminal-sim" }: { id?: string }) {
             {!mission.done && (
               <button
                 type="button"
+                disabled={!ready}
                 onClick={() => setInput(mission.hint)}
                 aria-label={`使用提示 ${mission.hint}`}
               >

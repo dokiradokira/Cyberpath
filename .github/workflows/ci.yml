@@ -16,12 +16,19 @@ jobs:
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    # Keep this tag exactly equal to the @playwright/test version in package-lock.
+    # The image already contains Chromium, WebKit and every system dependency.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --ipc=host
     defaults:
       run:
         shell: bash
     env:
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -43,7 +50,17 @@ jobs:
       - name: Production build
         run: npm run build 2>&1 | tee reports/build.log
       - name: Install Playwright browsers
+        # Only for non-image runs; the pinned image already has browsers/deps.
+        if: ${{ env.PLAYWRIGHT_BROWSERS_PATH != '/ms-playwright' }}
         run: npx playwright install --with-deps chromium webkit 2>&1 | tee reports/browsers.log
+      - name: Verify container browsers
+        run: |
+          node --version
+          npm --version
+          npx playwright --version
+          id
+          getent hosts localhost
+          node -e 'const fs = require("node:fs"); const { chromium, webkit } = require("@playwright/test"); for (const [name, browser] of [["chromium", chromium], ["webkit", webkit]]) { const path = browser.executablePath(); if (!fs.existsSync(path)) { console.error(name + " missing: " + path); process.exit(1); } console.log(name + ": " + path); }' 2>&1 | tee reports/browsers.log
       - name: Browser regression
         run: npm run test:e2e -- --reporter=list,html 2>&1 | tee reports/e2e.log
       - name: Network origin regression

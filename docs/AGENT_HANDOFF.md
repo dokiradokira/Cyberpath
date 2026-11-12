@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Lesson 04 教学质量升级）
+
+- Previous Agent: DeepSeek Harness（课程标准归档 `1c30d95`）。
+- Current Development Phase: Lesson 04 定向教学改进，暂不 Push，等待 ChatGPT 第二轮审查。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 升级前 `1c30d95`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 代码/测试/状态文档修改；`docs/review/`（V1/V2 与截图）保持未跟踪。
+- Latest Completed Task: memory-bound 与 memory pressure/paging/thrashing 分离；h2 证据与逐项反馈；write-back 与存储模型边界；Sections 2–6 深化；51 条共享词汇；跨课释义修正；Explain 练习；Windows 实践指标修正。
+- Changed Files: `src/content/lessons/foundations.ts`、`src/content/vocabulary.ts`、`src/content/dns-vocabulary.ts`、`src/types/index.ts`、`src/components/lessons/{lesson-practice,quiz}.tsx`、`src/components/labs/cpu-lab.tsx`、`tests/foundations.test.ts`、`tests/e2e/foundations.spec.ts`、新增 `tests/e2e/lesson04-quality.spec.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 151 项，完整浏览器 124/124，LAN 2/2。
+- CI Status: 本阶段未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述源码/测试/文档；`docs/review/` 未跟踪保留。
+- Unpushed Commits: 本轮本地提交未推送，等待审查授权。
+- Known Issues: 仅 h2 有逐选项测验反馈；Explain 自评不写档案；模拟器仍不建模 cache/pipeline/独立写回阶段；部分高级术语仅内联解释；截图为 Chromium 非真机。
+- Remaining Tasks: ChatGPT 第二轮评分；根据反馈决定是否继续打磨或进入下一课。
+- Next Recommended Action: 审查 `docs/review/LESSON_04_REVIEW_PACKAGE_V2.md` 与截图，再决定提交/推送。
+- Important Warnings: 不改旧 ID、不回退 contentVersion、不建第二词典；审查材料不得删除；README 保持不动。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，课程质量标准归档）
 
 - Previous Agent: DeepSeek Harness（CI 修复 `0d36a35`）。

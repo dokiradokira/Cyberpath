@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { availableLessons, lessons } from "../src/content/lessons";
 import { foundationsLessons } from "../src/content/lessons/foundations";
 import { labInfo } from "../src/lib/labs";
+import { wordEntries } from "../src/content/vocabulary";
 import { courseSummaries } from "../src/content/course-summaries";
 import { initialProgress, parseProgress, upgradeProgress } from "../src/lib/storage";
 
@@ -26,7 +27,7 @@ it("adds exactly three available foundations lessons after the published course"
     expect(labInfo[meta.lab as keyof typeof labInfo]?.title).toBeTruthy();
     expect(lesson.sections.length).toBeGreaterThanOrEqual(7);
     expect(lesson.quiz).toHaveLength(5);
-    expect(lesson.exercises).toHaveLength(3);
+    expect(lesson.exercises).toHaveLength(lesson.id === "how-computers-work" ? 4 : 3);
     expect(lesson.vocabulary.length).toBeGreaterThanOrEqual(5);
     expect(lesson.commands.length).toBeGreaterThanOrEqual(3);
     // The new lessons must be reachable in display order, not appended at random.
@@ -59,12 +60,21 @@ it("writes teaching depth with goals, cases, exercises and targeted feedback", (
     expect(lesson.brief!.technicalGoals.length).toBeGreaterThanOrEqual(4);
     expect(lesson.brief!.englishGoals.length).toBeGreaterThanOrEqual(3);
     expect(lesson.brief!.completion).toMatch(/[\u4e00-\u9fff]/);
-    expect(lesson.exercises!.map((e) => e.level)).toEqual([
-      "Understand",
-      "Apply",
-      "Reason",
-    ]);
+    expect(lesson.exercises!.map((e) => e.level)).toEqual(
+      lesson.id === "how-computers-work"
+        ? ["Understand", "Apply", "Reason", "Explain"]
+        : ["Understand", "Apply", "Reason"],
+    );
+    expect(
+      new Set(lesson.exercises!.map((e) => e.id ?? e.level)).size,
+    ).toBe(lesson.exercises!.length);
     for (const exercise of lesson.exercises!) {
+      if (exercise.level === "Explain") {
+        expect(exercise.hints.length).toBeGreaterThanOrEqual(3);
+        expect(exercise.reference.length).toBeGreaterThan(250);
+        expect(exercise.pitfalls.length).toBeGreaterThanOrEqual(3);
+        continue;
+      }
       expect(exercise.options).toHaveLength(4);
       expect(new Set(exercise.options).size).toBe(4);
       expect(exercise.feedback).toHaveLength(exercise.options.length);
@@ -89,6 +99,92 @@ it("writes teaching depth with goals, cases, exercises and targeted feedback", (
     expect(new Set(lesson.vocabulary.map((v) => v.zh)).size).toBe(
       lesson.vocabulary.length,
     );
+  }
+});
+
+it("preserves lesson aliases in the shared dictionary", () => {
+  const byWord = new Map(wordEntries.map((entry) => [entry.word, entry]));
+  expect(byWord.get("program counter")?.aliases).toContain("PC");
+  expect(byWord.get("direct memory access")?.aliases).toContain("DMA");
+  expect(byWord.get("write back")?.aliases).toContain("write-back");
+  expect(byWord.get("allocate")?.aliases).toContain("allocation");
+});
+
+it("separates memory-bound execution from memory pressure, paging and thrashing", () => {
+  const lesson = foundationsLessons[0];
+  const text = lesson.sections.map((s) => s.text).join("\n").toLowerCase();
+  for (const term of [
+    "memory-bound",
+    "memory pressure",
+    "paging",
+    "swapping",
+    "thrashing",
+    "working set",
+    "page fault",
+  ])
+    expect(text).toContain(term);
+  expect(text).toContain("fit in ram");
+  const h2 = lesson.quiz.find((q) => q.id === "h2")!;
+  expect(h2.options).toHaveLength(4);
+  expect(h2.feedback).toHaveLength(4);
+  expect(h2.feedback!.every((item) => item.length > 30)).toBe(true);
+  expect(h2.explanation.toLowerCase()).toContain("healthy cache");
+  expect(h2.options[h2.answer]).toContain("working set");
+});
+
+it("covers the required Lesson 04 vocabulary in the shared dictionary", () => {
+  const words = new Set(foundationsLessons[0].vocabulary.map((v) => v.word));
+  for (const required of [
+    "program counter",
+    "operand",
+    "ALU",
+    "pipeline",
+    "temporal locality",
+    "spatial locality",
+    "cache line",
+    "working set",
+    "address space",
+    "heap",
+    "stack",
+    "bytecode",
+    "virtual machine",
+    "throughput",
+    "latency",
+    "fetch",
+    "decode",
+    "execute",
+    "allocate",
+    "retrieve",
+    "overlap",
+    "map",
+    "swap",
+    "throttle",
+    "load",
+    "store",
+    "write back",
+    "load into memory",
+    "fit in memory",
+    "memory access",
+    "direct memory access",
+    "CPU-bound",
+    "memory-bound",
+    "I/O-bound",
+  ])
+    expect(words.has(required)).toBe(true);
+});
+
+it("keeps write-back, pipeline and stored-program caveats explicit", () => {
+  const lesson = foundationsLessons[0];
+  const text = lesson.sections.map((s) => s.text).join("\n");
+  expect(text).toContain("write-back");
+  expect(text).toContain("pipeline");
+  expect(text).toContain("program counter");
+  expect(text).toContain("stored-program machine");
+  const explain = lesson.exercises!.find((e) => e.level === "Explain")!;
+  expect(explain.level).toBe("Explain");
+  if (explain.level === "Explain") {
+    expect(explain.hints.length).toBeGreaterThanOrEqual(3);
+    expect(explain.pitfalls.join(" ").toLowerCase()).toContain("swapping");
   }
 });
 

@@ -7,14 +7,25 @@ export type Vocabulary = {
   /** Alternate surface forms matched by the shared reading highlighter. */
   aliases?: string[];
 };
-export type Exercise = {
-  level: "Understand" | "Apply" | "Reason";
-  prompt: string;
-  options: string[];
-  answer: number;
-  /** One targeted explanation per option, indexed like options. */
-  feedback: string[];
-};
+export type Exercise =
+  | {
+      /** Stable exercise identifier; existing lessons may omit it. */
+      id?: string;
+      level: "Understand" | "Apply" | "Reason";
+      prompt: string;
+      options: string[];
+      answer: number;
+      /** One targeted explanation per option, indexed like options. */
+      feedback: string[];
+    }
+  | {
+      id?: string;
+      level: "Explain";
+      prompt: string;
+      hints: string[];
+      reference: string;
+      pitfalls: string[];
+    };
 export type LessonBrief = {
   prerequisites: string[];
   technicalGoals: string[];
@@ -27,6 +38,8 @@ export type Question = {
   options: string[];
   answer: number;
   explanation: string;
+  /** Optional targeted explanation per option, shown after submission. */
+  feedback?: string[];
 };
 export type Lesson = {
   id: string;

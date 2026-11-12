@@ -1,5 +1,13 @@
 # CyberPath 项目状态
 
+## 当前阶段：Lesson 04 教学质量升级（2026-11-12）
+
+依据 Curriculum Quality Standard 1.0 与首轮审查（62/100），对 Lesson 04 做定向升级，未新增课程、未改旧课程/实验/测验 ID、未改 `introducedIn` 与 IndexedDB schema。
+
+修正 memory-bound 定义（内存访问延迟/带宽受限，数据可完全在 RAM 内），并区分 memory pressure、paging/swapping 与 thrashing；重写 quiz `h2`，加入 working set、硬缺页、Pages/sec 证据与四个选项的针对性反馈；正文与 CPU 实验统一 fetch/decode/execute/write-back 的模型边界，实验新增“教学模型非完整 CPU”说明（独立数组、概念地址、写回并入 execute）；Section 2–6 深化并新增 51 条本课共享词汇（含别名、例句），修正 `source`/`hierarchy`/`cache` 等跨课释义；新增不依赖选择题的 Explain 练习（提示、参考解释、常见误区，自评且不写档案）；Windows 实践区分累计 CPU/瞬时占用、空闲内存/内存压力、磁盘空间/活动率、缺页/换页。
+
+验证：typecheck、lint、build 通过；单元 21 文件 151 项；完整浏览器 **124/124**；LAN **2/2**。审查材料见 `docs/review/LESSON_04_REVIEW_PACKAGE_V2.md`（未提交，等待第二轮独立审查）。本轮本地提交、暂不 Push。
+
 ## 当前阶段：Foundations × Motion 合并整合（2026-11-12）
 
 本节覆盖下文各快照。`origin/master` 已含 Motion PR #5（合并提交 `00c2f02`，包含 `07a0bba` 与修复 `a91f3b3`）。本轮在 `feature/curriculum-3-foundations` 合入 `origin/master`：保留 Motion 的导航预取与 pending 反馈、词汇浮层退出修复、动效 tokens 与 AnimatedDetails，以及三节基础课程（04–06）、三个共享实验、词汇、三层练习与测验；旧课程/实验/测验 ID、IndexedDB schema 与 `contentVersion` 均未变。

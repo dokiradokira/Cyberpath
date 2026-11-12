@@ -99,8 +99,8 @@ const extras: [number, string, string, string, string][] = [
     2,
     "cache",
     "缓存",
-    "Stored information reused to avoid repeated work.",
-    "A valid cache entry can skip a DNS query.",
+    "A smaller, faster storage area that keeps recently used data for reuse.",
+    "A cache keeps recently used data close, whether in a CPU or a DNS resolver.",
   ],
   [
     2,
@@ -213,7 +213,9 @@ export const wordEntries: WordEntry[] = [
   ...availableLessons.flatMap((l) =>
     l.vocabulary.map((v) => ({
       ...v,
-      aliases: v.word === "resolver" ? ["recursive resolver"] : undefined,
+      aliases:
+        v.aliases ??
+        (v.word === "resolver" ? ["recursive resolver"] : undefined),
       id: v.word,
       lessonId: l.id,
       example: v.example ?? courseExamples[v.word] ?? v.definition,

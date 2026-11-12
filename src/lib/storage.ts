@@ -160,6 +160,14 @@ export function parseProgress(text: string): Progress {
   if (x.study !== undefined) clean.study = parseStudy(x.study);
   return clean;
 }
+/**
+ * Normalize a stored profile to the current content revision. Lessons that are
+ * new in this revision gain empty records; existing records are validated, not
+ * replaced.
+ */
+export function upgradeProgress(profile: Progress): Progress {
+  return parseProgress(JSON.stringify(profile));
+}
 export type ReadResult = {
   data: Progress;
   warning: string;

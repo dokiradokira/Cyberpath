@@ -172,7 +172,7 @@ it("handles empty and single points and differing question totals", () => {
   expect(scoreTrend(saveAttempt(initialProgress(), a))[0].percent).toBe(50);
   expect(completion(initialProgress())).toEqual({
     done: 0,
-    total: 3,
+    total: availableLessons.length,
     percent: 0,
   });
 });

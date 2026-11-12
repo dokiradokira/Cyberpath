@@ -216,7 +216,7 @@ export const wordEntries: WordEntry[] = [
       aliases: v.word === "resolver" ? ["recursive resolver"] : undefined,
       id: v.word,
       lessonId: l.id,
-      example: courseExamples[v.word],
+      example: v.example ?? courseExamples[v.word] ?? v.definition,
     })),
   ),
   ...extras.map(([number, word, zh, definition, example]) => ({

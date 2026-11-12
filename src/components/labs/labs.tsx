@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 import { calculateSubnet } from "../../lib/subnet";
 import { labInfo, type LabId } from "../../lib/labs";
+import type { ComponentType } from "react";
+import { CpuLab } from "./cpu-lab";
+import { OsLab } from "./os-lab";
+import { TerminalLab } from "./terminal-lab";
 export type { LabId } from "../../lib/labs";
 const tcpSteps = [
   "准备连接，尚未建立连接。",
@@ -314,7 +318,18 @@ export function NatLab() {
     </div>
   );
 }
+const labComponents = {
+  tcp: TcpLab,
+  dns: DnsLab,
+  subnet: SubnetLab,
+  nat: NatLab,
+  cpu: CpuLab,
+  os: OsLab,
+  terminal: TerminalLab,
+} satisfies Record<LabId, ComponentType<{ id?: string }>>;
+
 export function Lab({ id }: { id: LabId }) {
+  const Component = labComponents[id];
   return (
     <section className="panel lab-panel" id={`lab-${id}`}>
       <div className="section-heading">
@@ -324,15 +339,7 @@ export function Lab({ id }: { id: LabId }) {
         </div>
         <span className="badge">可交互</span>
       </div>
-      {id === "tcp" ? (
-        <TcpLab />
-      ) : id === "dns" ? (
-        <DnsLab />
-      ) : id === "subnet" ? (
-        <SubnetLab />
-      ) : (
-        <NatLab />
-      )}
+      <Component />
     </section>
   );
 }

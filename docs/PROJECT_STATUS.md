@@ -1,5 +1,17 @@
 # CyberPath 项目状态
 
+## 当前阶段：Curriculum 3.0 首批基础课程（2026-11-12）
+
+本节覆盖下文快照。从 `e06d9597e380b75cd4ac5b88452c67e0b356611f`（`origin/master`，PR #4 合并提交）创建 `feature/curriculum-3-foundations`；未使用 Codex 的 Motion 分支，未进入 `D:\cyberpath` 工作区。
+
+本轮新增三节可学课程，编号 04–06：How Computers Work、Operating Systems Basics、Linux and the Command Line。旧 01–03 的 ID、题号、稳定记录与 IndexedDB 结构保持不变；原 5 节预告顺延为 07–11（ID/标题不变，仍为 unavailable）。三课均含 Technical/English Goals、完整章节、五题测验、Understand/Apply/Reason 三层练习（每个错误选项独立反馈）、可操作实验与重点词汇；实验 `cpu`/`os`/`terminal` 统一注册进实验中心，与课程入口共用同一组件实现。
+
+新增独立模拟器与回归：`cpu-sim`（取指/译码/执行、预测校验）、`os-sim`（FCFS/RR、时间片、等待时间）、`terminal-sim`（无真实进程的受限文件系统与 4 个任务）。`HistoryRepository.open()` 现会把旧档案归一到当前课程版本（补充新课程空记录，保留既有成绩/笔记/错题）并写入升级备份；浏览器探针验证旧 head 缺少新课程记录时可自动恢复。
+
+验证：typecheck、lint、build 通过；单元 19 文件 137 项全通过；Playwright Chromium + WebKit iPhone 98 项全通过（含新增 foundations 6×2、旧档案升级 1×2，以及既有全部用例）。未等待或轮询远程 CI；不 merge、不部署、不打标签。
+
+下一步：由用户验收英文难度、练习反馈与三课实验的真机触屏体验；后续按 Curriculum 3.0 模块继续扩展，不在本轮批量加课。
+
 ## 当前阶段：DNS Sample Integration & Reading Polish（2026-11-12）
 
 本节覆盖下文快照。本轮起点 `f1747ed`，继续 `feature/curriculum-3-dns-sample`。fetch 核实 `origin/master = 13cc786`，PR #3 已合并初版 DNS 样板，与本轮起点源码相同；本轮没有再次 merge。Production 上线为用户确认的背景，本轮不部署。

@@ -19,6 +19,22 @@ export const topicSections: Record<string, string> = {
   i3: "host-addresses",
   i4: "nat-pat",
   i5: "nat-firewall",
+  // Content revision 2: foundations questions keep the same stable-ID contract.
+  h1: "hsw-instruction-cycle",
+  h2: "hsw-performance",
+  h3: "hsw-memory-hierarchy",
+  h4: "hsw-program-run",
+  h5: "hsw-performance",
+  o1: "osb-kernel",
+  o2: "osb-process",
+  o3: "osb-memory",
+  o4: "osb-scheduling",
+  o5: "osb-diagnosis",
+  l1: "lin-shell",
+  l2: "lin-paths",
+  l3: "lin-permissions",
+  l4: "lin-pipes",
+  l5: "lin-safety",
 };
 export function makeAttempt(
   lesson: Lesson,

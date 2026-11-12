@@ -13,6 +13,8 @@ import { useReading } from "../../hooks/use-reading";
 import { resolveSection } from "../../lib/reading";
 import { ChapterNavigation } from "./chapter-navigation";
 import { DnsGoals, DnsWorkshop } from "./dns-workshop";
+import { LessonGoals } from "./lesson-goals";
+import { LessonPractice } from "./lesson-practice";
 function Command({
   command,
   explanation,
@@ -90,7 +92,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       </Link>
       <header className="page-heading">
         <p className="eyebrow">
-          网络基础 / 课程 {String(lesson.number).padStart(2, "0")}
+          {lesson.category ?? "网络基础"} / 课程{" "}
+          {String(lesson.number).padStart(2, "0")}
         </p>
         <h1 lang="en">{lesson.title}</h1>
         <p lang="zh-CN">
@@ -116,7 +119,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       <div className="lesson-layout">
         <article>
           {lesson.id === "dns-tcp-web" && <DnsGoals />}
-          {lesson.id !== "dns-tcp-web" && (
+          {lesson.brief && <LessonGoals brief={lesson.brief} />}
+          {lesson.id !== "dns-tcp-web" && !lesson.brief && (
             <section className="panel">
               <p className="eyebrow">本课目标</p>
               <h2>你将学到</h2>
@@ -181,24 +185,34 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             </div>
           </section>
           {lesson.id === "dns-tcp-web" && <DnsWorkshop />}
+          {lesson.brief && lesson.labs.length > 0 && (
+            <p className="reading-links">
+              <a href={`/labs#lab-${lesson.labs[0]}`}>
+                在互动实验中心打开此实验
+              </a>
+            </p>
+          )}
           {lesson.labs
             .filter((id) => !(lesson.id === "dns-tcp-web" && id === "dns"))
             .map((id) => (
               <Lab key={id} id={id as LabId} />
             ))}
           <section className="panel" id="practical-experiment">
-            <p className="eyebrow">WINDOWS / 实践指导</p>
+            <p className="eyebrow">
+              {lesson.practice?.label ?? "WINDOWS / 实践指导"}
+            </p>
             <h2>动手实践</h2>
             <p>
-              Open Windows Terminal or PowerShell yourself. Run these read-only
-              diagnostics, compare the output with the explanation, and record
-              what you observe. Commands are displayed as text; this site never
-              executes them.
+              {lesson.practice?.intro ??
+                "Open Windows Terminal or PowerShell yourself. Run these read-only diagnostics, compare the output with the explanation, and record what you observe. Commands are displayed as text; this site never executes them."}
             </p>
             {lesson.commands.map((c) => (
               <Command key={c.command} {...c} />
             ))}
           </section>
+          {lesson.exercises && (
+            <LessonPractice exercises={lesson.exercises} />
+          )}
           <Quiz key={lesson.id} lesson={lesson} />
           <section className="panel">
             <h2>学习笔记</h2>

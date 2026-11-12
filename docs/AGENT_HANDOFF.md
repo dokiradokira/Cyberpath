@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Curriculum 3.0 基础三课）
+
+- Previous Agent: Codex（Motion & Interaction Upgrade，独立工作区 `D:\cyberpath`；本轮未读取、未修改）。
+- Current Development Phase: Curriculum 3.0 首批基础课程（Foundations A/B/C）。
+- Branch: `feature/curriculum-3-foundations`（从 `origin/master` 创建）。
+- HEAD: 提交前基线 `e06d9597e380b75cd4ac5b88452c67e0b356611f`；本记录随代码提交，其 SHA 用 `git log -1 --format="%H %s" -- docs/AGENT_HANDOFF.md` 解析。
+- Working Tree Status: 本轮提交前工作区干净；提交后、推送前无未提交改动。
+- Latest Completed Task: 新增 04 How Computers Work、05 Operating Systems Basics、06 Linux and the Command Line；三层练习、词汇、CPU/调度/终端三个共享实验、课程注册与旧档案升级。
+- Changed Files: 新增 `src/content/lessons/foundations.ts`、`src/lib/{cpu-sim,os-sim,terminal-sim}.ts`、`src/components/labs/{cpu-lab,os-lab,terminal-lab}.tsx`、`src/components/lessons/{lesson-goals,lesson-practice}.tsx`、`tests/{foundations,cpu-sim,os-sim,terminal-sim}.test.ts`、`tests/e2e/{foundations,profile-upgrade}.spec.ts`；修改 `src/types/index.ts`、`src/content/lessons/index.ts`、`src/content/vocabulary.ts`、`src/content/course-summaries.ts`、`src/components/lessons/lesson-view.tsx`、`src/components/labs/labs.tsx`、`src/lib/labs.ts`、`src/lib/storage.ts`、`src/lib/history-repository.ts`、`src/lib/study.ts`、`src/app/courses/page.tsx`、`src/components/overview.tsx`、`tests/{quiz,study}.test.ts`。
+- Tests Actually Run: `npm run typecheck`、`npm run lint`、`npm test`、`npm run build`、`npm run test:e2e`（Chromium + WebKit iPhone）。
+- Test Results: typecheck 通过；lint 通过；单元 19 文件 137 项通过；build 通过（6 条课程静态路径）；e2e 98 项通过（0 失败，未 skip）。
+- CI Status: 本轮按要求未等待或轮询远程 CI；push 后需按实际 SHA 在 GitHub Actions 重新核实，不能沿用旧运行结果。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: 推送后应为 0；以 `git status -sb` 与远端 SHA 为准。
+- Known Issues: 三个实验均为教学简化模型（单核、无流水线/缓存、无 I/O 与上下文切换开销）；WebKit 仅为模拟，真机触屏仍待人工验收；旧 DNS 实验仍为临时状态。
+- Remaining Tasks: 用户验收三课英文难度、反馈质量与手机实验操作；后续按 MOD-CF-03 / MOD-OS-01 / MOD-LNX-01 继续扩展。
+- Next Recommended Action: 先人工检查 390px 下终端输入、CPU 单步与调度时间轴，再决定下一批课程；保持「5 题测验 + 三层练习 + 实验双入口」契约。
+- Important Warnings: 共享文件 `lesson-view.tsx`、`labs.tsx`、`lib/labs.ts`、`overview.tsx`、`courses/page.tsx`、`vocabulary.ts`、`storage.ts`、`history-repository.ts`、`study.ts`、`course-summaries.ts` 与 Codex 分支存在冲突可能；合并时保留双方改动，不覆盖实验注册与档案升级逻辑，不改旧课程 ID/题号，不回退 `contentVersion`。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（Codex，DNS 整合与阅读修整）
 
 - Previous Agent: Codex（DNS 样板 f1747ed，本轮用户继续交付修整任务）。

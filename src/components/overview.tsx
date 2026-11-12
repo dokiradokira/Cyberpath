@@ -86,7 +86,8 @@ export function Overview() {
           ),
         )[0] ??
       availableLessons.find((l) => data.lessons[l.id].latest !== null),
-    recommended = availableLessons.find((l) => !data.lessons[l.id].completed);
+    recommended = availableLessons.find((l) => !data.lessons[l.id].completed),
+    upcoming = lessons.filter((l) => !l.available);
   return (
     <>
       <header className="page-heading">
@@ -147,7 +148,7 @@ export function Overview() {
             <div className="hero-copy">
               <span className="hero-meta">
                 课程 {String(current.number).padStart(2, "0")} <span>•</span>{" "}
-                网络基础
+                {current.category ?? "网络基础"}
               </span>
               <h2 lang="en">{current.title}</h2>
               <p className="course-translation">{current.zh}</p>
@@ -185,7 +186,7 @@ export function Overview() {
                 <h2>学习路线</h2>
               </div>
               <Link prefetch={false} href="/courses">
-                全部 8 节课程 <ArrowUpRight size={16} />
+                全部 {lessons.length} 节课程 <ArrowUpRight size={16} />
               </Link>
             </div>
             <div className="path-list">
@@ -210,7 +211,14 @@ export function Overview() {
                 </Link>
               ))}
               <div className="future-path">
-                <span>04–08</span> 安全基础、身份认证与防御实践{" "}
+                <span>
+                  {String(upcoming[0]?.number ?? 7).padStart(2, "0")}–
+                  {String(upcoming[upcoming.length - 1]?.number ?? 11).padStart(
+                    2,
+                    "0",
+                  )}
+                </span>{" "}
+                安全基础、身份认证与防御实践{" "}
                 <span className="badge">即将推出</span>
               </div>
             </div>

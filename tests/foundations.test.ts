@@ -129,7 +129,16 @@ it("separates memory-bound execution from memory pressure, paging and thrashing"
   expect(h2.feedback).toHaveLength(4);
   expect(h2.feedback!.every((item) => item.length > 30)).toBe(true);
   expect(h2.explanation.toLowerCase()).toContain("healthy cache");
-  expect(h2.options[h2.answer]).toContain("working set");
+  expect(h2.feedback!.join(" ")).toContain(
+    "Page Faults/sec includes soft and hard faults",
+  );
+  expect(h2.explanation).toContain("pagefile");
+  expect(h2.prompt).toContain("resident working set");
+  expect(h2.options[h2.answer]).toContain("hard faults");
+  const perf = lesson.sections.find((s) => s.id === "hsw-performance")!.text;
+  expect(perf).toContain("Page Faults/sec counts soft and hard faults");
+  expect(perf).toContain("Pages/sec counts pages read from or written to disk");
+  expect(perf).toContain("not necessarily the pagefile");
 });
 
 it("covers the required Lesson 04 vocabulary in the shared dictionary", () => {
@@ -138,6 +147,14 @@ it("covers the required Lesson 04 vocabulary in the shared dictionary", () => {
     "program counter",
     "operand",
     "ALU",
+    "register",
+    "accumulator",
+    "opcode",
+    "instruction set",
+    "micro-operation",
+    "interrupt",
+    "volatile",
+    "memory bandwidth",
     "pipeline",
     "temporal locality",
     "spatial locality",

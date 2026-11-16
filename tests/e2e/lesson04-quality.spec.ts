@@ -45,7 +45,7 @@ test("quiz h2 gives targeted feedback for the memory-pressure misconception", as
   }
   await page
     .getByRole("radio", {
-      name: "High memory use alone proves swapping, so no further evidence is needed",
+      name: "Page Faults/sec and Pages/sec measure the same thing, so every fault must be reading the pagefile",
       exact: true,
     })
     .check();
@@ -55,9 +55,11 @@ test("quiz h2 gives targeted feedback for the memory-pressure misconception", as
     .locator("fieldset")
     .filter({ hasText: "Windows laptop feels slow" });
   await expect(h2.locator(".feedback")).toContainText(
-    "95% used memory may be cache",
+    "Page Faults/sec includes soft and hard faults",
   );
-  await expect(h2.locator(".feedback")).toContainText("page-fault and disk evidence");
+  await expect(h2.locator(".feedback")).toContainText(
+    "rather than the pagefile",
+  );
 });
 
 test("CPU lab explains the stored-program simplification and is shared by course and lab centre", async ({

@@ -1,5 +1,18 @@
 # CyberPath 项目状态
 
+## 当前阶段：Lesson 04 V3 精度修复（2026-11-16）
+
+在 V2 教学升级基础上做定向精度修复，未重写八章、未改任何稳定 ID、`introducedIn`、IndexedDB schema 或 `contentVersion`。
+
+- 修正 `Page Faults/sec`（含软/硬缺页）与 `Pages/sec`（仅硬缺页引发的磁盘页读写）的区别，并加入 PowerShell 计数器与解释。
+- Page fault 改为“页面不在进程 working set 中”；soft fault 无需磁盘，hard fault 从 backing store（可能是 pagefile、EXE/DLL 映像或 memory-mapped file）读取。
+- 区分理论 working set 与 Windows 进程 working set（后者为当前驻留物理内存的页），并在 quiz `h2` 中使用“resident working set”。
+- `h2` 结论改为“证据支持 memory pressure 与 hard faults，但需确认 backing store / 磁盘目标后才能断言 pagefile swapping”；四个反馈同步更新。
+- Pipeline 改为主要提升 throughput、不保证单条指令 latency；补充 micro-operations、per-core L1/L2 与 shared LLC、DMA 完成中断为常见而非唯一、Explain 中初学者指标 vs profiler/硬件计数器。
+- 新增 8 条共享词汇：register、volatile、accumulator、opcode、instruction set、micro-operation、interrupt、memory bandwidth；本课词汇 59 条，全局 166 条；alias/收藏/复习沿用现有系统。
+
+验证：typecheck、lint、build 通过；单元 21 文件 151 项；完整浏览器 124/124；LAN 2/2。V3 审查材料见 `docs/review/LESSON_04_REVIEW_PACKAGE_V3.md`（未跟踪，等待第三轮审查）。本地提交、未 Push。
+
 ## 当前阶段：Lesson 04 教学质量升级（2026-11-12）
 
 依据 Curriculum Quality Standard 1.0 与首轮审查（62/100），对 Lesson 04 做定向升级，未新增课程、未改旧课程/实验/测验 ID、未改 `introducedIn` 与 IndexedDB schema。

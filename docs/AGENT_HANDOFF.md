@@ -77,6 +77,25 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-17 Asia/Shanghai（DeepSeek Harness，Lesson 04 Pages/sec 最终措辞）
+
+- Previous Agent: DeepSeek Harness（Pages I/O 与 Hard Faults 修正 `5aa869f`）。
+- Current Development Phase: 发布前最后一次措辞收紧，不开启新优化。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修正前 `5aa869f`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 课程/测试/状态文档修改；`docs/review/`（含 FINAL 同步）保持未跟踪。
+- Latest Completed Task: 明确 `Pages/sec` 是 `Pages Input/sec` 与 `Pages Output/sec` 的合计，不能简单理解为硬缺页读取次数；对应单元断言更新，FINAL 审查材料同步。
+- Changed Files: `src/content/lessons/foundations.ts`、`tests/foundations.test.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`；`LESSON_04_REVIEW_PACKAGE_FINAL.md`（未跟踪）同步。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 152 项，定向 20/20，完整浏览器 124/124，LAN 2/2。
+- CI Status: 未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述文件；`docs/review/` 未跟踪。
+- Unpushed Commits: `06caf90`、`ba6bc3c`、`b74d675`、`5aa869f` 与本轮提交均未推送。
+- Known Issues: 仅 h2 有逐选项反馈；Explain 自评不写档案；模拟器不建模 cache/pipeline/独立 write-back；部分高级术语仅内联；截图为 Chromium。
+- Remaining Tasks: 独立审查后决定是否 Push；不再新增优化任务。
+- Next Recommended Action: 核对 FINAL 的 Pages 段落与 §8 测试结果。
+- Important Warnings: 不改稳定 ID/contentVersion/schema；审查材料不得删除；README 不动。
+
 ### Agent Handoff — 2026-11-17 Asia/Shanghai（DeepSeek Harness，Lesson 04 Pages/sec 与 Hard Faults 收尾）
 
 - Previous Agent: DeepSeek Harness（FINAL 微调 `b74d675`）。

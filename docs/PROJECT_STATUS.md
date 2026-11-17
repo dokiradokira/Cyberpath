@@ -7,7 +7,7 @@
 - Machine instruction 改为 ISA 定义的基本指令单位（保留 opcode、operands、micro-operations）。
 - Loader 改为把 executable 映射到进程地址空间、按需调入页面，明确不会一次性读入整个文件；`load into memory` 词条例句同步修正。
 - Page fault 删除 “(not resident, or not valid in its page table)”，保留“不在当前进程 working set 中”及 soft/hard fault 区别。
-- Windows 实践新增 `PagesInputPersec`、`PagesOutputPersec`：Input 为处理硬缺页从磁盘读取页，Output 为释放物理内存写回已修改页，`Pages/sec` 为二者之和；不把 Output 说成硬缺页读取，也不把全部活动视为 pagefile swapping。
+- Windows 实践新增 `PagesInputPersec`、`PagesOutputPersec`：Input 为处理硬缺页从磁盘读取页，Output 为释放物理内存写回已修改页，`Pages/sec` 为二者之和，不能简单理解为硬缺页读取次数；不把 Output 说成硬缺页读取，也不把全部活动视为 pagefile swapping。
 - Quiz `h2` 的 Resource Monitor 指标改为进程级 `Hard Faults/sec`；`Page Faults/sec` 仍表示包含 soft/hard faults 的性能计数器，两者不混用。
 - 可选补充：stored-program 段落说明现代 CPU 可能使用独立指令缓存与数据缓存，不展开 Harvard 架构。
 

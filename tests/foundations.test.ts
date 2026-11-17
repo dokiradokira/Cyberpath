@@ -144,7 +144,7 @@ it("separates memory-bound execution from memory pressure, paging and thrashing"
   expect(perf).toContain("Page Faults/sec counts soft and hard faults");
   expect(perf).toContain("Pages Input/sec counts pages read from disk");
   expect(perf).toContain("Pages Output/sec counts modified pages written back");
-  expect(perf).toContain("their sum is Pages/sec");
+  expect(perf).toContain("Pages/sec is their sum, not a count of hard-fault reads");
   expect(perf).toContain("rather than the pagefile alone");
 });
 

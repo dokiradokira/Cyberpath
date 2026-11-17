@@ -205,6 +205,28 @@ it("keeps write-back, pipeline and stored-program caveats explicit", () => {
   }
 });
 
+it("aligns loader, page fault and Windows counters with demand paging", () => {
+  const lesson = foundationsLessons[0];
+  const program = lesson.sections.find((s) => s.id === "hsw-program-run")!.text;
+  expect(program).toContain("does not load into memory every page up front");
+  expect(program).toContain("on demand");
+  const perf = lesson.sections.find((s) => s.id === "hsw-performance")!.text;
+  expect(perf).not.toContain("not valid in its page table");
+  expect(perf).toContain("current working set");
+  const instruction = lesson.sections.find(
+    (s) => s.id === "hsw-instruction-cycle",
+  )!.text;
+  expect(instruction).toContain("instruction set architecture (ISA)");
+  const counter = lesson.commands.find((c) =>
+    c.command.includes("PagesInputPersec"),
+  )!;
+  expect(counter.command).toContain("PagesOutputPersec");
+  expect(counter.explanation).toContain("Pages Input/sec");
+  expect(
+    wordEntries.find((w) => w.word === "load into memory")!.example,
+  ).toContain("does not need to load into memory");
+});
+
 it("references the previous lesson in each prerequisite chain", () => {
   const [computers, os, linux] = foundationsLessons;
   expect(computers.brief!.prerequisites.join(" ")).toContain("Lesson 1");

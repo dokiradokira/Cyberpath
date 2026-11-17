@@ -1,5 +1,17 @@
 # CyberPath 项目状态
 
+## 当前阶段：Lesson 04 FINAL 微调（2026-11-17）
+
+第三轮审查后的收尾微调，未重写课程、未改稳定 ID、`introducedIn`、IndexedDB schema 或 `contentVersion`，未修改其他课程。
+
+- Machine instruction 改为 ISA 定义的基本指令单位（保留 opcode、operands、micro-operations）。
+- Loader 改为把 executable 映射到进程地址空间、按需调入页面，明确不会一次性读入整个文件；`load into memory` 词条例句同步修正。
+- Page fault 删除 “(not resident, or not valid in its page table)”，保留“不在当前进程 working set 中”及 soft/hard fault 区别。
+- Windows 实践新增 `PagesInputPersec`、`PagesOutputPersec`，解释 `Pages/sec` 为二者合计、只统计硬缺页磁盘页 I/O，不能全部视为 pagefile swapping。
+- 可选补充：stored-program 段落说明现代 CPU 可能使用独立指令缓存与数据缓存，不展开 Harvard 架构。
+
+验证：typecheck、lint、build 通过；单元 21 文件 152 项；定向 Lesson 04 20/20；完整浏览器 124/124；LAN 2/2。最终审查材料 `docs/review/LESSON_04_REVIEW_PACKAGE_FINAL.md`（未跟踪）。本地提交，未 Push。
+
 ## 当前阶段：Lesson 04 V3 精度修复（2026-11-16）
 
 在 V2 教学升级基础上做定向精度修复，未重写八章、未改任何稳定 ID、`introducedIn`、IndexedDB schema 或 `contentVersion`。

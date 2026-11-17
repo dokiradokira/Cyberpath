@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+﻿import { expect, it } from "vitest";
 import { availableLessons, lessons } from "../src/content/lessons";
 import { foundationsLessons } from "../src/content/lessons/foundations";
 import { labInfo } from "../src/lib/labs";
@@ -134,11 +134,18 @@ it("separates memory-bound execution from memory pressure, paging and thrashing"
   );
   expect(h2.explanation).toContain("pagefile");
   expect(h2.prompt).toContain("resident working set");
+  expect(h2.prompt).toContain("Hard Faults/sec");
+  expect(h2.explanation).toContain("process-level");
+  expect(h2.feedback!.join(" ")).toContain(
+    "Hard Faults/sec is not the same as Page Faults/sec",
+  );
   expect(h2.options[h2.answer]).toContain("hard faults");
   const perf = lesson.sections.find((s) => s.id === "hsw-performance")!.text;
   expect(perf).toContain("Page Faults/sec counts soft and hard faults");
-  expect(perf).toContain("Pages/sec counts pages read from or written to disk");
-  expect(perf).toContain("not necessarily the pagefile");
+  expect(perf).toContain("Pages Input/sec counts pages read from disk");
+  expect(perf).toContain("Pages Output/sec counts modified pages written back");
+  expect(perf).toContain("their sum is Pages/sec");
+  expect(perf).toContain("rather than the pagefile alone");
 });
 
 it("covers the required Lesson 04 vocabulary in the shared dictionary", () => {
@@ -222,6 +229,7 @@ it("aligns loader, page fault and Windows counters with demand paging", () => {
   )!;
   expect(counter.command).toContain("PagesOutputPersec");
   expect(counter.explanation).toContain("Pages Input/sec");
+  expect(counter.explanation).toContain("Pages Output/sec");
   expect(
     wordEntries.find((w) => w.word === "load into memory")!.example,
   ).toContain("does not need to load into memory");

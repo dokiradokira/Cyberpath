@@ -6,13 +6,13 @@ const entries: [string, string, string, string, string[]?][] = [
     "browser",
     "浏览器",
     "An application that retrieves and displays web resources.",
-    "The browser resolves a host before making a new connection.",
+    "The browser downloads resources and renders pages for the user.",
   ],
   [
     "operating system",
     "操作系统",
     "Software managing a computer's resources and services for applications.",
-    "The operating system may maintain a DNS cache.",
+    "The operating system schedules processes, manages memory and provides file systems.",
   ],
   [
     "domain name",
@@ -29,8 +29,8 @@ const entries: [string, string, string, string, string[]?][] = [
   [
     "hierarchy",
     "层级结构",
-    "An arrangement of levels, as used by the DNS namespace and delegations.",
-    "The resolver follows the DNS hierarchy toward the answer.",
+    "An arrangement of levels in which each level builds on or serves the one above it.",
+    "Memory forms a hierarchy from registers and cache to RAM and disk.",
   ],
   [
     "non-authoritative",
@@ -170,14 +170,14 @@ const entries: [string, string, string, string, string[]?][] = [
   [
     "cache hit",
     "缓存命中",
-    "A lookup satisfied by a usable cached entry.",
-    "A cache hit does not restart the TTL clock.",
+    "A memory or lookup access satisfied by data already present in a cache.",
+    "A cache hit returns data without a slower trip to RAM or a DNS query.",
   ],
   [
     "cache miss",
     "缓存未命中",
-    "A lookup without a usable cached answer.",
-    "A cache miss makes this resolver fetch a fresh answer.",
+    "An access that does not find the requested data in cache and must use a slower level.",
+    "A cache miss sends the request to RAM or to an upstream server.",
     ["cold miss"],
   ],
   [
@@ -306,9 +306,9 @@ const entries: [string, string, string, string, string[]?][] = [
   ],
   [
     "source",
-    "答案来源",
-    "Where an observed answer came from in the experiment.",
-    "The source can be the cache or the authority.",
+    "来源",
+    "The origin of a value, answer or file; in programming, source code is the text a compiler or interpreter reads.",
+    "The source of an answer can be cache or authority, and source code is the input to a compiler.",
   ],
   [
     "invalidate",

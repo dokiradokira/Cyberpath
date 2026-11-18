@@ -10,7 +10,7 @@ const howComputersWork: Lesson = {
   zh: "计算机如何工作",
   description:
     "Follow one instruction from memory to result, and learn why speed is a chain of trade-offs.",
-  minutes: 55,
+  minutes: 60,
   available: true,
   introducedIn: 2,
   category: "计算机基础",
@@ -21,119 +21,528 @@ const howComputersWork: Lesson = {
       "Lesson 1 is useful background, but no networking knowledge is required here.",
     ],
     technicalGoals: [
-      "Trace the fetch, decode and execute steps of one machine instruction.",
-      "Explain why registers, cache, RAM and storage form a hierarchy instead of one pool of memory.",
-      "Decide whether a slow task is limited by the CPU, memory or storage, and say which evidence supports the claim.",
+      "Trace fetch, decode, execute and write-back for one machine instruction, and explain why a real CPU may pipeline those stages.",
+      "Explain the register–cache–RAM–storage hierarchy with temporal and spatial locality, cache lines, latency and bandwidth.",
+      "Separate memory-bound execution (waiting on memory latency or bandwidth) from memory pressure, paging and thrashing.",
+      "Use CPU, memory and disk evidence to classify a slow workload, and say which measurement would confirm the claim.",
       "Distinguish a program stored on disk from the process that runs in memory.",
     ],
     englishGoals: [
-      "Use instruction, register and execute as precise technical nouns and verbs.",
-      "Read an English performance sentence such as 'the workload is memory-bound' and state what it excludes.",
+      "Use fetch, decode, execute and write back as precise technical verbs for what a processor does.",
+      "Use latency, bandwidth, working set and memory pressure to describe performance without confusing them.",
       "Explain cause and evidence with because, whereas and therefore.",
     ],
     completion:
-      "完成标准：用一条指令的执行过程解释「打开程序」到底发生了什么，并用 CPU、内存、磁盘三类证据判断一个慢场景的瓶颈。",
+      "完成标准：用一条指令的取指、译码、执行与写回解释「打开程序」发生了什么；说明 memory-bound 与 memory pressure / paging 的区别；用 CPU、内存、磁盘三类证据判断一个慢场景的瓶颈，并指出还需要补充哪项证据。",
   },
   objectives: [
-    "Describe the fetch-decode-execute cycle in your own words.",
-    "Explain why RAM is faster than an SSD but loses its contents when power is off.",
-    "Use Task Manager evidence to classify a slow task as CPU-bound, memory-bound or I/O-bound.",
+    "Describe the fetch-decode-execute-write-back cycle in your own words and explain how a pipeline overlaps it.",
+    "Explain why RAM is faster than an SSD but loses its contents when power is off, and when a cache hit or miss occurs.",
+    "Distinguish a memory-bound workload from memory pressure and paging, with evidence for each.",
+    "Use Task Manager and Resource Monitor evidence to classify a slow task as CPU-bound, memory-bound or I/O-bound.",
   ],
   sections: [
     {
       id: "hsw-case-study",
       title: "A slow laptop is a clue, not a diagnosis",
-      text: "At 09:10, Ada opens twelve browser tabs and joins a video call. The fan becomes loud, the cursor lags, and the call freezes for two seconds. She concludes that the internet is slow. Her colleague opens Task Manager and reads a different story: the CPU is at 96%, memory is at 91%, the disk is busy 100% of the time, and the network is almost idle.\n\nThe same symptom can come from four different resources. A CPU-bound task waits for computation. A memory-bound task waits because data does not fit in RAM and the system swaps to disk. An I/O-bound task waits for storage or network. A network-bound task waits for packets. Each explanation predicts a different measurement, so the measurement should come before the purchase.\n\nThis lesson builds the model behind those four words. It is not a tour of hardware names. It is a way to predict which resource will become the bottleneck when you change a program, a file size or a machine.",
+      text: "At 09:10, Ada opens twelve browser tabs and joins a video call. The fan becomes loud, the cursor lags, and the call freezes for two seconds. She concludes that the internet is slow. Her colleague opens Task Manager and reads a different story: the CPU is at 96%, memory is at 91%, the disk is busy 100% of the time, and the network is almost idle.\n\nThe same symptom can come from four different limiting resources. A CPU-bound task waits for computation. A memory-bound task waits for data: the values may fit in RAM, but memory access latency or bandwidth keeps the processor waiting. An I/O-bound task waits for storage or network. A network-bound task waits for packets. Each explanation predicts a different measurement, so measure before buying anything. A single number such as 95% memory use is not a diagnosis; it may be healthy cache.\n\nMemory use is not the same thing as memory pressure. Operating systems deliberately fill free RAM with cached data, so a machine can show high memory use and still be comfortable. Pressure appears when the working set no longer fits and the system begins paging. Section 6 separates memory-bound execution, memory pressure, paging and thrashing, because confusing them leads to the wrong upgrade.\n\nThis lesson builds the model behind those words. It is not a tour of hardware names. It is a way to predict which resource will become the bottleneck when you change a program, a file size or a machine, and to notice when your evidence is still incomplete.",
     },
     {
       id: "hsw-instruction-cycle",
       title: "The fetch-decode-execute cycle",
-      text: "A modern computer is a stored-program machine. Memory holds both instructions and data, and the CPU does not know the difference until it interprets a value. A special register called the program counter (PC) holds the address of the next instruction. The CPU fetches the instruction at that address, decodes its operation and operands, executes the operation, and writes a result back to a register or to memory.\n\nConsider three instructions. LOAD copies a value from memory into a register. ADD adds two values. STORE writes a register back to memory. A program that adds two numbers is a short list of such instructions plus a HALT marker. The arithmetic logic unit (ALU) performs the addition, while registers hold the values that are being worked on right now.\n\nThe clock is a rhythm, not a speed limit on its own. A 3 GHz CPU can start roughly three billion cycles per second, but one instruction may need several cycles, and a memory read can need hundreds. Modern processors also overlap instructions in a pipeline, so several are in flight at once. 'One instruction at a time' is a useful teaching model, not a literal description of the hardware.",
+      text: "A machine instruction is the basic unit of work defined by a processor's instruction set architecture (ISA), encoded as an opcode plus the operands it needs. One instruction may be decoded into several micro-operations, the smaller internal steps a particular core actually performs; the instruction set defines which instructions an architecture can execute. A modern computer is a stored-program machine: the same memory holds instructions and data, and the CPU does not know the difference until it interprets the bits. Modern processors may also use separate instruction and data caches close to the core, even though both ultimately address the same stored program. A special register called the program counter (PC) holds the address of the next instruction; fetch reads the instruction at that address, decode works out the operation and operands, execute performs it, and write-back stores the result in a register or memory.\n\nConsider a four-instruction program. LOAD copies memory[10] into a register called the accumulator (ACC). ADD adds memory[11] to ACC, using the arithmetic logic unit (ALU). STORE writes ACC to memory[12]. HALT stops the program. With memory[10]=7 and memory[11]=5, the result is 12. Write-back is not decoration: memory[12] changes only when STORE writes to it, even though the addition already happened in the ALU.\n\nThe stage names are a teaching model, not a law. A classic pipeline is often drawn as fetch, decode, execute, memory and write-back; some processors merge memory and execute, and some split decode into several stages. This lesson's simulator uses three phases (fetch, decode, execute) and folds write-back into execute, so the STORE result appears during the execute step. Real hardware still needs a write-back path; the simulator just does not draw it as a separate phase.\n\nModern processors overlap instructions in a pipeline: while one instruction executes, the next can be decoded and a third fetched. Overlap primarily increases throughput (instructions completed per second); it does not guarantee lower latency for any single instruction, and a stall can make one instruction slower. Branches, data dependencies and cache misses can stall the pipeline, which is why clock speed alone does not predict performance.\n\nA common misconception is that execute is the only stage that changes anything. The PC changes as instructions advance, load and store instructions move data, and write-back makes a result visible. Another misconception is that every CPU must use exactly these five stages; the stages describe the work that must happen, not a fixed hardware schedule.",
     },
     {
       id: "hsw-memory-hierarchy",
       title: "Why memory is a hierarchy, not one bucket",
-      text: "Registers are the fastest storage and hold only a few values. Small caches sit beside each CPU core and keep recently used data close. RAM is larger and slower, and an SSD or hard disk is much larger and much slower again. The exact numbers change every year, but the order of magnitude does not: registers and cache are nanoseconds, RAM is tens to hundreds of nanoseconds, an SSD is tens of microseconds, and a spinning disk is milliseconds.\n\nA cache exists because programs reuse data. If a loop reads the same array many times, keeping part of it in cache avoids repeated trips to RAM. This is called locality: temporal locality means the same value is used again soon, and spatial locality means nearby addresses are used together. Cache lines move data in blocks, not one byte at a time.\n\nRAM is volatile: it loses its contents when power is removed. An SSD keeps data without power, but it is not a backup. A file can be deleted, a disk can fail, and a laptop can be lost. The hierarchy explains speed, not safety.",
+      text: "Registers sit inside the processor and hold only a few values, but they are the fastest storage. Small L1 and L2 caches usually sit beside each core, while a larger last-level cache (often L3) is shared by several cores; all of them keep recently used data close. RAM is much larger and slower, and an SSD or hard disk is larger and slower again. The hierarchy exists because fast memory is expensive and physically close to the core, while large memory has to be farther away. The exact numbers change every year, but the order of magnitude does not: a register access is a fraction of a nanosecond, cache is a few nanoseconds, RAM is tens to hundreds of nanoseconds, and an SSD is tens of microseconds.\n\nA cache works because programs reuse data. Temporal locality means the same value is used again soon, as when a loop repeatedly reads a counter. Spatial locality means nearby addresses are used together, as when a loop walks through an array. Memory moves in cache lines, typically 64 bytes, so touching one byte can bring its neighbours along. A cache hit means the data was already in cache; a cache miss means the request retrieves data from a slower level. Cache lines and hits are why sequential access often beats random access.\n\nLatency and bandwidth are different. Latency is how long one request takes; bandwidth is how many bytes can be transferred per second. A bus can have high bandwidth and still make a single dependent access slow. Random pointer chasing is latency-bound because each address depends on the previous value; streaming a large file is bandwidth-bound because the bytes are independent but plentiful.\n\nThis is the case that memory-bound language often misses. An array can fit in memory and still leave the CPU waiting: if the access pattern has poor locality, most reads miss cache and pay the RAM latency, and if the program demands bytes faster than the memory system can deliver, it saturates memory bandwidth. No swapping is involved. The fix may be a better layout or fewer dependent accesses, not more RAM.\n\nRAM is volatile: it loses its contents when power is removed. An SSD keeps data without power, but it is not a backup. A file can be deleted, a disk can fail, and a laptop can be lost. The hierarchy explains speed, not safety.",
     },
     {
       id: "hsw-data-flow",
       title: "From keystroke to pixels",
-      text: "When you press a key, a controller reports an event, the operating system delivers it to the focused application, and the application updates memory. The CPU runs the code that reacts, and the graphics processor (GPU) draws the new frame. A network packet follows a similar path through a network interface and a device driver. In each case, data moves between a device and memory before software can use it.\n\nMemory is byte-addressable. Every byte has an address, and a value such as the letter A is stored as a number using an encoding such as UTF-8. A text file is therefore bytes plus an agreed interpretation. This is why a file can look like gibberish in the wrong program: the bytes are intact, but the interpretation is wrong.\n\nMany devices write directly into memory with direct memory access (DMA), so the CPU does not copy every byte itself. That improves throughput, but it also means a buggy driver can corrupt memory. The abstraction is clean only while the implementation is correct.",
+      text: "When you press a key, a controller detects the electrical change and reports an event. The operating system's device driver receives that event, translates it into a form the system understands, and delivers it to the focused application. The application updates memory, the CPU runs the code that reacts, and the graphics processor (GPU) draws the new frame. A network packet follows a similar path through a network interface and its driver. In every case, data moves between a device and memory before software can use it.\n\nMemory is byte-addressable: every byte has its own address. A character such as A is stored as a number using an encoding such as UTF-8, so a text file is bytes plus an agreed interpretation. This is why a file can look like gibberish in the wrong program: the bytes are intact, but the interpretation is wrong. It is also why file size and character count are not always the same number.\n\nMany devices write directly into memory with direct memory access (DMA), so the CPU does not copy every byte itself. The CPU programs the controller; completion commonly raises an interrupt, though polling and other completion mechanisms also exist. DMA improves throughput and frees the processor, but it also means a buggy driver can corrupt memory, which is why drivers and IOMMU protections matter.\n\nA common misconception is that the CPU personally copies every byte from every device. In practice, controllers and DMA engines move most data; the CPU coordinates and consumes it. The abstraction is clean only while the implementation is correct.",
     },
     {
       id: "hsw-program-run",
       title: "What actually happens when you open an app",
-      text: "The icon is not the program. The program is an executable file on storage, containing machine code and data. When you open it, the operating system's loader maps the file into a new process, assigns an address space, and starts execution at an entry point. The process then has code, initialized data, a heap for dynamic allocation and a stack for function calls.\n\nMost software is written in a higher-level language and translated before it runs. A compiler translates source code into machine code ahead of time. An interpreter reads and executes a representation of the program while it runs. Some languages use both: bytecode is compiled first and then executed by a virtual machine. The distinction matters because it predicts startup time, portability and error timing.\n\nA running process is more than its code. It owns memory, open files, network connections and permissions. Two instances of the same executable are two processes with separate state. When you close a window, the program may keep running in the background, which is why 'I closed it' and 'it stopped' are different claims.",
+      text: "The icon is not the program. The program is an executable file on storage, containing machine code and data. When you open it, the operating system's loader maps the executable into the process address space and does not load into memory every page up front; individual pages are brought in on demand as the program touches them. This mapping turns a passive file into code and data that the CPU can use. The process then has code, initialized data, a heap for dynamic allocation and a stack for function calls, local variables and return addresses.\n\nMost software is written in a higher-level language and translated before it runs. A compiler translates source code into machine code ahead of time. An interpreter reads and executes a representation of the program while it runs. Some languages use both: bytecode is compiled first and then executed by a virtual machine. The distinction matters because it predicts startup time, portability and when errors appear; a compiler can reject a type error before the program starts, while an interpreter may only discover it on the line it reaches.\n\nA running process is more than its code. It owns memory, open files, network connections and permissions. Two instances of the same executable are two processes with separate state, even though they share the same file on disk. When you close a window, the program may keep running in the background, which is why 'I closed it' and 'it stopped' are different claims.\n\nA common misconception is that the executable is the running program. The file is passive; the process is the active instance with an address space and resources. Another is that compiling and running are the same step: compilation produces code, execution consumes it later.",
     },
     {
       id: "hsw-performance",
       title: "Bottlenecks: CPU-bound, memory-bound, I/O-bound",
-      text: "A workload is CPU-bound when the processor is the limiting resource: video encoding, compiling code, or a tight numerical loop. It is memory-bound when the working set does not fit in RAM and the machine spends time moving pages to disk. It is I/O-bound when storage or network latency dominates: copying many small files, waiting for a database, or downloading an update.\n\nThe classification is about the limiting resource, not the program's category. A video editor is CPU-bound while exporting and I/O-bound while importing footage. A browser is network-bound on a slow connection and CPU-bound on a heavy page with complex scripts. You cannot tell from the application name; you tell from the measurement.\n\nSwapping deserves special attention. When RAM is full, the operating system moves pages to disk to make room. Disk access is thousands of times slower than RAM, so the machine can appear frozen even though the CPU is mostly idle. Adding RAM helps this case; adding a faster CPU usually does not. A faster SSD helps, but it is still far slower than RAM.",
+      text: "A workload is CPU-bound when the processor is the limiting resource: video encoding, compiling code, or a tight numerical loop. It is memory-bound when the processor waits on the memory system: the theoretical working set may fit in RAM, but access latency, limited bandwidth or cache misses keep the core from making progress. It is I/O-bound when storage or network transfer dominates. The classification is about the limiting resource, not the application's name; a video editor is CPU-bound while exporting and I/O-bound while importing footage.\n\nThe theoretical working set is the set of pages a process actively uses during an interval. Windows reports a process working set with a narrower meaning: the pages currently resident in physical memory for that process, whether or not they are all in active use. A resident working set close to RAM is a warning sign, but it is not by itself proof of memory pressure. If the theoretical working set does not fit, the system faces memory pressure: available physical memory is short, so the kernel reclaims pages and may start paging.\n\nPaging moves fixed-size pages between RAM and disk; swapping moves pages to a swap area, and older systems swapped whole processes. A page fault occurs when a process touches a page that is not in its current working set. A soft fault resolves without disk I/O, for example from the standby list or a shared page already in memory; a hard fault must read the page from a backing store. That backing store is not necessarily the pagefile: it can be an EXE or DLL image, a memory-mapped file, or another file.\n\nCase A: an array fits in RAM, but the program chases pointers through it. Each load depends on the previous one, cache misses cost RAM latency, and the CPU stalls. This is memory-bound without memory pressure; evidence is high cache-miss or stall rates, low instructions per cycle, and no paging activity. Case B: the theoretical working set exceeds RAM, the kernel pages, hard faults and Pages/sec rise, the disk queue grows and the machine feels frozen. Both cases are slow, but only Case B is paging. Hard faults alone do not prove pagefile swapping; confirm which backing store and which disk traffic is involved.\n\nMeasurements must be read together. Page Faults/sec counts soft and hard faults. Pages Input/sec counts pages read from disk to resolve hard faults, while Pages Output/sec counts modified pages written back to disk to free physical memory. Pages/sec is their sum, not a count of hard-fault reads; it measures fault-related disk page I/O, and its pages can come from a pagefile, an image or a memory-mapped file rather than the pagefile alone. Ninety-five percent memory use can be healthy cache, so it does not prove swapping. Useful evidence includes available memory, the resident working set, Hard Faults/sec in Resource Monitor, Pages Input/Output/sec, disk queue or active time, and CPU wait/stall counters. High disk activity can also be a backup or an update, so ask whether the disk traffic is fault-driven and which file is being read. Throughput (work per second) and latency (time per operation) can point in different directions: high-bandwidth storage still feels slow when each request waits in a long queue.",
     },
     {
       id: "hsw-misconceptions",
       title: "Three expensive misconceptions",
-      text: "The first misconception is that a higher clock speed always means a faster computer. Real performance depends on how many instructions a core completes per cycle, how many cores do useful work, how much cache is available and whether the cooling system can sustain the clock. A laptop that throttles under load can be slower than a lower-clocked desktop.\n\nThe second is that closing applications always frees memory for other work. Operating systems use free RAM for caching, and unused memory is wasted memory. Closing an application can help when it holds a large working set, but the number of open windows is not a measurement.\n\nThe third is that a registry cleaner or 'optimizer' makes a machine faster. At best it changes little; at worst it removes settings that software depends on. Prefer measurable actions: remove startup programs you recognize, keep free disk space, update drivers from the vendor and back up before changing system settings. A slow machine is a diagnostic problem before it is a shopping problem.",
+      text: "The first misconception is that a higher clock speed always means a faster computer. Real performance depends on how many instructions a core completes per cycle, how many cores do useful work, how much cache is available and whether the cooling system can sustain the clock. A laptop that throttles under load can be slower than a lower-clocked desktop.\n\nThe second is that closing applications always frees memory for other work. Operating systems use free RAM for caching, and unused memory is wasted memory. Closing an application can help when it holds a large working set, but the number of open windows is not a measurement. Likewise, high memory use alone is not proof of memory pressure; check fault types and whether the disk traffic comes from the pagefile before concluding that the machine is swapping.\n\nThe third is that a registry cleaner or 'optimizer' makes a machine faster. At best it changes little; at worst it removes settings that software depends on. Prefer measurable actions: remove startup programs you recognize, keep free disk space, update drivers from the vendor and back up before changing system settings. A slow machine is a diagnostic problem before it is a shopping problem.",
     },
     {
       id: "hsw-summary",
       title: "What you can now explain",
-      text: "You can now describe one instruction as fetch, decode, execute and write-back, and explain why the program counter matters. You can place registers, cache, RAM and storage on a speed hierarchy and say why the hierarchy exists. You can distinguish a program on disk from a process in memory, and you can classify a slow workload by its limiting resource.\n\nThe operating system is the next layer. It decides which process runs, which memory pages are resident, and which file a path refers to. The next lesson opens that layer and shows how the same hardware becomes many isolated programs.",
+      text: "You can now describe one instruction as fetch, decode, execute and write-back, and explain why a real CPU may pipeline those stages while a teaching model may merge them. You can place registers, cache, RAM and storage on a speed hierarchy and explain locality, cache lines, hits, misses, latency and bandwidth.\n\nYou can distinguish a program on disk from a process in memory with an address space, heap and stack. You can classify a slow workload by its limiting resource, and you can separate memory-bound execution from memory pressure, paging and thrashing instead of treating them as synonyms.\n\nThe operating system is the next layer. It decides which process runs, which memory pages are resident, and which file a path refers to. The next lesson opens that layer and shows how the same hardware becomes many isolated programs.",
     },
   ],
   vocabulary: [
     {
-      word: "instruction",
-      zh: "指令",
+      word: "program counter",
+      zh: "程序计数器",
       definition:
-        "A single operation a processor can perform, such as loading a value or adding two numbers.",
+        "A register that holds the address of the next instruction to fetch.",
       example:
         "The program counter holds the address of the next instruction to fetch.",
+      aliases: ["PC"],
+    },
+    {
+      word: "operand",
+      zh: "操作数",
+      definition: "A value or location that an instruction reads or writes.",
+      example:
+        "The ADD instruction reads two operands and writes one result.",
+    },
+    {
+      word: "ALU",
+      zh: "算术逻辑单元",
+      definition:
+        "The part of a CPU that performs arithmetic and logic operations.",
+      example: "The ALU adds the two register values.",
+      aliases: ["arithmetic logic unit"],
+    },
+    {
+      word: "pipeline",
+      zh: "流水线",
+      definition:
+        "A technique that overlaps stages of several instructions to increase throughput.",
+      example:
+        "A pipeline keeps several instructions in flight at once.",
+    },
+    {
+      word: "temporal locality",
+      zh: "时间局部性",
+      definition:
+        "The tendency to reuse the same data soon after it was accessed.",
+      example: "Temporal locality makes a loop counter stay in cache.",
+    },
+    {
+      word: "spatial locality",
+      zh: "空间局部性",
+      definition:
+        "The tendency to access nearby memory addresses together.",
+      example:
+        "Spatial locality makes sequential array access cache-friendly.",
+    },
+    {
+      word: "cache line",
+      zh: "缓存行",
+      definition: "The fixed-size block of memory moved into a cache.",
+      example:
+        "A cache line is typically 64 bytes on a modern CPU.",
+      aliases: ["cache lines"],
+    },
+    {
+      word: "working set",
+      zh: "工作集",
+      definition:
+        "The set of pages a process actively uses over an interval (the theoretical working set); Windows also reports a process working set meaning the pages currently resident in physical memory.",
+      example:
+        "If the theoretical working set exceeds RAM, the system starts paging.",
+    },
+    {
+      word: "address space",
+      zh: "地址空间",
+      definition:
+        "The range of addresses a process can use, isolated from other processes.",
+      example: "Each process has its own address space.",
+    },
+    {
+      word: "heap",
+      zh: "堆",
+      definition:
+        "The memory area used for dynamic allocation while a program runs.",
+      example:
+        "The loader reserves a heap for objects created at runtime.",
+    },
+    {
+      word: "stack",
+      zh: "栈",
+      definition:
+        "The memory area holding function calls, local variables and return addresses.",
+      example: "Each function call pushes a frame onto the stack.",
+    },
+    {
+      word: "bytecode",
+      zh: "字节码",
+      definition:
+        "An intermediate instruction format executed by a virtual machine.",
+      example:
+        "Bytecode is compiled once and then run by a virtual machine.",
+    },
+    {
+      word: "virtual machine",
+      zh: "虚拟机",
+      definition:
+        "Software that executes an instruction format as if it were a computer.",
+      example:
+        "A virtual machine runs bytecode on different host platforms.",
+    },
+    {
+      word: "throughput",
+      zh: "吞吐量",
+      definition:
+        "The amount of work or data completed per unit of time.",
+      example:
+        "DMA increases throughput by moving data without CPU copies.",
+    },
+    {
+      word: "latency",
+      zh: "延迟",
+      definition: "The time from a request to its result.",
+      example:
+        "Memory latency is why a cache miss can stall the CPU.",
+    },
+    {
+      word: "fetch",
+      zh: "取指",
+      definition: "To read the next instruction from memory.",
+      example:
+        "The CPU fetches the instruction at the program counter.",
+    },
+    {
+      word: "decode",
+      zh: "译码",
+      definition:
+        "To interpret an instruction's opcode and operands.",
+      example:
+        "The decoder identifies ADD and its two operands.",
+    },
+    {
+      word: "execute",
+      zh: "执行",
+      definition:
+        "To carry out the operation that an instruction specifies.",
+      example: "The CPU executes ADD in the ALU.",
+    },
+    {
+      word: "allocate",
+      zh: "分配",
+      definition: "To reserve memory or a resource for later use.",
+      example:
+        "The program allocates a buffer before reading the file.",
+      aliases: ["allocation"],
+    },
+    {
+      word: "retrieve",
+      zh: "取回",
+      definition: "To read stored data and bring it back for use.",
+      example:
+        "The cache retrieves a line from RAM after a miss.",
+    },
+    {
+      word: "overlap",
+      zh: "重叠执行",
+      definition:
+        "To run parts of different instructions at the same time.",
+      example:
+        "Pipelining overlaps fetch, decode and execute.",
+    },
+    {
+      word: "map",
+      zh: "映射到",
+      definition:
+        "To associate an address, file or object with another location.",
+      example:
+        "The loader maps the executable into the process address space.",
+    },
+    {
+      word: "swap",
+      zh: "交换（换页）",
+      definition:
+        "To move pages between RAM and disk when memory is tight.",
+      example:
+        "The system begins to swap when the working set exceeds RAM.",
+      aliases: ["swaps", "swapping", "swapped"],
+    },
+    {
+      word: "throttle",
+      zh: "降频",
+      definition:
+        "To reduce a processor's clock to stay within power or temperature limits.",
+      example:
+        "The laptop throttles under sustained load and becomes slower.",
+    },
+    {
+      word: "load",
+      zh: "载入",
+      definition:
+        "To copy data or an instruction from memory into a register, or from storage into memory.",
+      example: "LOAD copies memory[10] into the accumulator.",
+    },
+    {
+      word: "store",
+      zh: "存储（写入）",
+      definition: "To write a value from a register into memory.",
+      example: "STORE writes the accumulator to memory[12].",
+    },
+    {
+      word: "write back",
+      zh: "写回",
+      definition:
+        "The stage that writes an instruction's result to a register or memory.",
+      example:
+        "Write back makes the result visible after execute.",
+      aliases: ["write-back", "writes back"],
+    },
+    {
+      word: "load into memory",
+      zh: "载入内存",
+      definition:
+        "To copy code or data from storage into RAM before use.",
+      example:
+        "The loader maps the file and does not need to load into memory every page before execution starts.",
+    },
+    {
+      word: "fit in memory",
+      zh: "可装入内存",
+      definition:
+        "To be small enough to reside in available RAM at once.",
+      example:
+        "When the whole array does not fit in memory, the system pages.",
+      aliases: ["fits in memory"],
+    },
+    {
+      word: "memory access",
+      zh: "内存访问",
+      definition: "A read or write that reaches a level of memory.",
+      example:
+        "A cache miss turns one memory access into a slower trip to RAM.",
+    },
+    {
+      word: "direct memory access",
+      zh: "直接内存访问",
+      definition:
+        "A mechanism that lets a device transfer data to or from memory without the CPU copying each byte.",
+      example:
+        "Direct memory access moves disk blocks while the CPU works on other tasks.",
+      aliases: ["DMA"],
+    },
+    {
+      word: "CPU-bound",
+      zh: "受 CPU 限制的",
+      definition:
+        "Limited by processor computation rather than waiting for memory or I/O.",
+      example: "Video export is CPU-bound on most laptops.",
+      aliases: ["CPU-bound workload"],
+    },
+    {
+      word: "memory-bound",
+      zh: "受内存限制的",
+      definition:
+        "Limited by memory access latency or bandwidth, even when the data fits in RAM.",
+      example:
+        "A pointer-chasing loop can be memory-bound without any swapping.",
+    },
+    {
+      word: "I/O-bound",
+      zh: "受 I/O 限制的",
+      definition:
+        "Limited by storage or network transfer rather than computation.",
+      example: "Copying thousands of small files is I/O-bound.",
+    },
+    {
+      word: "paging",
+      zh: "分页",
+      definition:
+        "Moving fixed-size pages between RAM and disk as memory pressure changes.",
+      example:
+        "Paging appears when the working set no longer fits in RAM.",
+    },
+    {
+      word: "thrashing",
+      zh: "抖动",
+      definition:
+        "Severe slowdown caused by continuous page faults and page replacement.",
+      example:
+        "Thrashing leaves the CPU mostly idle while the disk stays busy.",
+    },
+    {
+      word: "page fault",
+      zh: "缺页",
+      definition: "An access to a page that is not in the process's working set; a soft fault needs no disk I/O, while a hard fault must read from a backing store such as a pagefile, image or memory-mapped file.",
+      example:
+        "A hard page fault reads the page from a backing store, which is not always the pagefile.",
+      aliases: ["page faults"],
+    },
+    {
+      word: "memory pressure",
+      zh: "内存压力",
+      definition:
+        "A shortage of available physical memory that forces reclaiming or paging.",
+      example:
+        "Rising hard faults and a large working set indicate memory pressure.",
+    },
+    {
+      word: "device driver",
+      zh: "设备驱动程序",
+      definition:
+        "Operating-system code that controls a hardware device.",
+      example:
+        "The device driver programs the controller and handles interrupts.",
+      aliases: ["device drivers"],
+    },
+    {
+      word: "GPU",
+      zh: "图形处理器",
+      definition:
+        "A processor optimized for parallel graphics and data work.",
+      example:
+        "The GPU draws the next frame after the CPU updates the scene.",
+      aliases: ["graphics processor"],
+    },
+    {
+      word: "byte-addressable",
+      zh: "按字节寻址",
+      definition:
+        "Describing memory in which every byte has its own address.",
+      example:
+        "Byte-addressable memory gives each character a distinct address.",
+    },
+    {
+      word: "UTF-8",
+      zh: "UTF-8 编码",
+      definition:
+        "A variable-width encoding of Unicode text using bytes.",
+      example: "UTF-8 stores the letter A as a single byte.",
+    },
+    {
+      word: "controller",
+      zh: "控制器",
+      definition:
+        "Hardware that operates a device and reports events to the CPU.",
+      example: "The keyboard controller reports a key press.",
+    },
+    {
+      word: "encoding",
+      zh: "编码",
+      definition:
+        "An agreed mapping from characters or values to bytes.",
+      example:
+        "The same bytes look wrong when decoded with the wrong encoding.",
+    },
+    {
+      word: "core",
+      zh: "核心",
+      definition: "An independent processing unit inside a CPU.",
+      example: "A quad-core CPU can run four instruction streams.",
+    },
+    {
+      word: "clock speed",
+      zh: "时钟速度",
+      definition:
+        "The number of clock cycles per second, not a complete measure of performance.",
+      example:
+        "Higher clock speed helps only if the core does more useful work per cycle.",
+    },
+    {
+      word: "executable",
+      zh: "可执行文件",
+      definition:
+        "A file containing machine code and data that the operating system can load.",
+      example:
+        "The executable is stored on disk until the loader starts it.",
+    },
+    {
+      word: "loader",
+      zh: "加载器",
+      definition:
+        "The operating-system component that maps an executable into a process.",
+      example:
+        "The loader assigns an address space and starts at the entry point.",
+    },
+    {
+      word: "interpreter",
+      zh: "解释器",
+      definition:
+        "A program that executes source or bytecode while reading it.",
+      example:
+        "An interpreter can run a script without a separate compile step.",
+    },
+    {
+      word: "machine instruction",
+      zh: "机器指令",
+      definition:
+        "An instruction encoded for a specific processor, with an opcode and operands.",
+      example:
+        "A machine instruction combines an operation code with its operands.",
+    },
+    {
+      word: "source code",
+      zh: "源代码",
+      definition:
+        "Human-written program text before compilation or interpretation.",
+      example:
+        "A compiler translates source code into machine instructions.",
     },
     {
       word: "register",
       zh: "寄存器",
       definition:
-        "A very small, very fast storage location inside the processor used for current values.",
+        "A very small, very fast storage location inside the processor used for current values; special registers include the program counter and accumulator.",
       example: "The ADD instruction writes its result into a register.",
     },
     {
       word: "volatile",
       zh: "易失的",
-      definition: "Losing stored contents when electrical power is removed.",
+      definition:
+        "Losing stored contents when electrical power is removed; volatile memory is fast but cannot preserve data across a reboot.",
       example:
         "RAM is volatile, so an unsaved document disappears after a power cut.",
     },
     {
-      word: "clock cycle",
-      zh: "时钟周期",
+      word: "accumulator",
+      zh: "累加寄存器",
       definition:
-        "One tick of the processor clock that paces when work can begin.",
-      example:
-        "A memory read can take hundreds of clock cycles, while a register read takes one.",
+        "A register that holds an intermediate result, such as a running sum.",
+      example: "The accumulator holds the sum while ADD runs.",
+      aliases: ["ACC"],
     },
     {
-      word: "byte",
-      zh: "字节",
+      word: "opcode",
+      zh: "操作码",
       definition:
-        "A unit of eight bits, usually the smallest addressable unit of memory.",
-      example: "Each byte of the text file has its own address in memory.",
+        "The part of a machine instruction that selects the operation to perform.",
+      example: "The opcode tells the decoder to perform ADD.",
+      aliases: ["operation code"],
     },
     {
-      word: "compiler",
-      zh: "编译器",
+      word: "instruction set",
+      zh: "指令集",
       definition:
-        "A program that translates source code into machine code or another executable form before it runs.",
-      example:
-        "A compiler reports a type error before the program ever starts.",
+        "The set of machine instructions a processor architecture can execute.",
+      example: "The instruction set defines which operations the CPU supports.",
+      aliases: ["ISA"],
     },
     {
-      word: "bandwidth",
-      zh: "带宽",
+      word: "micro-operation",
+      zh: "微操作",
       definition:
-        "The maximum amount of data a link or component can transfer per unit of time.",
+        "A small internal step into which a machine instruction may be decoded.",
+      example: "One machine instruction can become several micro-operations.",
+      aliases: ["micro-operations", "micro-op"],
+    },
+    {
+      word: "interrupt",
+      zh: "中断",
+      definition:
+        "A signal that makes the processor stop current work and run a handler.",
+      example: "A device can raise an interrupt when its transfer completes.",
+    },
+    {
+      word: "memory bandwidth",
+      zh: "内存带宽",
+      definition:
+        "The maximum rate at which data can move between the processor and memory.",
       example:
-        "High bandwidth does not fix high latency when many small requests are sent.",
+        "Streaming an array can saturate memory bandwidth even when it fits in RAM.",
     },
   ],
   labs: ["cpu"],
@@ -141,17 +550,23 @@ const howComputersWork: Lesson = {
     {
       command: "Get-Process | Sort-Object CPU -Descending | Select-Object -First 5",
       explanation:
-        "按累计 CPU 时间排序，先看是谁在消耗处理器。数字是累计值，不是瞬时占用率。",
+        "按累计 CPU 时间排序，先看是谁在消耗处理器。这个数字是累计秒数，不是当前占用率；要判断瞬时负载，请用任务管理器的“CPU”列，或间隔一段时间取两次差值。",
     },
     {
       command: "Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory",
       explanation:
-        "查看物理内存总量与空闲量（KB）。空闲内存很少不一定异常，系统会用空闲内存做缓存。",
+        "查看物理内存总量与空闲量（KB）。空闲内存少不等于内存压力：系统会用空闲内存做缓存；应结合 Page Faults/sec（含软/硬缺页）、Pages/sec（硬缺页引发的磁盘页读写）与进程驻留工作集判断。",
     },
     {
       command: "Get-PSDrive C | Select-Object Used,Free",
       explanation:
-        "查看 C 盘已用与剩余空间。磁盘接近写满会显著拖慢系统与更新。",
+        "只表示 C 盘空间用量，不能说明磁盘是否繁忙。磁盘活动率、队列长度请在任务管理器或资源监视器查看；磁盘写满与磁盘正在频繁读写是两件事。",
+    },
+    {
+      command:
+        "Get-CimInstance Win32_PerfFormattedData_PerfOS_Memory | Select-Object AvailableMBytes,PageFaultsPersec,PagesPersec,PagesInputPersec,PagesOutputPersec",
+      explanation:
+        "读取可用内存（MB）与 Page Faults/sec、Pages/sec、Pages Input/sec、Pages Output/sec，只读、安全。Page Faults/sec 包含软缺页和硬缺页；Pages Input/sec 统计为处理硬缺页而从磁盘读取的页，Pages Output/sec 统计为释放物理内存而写回磁盘的已修改页，Pages/sec 是二者之和，不能简单理解为硬缺页读取次数。它不指向唯一文件：pagefile、映像和内存映射文件都可能产生这些页；资源监视器的 Hard Faults/sec 是进程级硬缺页视图，不能把全部 Pages/sec 都当作 pagefile swapping。",
     },
   ],
   quiz: [
@@ -166,21 +581,27 @@ const howComputersWork: Lesson = {
       ],
       answer: 1,
       explanation:
-        "The processor fetches the instruction at the program counter, decodes it, executes it, and writes a result back to a register or memory.",
+        "The processor fetches the instruction at the program counter, decodes it, executes it, and writes a result back to a register or memory. Some CPUs split or merge these stages, but the work still has to happen.",
     },
     {
       id: "h2",
       prompt:
-        "A machine shows 95% memory use, heavy disk activity and low CPU use. Which explanation fits best?",
+        "A Windows laptop feels slow. Task Manager shows 95% memory in use, disk active time 100%, and CPU 8%. Resource Monitor shows the process's Hard Faults/sec rising, elevated Pages Input/sec and Pages/sec, and the largest process has a 6 GB resident working set on an 8 GB machine. Which conclusion is best supported?",
       options: [
         "The CPU is the bottleneck and needs an upgrade",
-        "The network is dropping packets",
-        "The working set does not fit in RAM, so the system is swapping",
-        "The graphics card cannot draw enough frames",
+        "Memory pressure with hard faults is likely; confirm whether the disk traffic is pagefile activity or image/mapped-file reads before calling it swapping",
+        "High memory use alone proves pagefile swapping, so no further evidence is needed",
+        "Page Faults/sec and Pages/sec measure the same thing, so every fault must be reading the pagefile",
       ],
-      answer: 2,
+      answer: 1,
       explanation:
-        "High memory use plus heavy disk traffic with low CPU use is the classic pattern of swapping pages to disk.",
+        "High memory use can be healthy cache, and a resident working set is not the same as the theoretical working set. Page Faults/sec is the performance counter that includes soft and hard faults; Resource Monitor's Hard Faults/sec is a process-level view of hard faults. Pages Input/sec reads pages to resolve hard faults, Pages Output/sec writes modified pages back to free physical memory, and their sum is Pages/sec. A hard fault can be served from an EXE or DLL image or a memory-mapped file, not only the pagefile. The current evidence supports memory pressure and hard faults; confirm the backing store and disk traffic source before asserting pagefile swapping.",
+      feedback: [
+        "The CPU is only 8% busy; a faster CPU would not reduce page faults or disk waits.",
+        "Correct. A resident working set close to RAM plus Hard Faults/sec and Pages Input/sec activity supports memory pressure; check Resource Monitor to see whether the pagefile, an image or a mapped file is being read before calling it swapping.",
+        "High memory use may be cache. Memory use alone does not prove pagefile swapping; fault types and disk targets are still missing.",
+        "Hard Faults/sec is not the same as Page Faults/sec: Page Faults/sec includes soft and hard faults, while Hard Faults/sec counts hard faults. Pages/sec adds page input/output I/O, and the backing store may be an image or mapped file rather than the pagefile.",
+      ],
     },
     {
       id: "h3",
@@ -193,7 +614,7 @@ const howComputersWork: Lesson = {
       ],
       answer: 3,
       explanation:
-        "A cache is a small, fast copy of data that would otherwise be fetched from a slower level of the hierarchy.",
+        "A cache is a small, fast copy of data that would otherwise be fetched from a slower level of the hierarchy. It does not compress the value or make storage permanent.",
     },
     {
       id: "h4",
@@ -206,7 +627,7 @@ const howComputersWork: Lesson = {
       ],
       answer: 0,
       explanation:
-        "The executable file is the program. Loading it creates a process with its own address space, open files and state.",
+        "The executable file is the program. Loading it creates a process with its own address space, heap, stack, open files and state.",
     },
     {
       id: "h5",
@@ -220,11 +641,12 @@ const howComputersWork: Lesson = {
       ],
       answer: 1,
       explanation:
-        "Video export is a compute-heavy task, so the processor is usually the limiting resource unless measurements show otherwise.",
+        "Video export is a compute-heavy task, so the processor is usually the limiting resource unless measurements show otherwise. Measurement still decides: check CPU time and wait states rather than assuming.",
     },
   ],
   exercises: [
     {
+      id: "u1",
       level: "Understand",
       prompt:
         "Which statement best explains what the program counter does during execution?",
@@ -243,6 +665,7 @@ const howComputersWork: Lesson = {
       ],
     },
     {
+      id: "a1",
       level: "Apply",
       prompt:
         "You edit the value in memory cell 11 and rerun the same three-instruction program. What should change?",
@@ -261,6 +684,7 @@ const howComputersWork: Lesson = {
       ],
     },
     {
+      id: "r1",
       level: "Reason",
       prompt:
         "A colleague says: 'The CPU is only at 20%, so the computer cannot be slow.' Why is this claim incomplete?",
@@ -278,13 +702,34 @@ const howComputersWork: Lesson = {
         "Correct. Low CPU use with high disk or memory wait still produces a slow experience.",
       ],
     },
+    {
+      id: "e1",
+      level: "Explain",
+      prompt:
+        "A program's working set fits entirely in RAM, yet its performance is still limited by memory access. Explain why this can happen, and describe the evidence you would collect to distinguish it from memory pressure.",
+      hints: [
+        "Where does the CPU wait when the data it needs is not in cache?",
+        "Consider both latency (time for one access) and bandwidth (bytes per second).",
+        "If the system were paging instead, what would happen to page faults, Pages/sec and disk activity?",
+        "Start with Task Manager or Resource Monitor; a profiler or hardware performance counters are the next step for cache misses, IPC and memory bandwidth."
+      ],
+      reference:
+        "Fitting in RAM removes the need to page; it does not remove the cost of reaching RAM. If the access pattern has poor locality, each access can miss cache and wait for a memory round trip, which is latency-bound. If the program streams data faster than the memory system can supply it, it can saturate bandwidth. Dependent loads such as pointer chasing can also leave the CPU stalled with little work to overlap. To distinguish this from memory pressure, collect cache-miss or stall counters, instructions per cycle, and memory bandwidth, and check that hard page faults, Pages/sec and paging-driven disk activity stay low while the working set remains below available memory. For a first pass, Task Manager and Resource Monitor provide the resident working set, hard-fault and Pages/sec evidence; a profiler or hardware performance counters add cache-miss, IPC and memory-bandwidth detail, but they are not required to demonstrate the distinction.",
+      pitfalls: [
+        "Assuming memory-bound always means 'not enough RAM' or swapping.",
+        "Looking only at CPU utilisation; a stalled CPU can show low or misleading percentages.",
+        "Ignoring the access pattern: sequential streaming is usually bandwidth-bound, while random dependent access is usually latency-bound.",
+        "Treating a high resident working set or hard faults as proof that the pagefile is being read.",
+      ],
+    },
   ],
   practice: {
     label: "WINDOWS / 实践指导",
     intro:
-      "Open Task Manager or Windows Terminal and collect three measurements: CPU time, memory pressure and disk activity. Compare what you expected with what the numbers show, and write both in your notes.",
+      "Open Task Manager and Resource Monitor, then use Windows Terminal for the read-only commands. Compare cumulative CPU time, available physical memory, Page Faults/sec, Pages/sec and disk activity. Do not treat one number as a diagnosis, and do not assume every hard fault reads the pagefile.",
   },
 };
+
 
 const operatingSystemsBasics: Lesson = {
   id: "operating-systems-basics",

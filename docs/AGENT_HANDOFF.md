@@ -77,6 +77,120 @@ git push origin feature/v2.2-learning-experience
 
 ## 交接记录
 
+### Agent Handoff — 2026-11-17 Asia/Shanghai（DeepSeek Harness，Lesson 04 Pages/sec 最终措辞）
+
+- Previous Agent: DeepSeek Harness（Pages I/O 与 Hard Faults 修正 `5aa869f`）。
+- Current Development Phase: 发布前最后一次措辞收紧，不开启新优化。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修正前 `5aa869f`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 课程/测试/状态文档修改；`docs/review/`（含 FINAL 同步）保持未跟踪。
+- Latest Completed Task: 明确 `Pages/sec` 是 `Pages Input/sec` 与 `Pages Output/sec` 的合计，不能简单理解为硬缺页读取次数；对应单元断言更新，FINAL 审查材料同步。
+- Changed Files: `src/content/lessons/foundations.ts`、`tests/foundations.test.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`；`LESSON_04_REVIEW_PACKAGE_FINAL.md`（未跟踪）同步。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 152 项，定向 20/20，完整浏览器 124/124，LAN 2/2。
+- CI Status: 未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述文件；`docs/review/` 未跟踪。
+- Unpushed Commits: `06caf90`、`ba6bc3c`、`b74d675`、`5aa869f` 与本轮提交均未推送。
+- Known Issues: 仅 h2 有逐选项反馈；Explain 自评不写档案；模拟器不建模 cache/pipeline/独立 write-back；部分高级术语仅内联；截图为 Chromium。
+- Remaining Tasks: 独立审查后决定是否 Push；不再新增优化任务。
+- Next Recommended Action: 核对 FINAL 的 Pages 段落与 §8 测试结果。
+- Important Warnings: 不改稳定 ID/contentVersion/schema；审查材料不得删除；README 不动。
+
+### Agent Handoff — 2026-11-17 Asia/Shanghai（DeepSeek Harness，Lesson 04 Pages/sec 与 Hard Faults 收尾）
+
+- Previous Agent: DeepSeek Harness（FINAL 微调 `b74d675`）。
+- Current Development Phase: 最后一次定向修正，等待独立审查。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修正前 `b74d675`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 课程/测试/状态文档修改；`docs/review/`（V1/V2/V3/FINAL 与截图）保持未跟踪。
+- Latest Completed Task: Pages Input（硬缺页读取）/ Pages Output（写回释放内存）/ Pages 合计；h2 改用进程级 Hard Faults/sec，Page Faults/sec 保留为性能计数器。
+- Changed Files: `src/content/lessons/foundations.ts`、`tests/foundations.test.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`；`LESSON_04_REVIEW_PACKAGE_FINAL.md` 同步更新（未跟踪）。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 152 项，定向 20/20，完整浏览器 124/124，LAN 2/2。
+- CI Status: 未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述文件；`docs/review/` 未跟踪。
+- Unpushed Commits: `06caf90`、`ba6bc3c`、`b74d675` 与本轮提交均未推送。
+- Known Issues: 仅 h2 有逐选项反馈；Explain 自评不写档案；模拟器不建模 cache/pipeline/独立 write-back；部分高级术语仅内联；截图为 Chromium。
+- Remaining Tasks: 独立审查 FINAL 包；决定是否 Push。
+- Next Recommended Action: 核对 FINAL §1/§2.3/§5.2 的 Pages 与 Hard Faults 措辞。
+- Important Warnings: 不改稳定 ID/contentVersion/schema；审查材料不得删除；README 不动。
+
+### Agent Handoff — 2026-11-17 Asia/Shanghai（DeepSeek Harness，Lesson 04 FINAL 微调）
+
+- Previous Agent: DeepSeek Harness（V3 精度修复 `ba6bc3c`）。
+- Current Development Phase: 第三轮审查后的最终微调，等待独立审查，不 Push。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修复前 `ba6bc3c`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 课程/测试/状态文档修改；`docs/review/`（V1/V2/V3/FINAL 与截图）保持未跟踪。
+- Latest Completed Task: ISA 指令定义；loader demand paging；page fault 定义简化；Pages Input/Output 计数器与 Pages/sec 关系；独立 I/D cache 备注；对应测试更新。
+- Changed Files: `src/content/lessons/foundations.ts`、`tests/foundations.test.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 152 项，定向 20/20，完整浏览器 124/124，LAN 2/2。
+- CI Status: 未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述文件；`docs/review/` 未跟踪。
+- Unpushed Commits: `06caf90`、`ba6bc3c` 与本轮提交均未推送。
+- Known Issues: 仅 h2 有逐选项反馈；Explain 自评不写档案；模拟器不建模 cache/pipeline/独立 write-back；部分高级术语仅内联；截图为 Chromium。
+- Remaining Tasks: 独立审查 `LESSON_04_REVIEW_PACKAGE_FINAL.md`；决定是否 Push。
+- Next Recommended Action: 核对 §1 差异、§2 正文、§3 词汇、§8 测试结果。
+- Important Warnings: 不改稳定 ID/contentVersion/schema；不建第二词典；审查材料不得删除；README 不动。
+
+### Agent Handoff — 2026-11-16 Asia/Shanghai（DeepSeek Harness，Lesson 04 V3 精度修复）
+
+- Previous Agent: DeepSeek Harness（Lesson 04 教学升级 `06caf90`）。
+- Current Development Phase: 仅修复审查指出的 P0/P1 精度问题，不重写课程、不 Push。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 修复前 `06caf90`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 课程/组件/测试/状态文档修改；`docs/review/`（V1/V2/V3 与截图）保持未跟踪。
+- Latest Completed Task: Page Faults/sec 与 Pages/sec 区分；page fault 对 working set 的定义与 soft/hard fault；理论 vs Windows 进程 working set；hard fault 不必访问 pagefile；h2 证据与结论；pipeline/micro-op/cache 层级/DMA 中断；Explain 初学者/进阶指标；8 条词汇。
+- Changed Files: `src/content/lessons/foundations.ts`、`tests/foundations.test.ts`、`tests/e2e/lesson04-quality.spec.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 151 项，定向 20/20，完整浏览器 124/124，LAN 2/2。
+- CI Status: 本阶段未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述源码/测试/文档；`docs/review/` 未跟踪保留。
+- Unpushed Commits: `06caf90` 与本轮本地提交均未推送。
+- Known Issues: 仅 h2 有逐选项反馈；Explain 自评不写档案；模拟器仍不建模 cache/pipeline/独立 write-back；部分高级术语仅内联；截图为 Chromium。
+- Remaining Tasks: ChatGPT 第三轮独立审查；根据结论决定推送或继续修正。
+- Next Recommended Action: 审查 `docs/review/LESSON_04_REVIEW_PACKAGE_V3.md` 的 §1 差异、§3 词汇、§5 h2 与 §8 测试结果。
+- Important Warnings: 不改稳定 ID/contentVersion/schema；不建第二词典；审查材料不得删除；README 不动。
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，Lesson 04 教学质量升级）
+
+- Previous Agent: DeepSeek Harness（课程标准归档 `1c30d95`）。
+- Current Development Phase: Lesson 04 定向教学改进，暂不 Push，等待 ChatGPT 第二轮审查。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 升级前 `1c30d95`；本记录随本地提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 代码/测试/状态文档修改；`docs/review/`（V1/V2 与截图）保持未跟踪。
+- Latest Completed Task: memory-bound 与 memory pressure/paging/thrashing 分离；h2 证据与逐项反馈；write-back 与存储模型边界；Sections 2–6 深化；51 条共享词汇；跨课释义修正；Explain 练习；Windows 实践指标修正。
+- Changed Files: `src/content/lessons/foundations.ts`、`src/content/vocabulary.ts`、`src/content/dns-vocabulary.ts`、`src/types/index.ts`、`src/components/lessons/{lesson-practice,quiz}.tsx`、`src/components/labs/cpu-lab.tsx`、`tests/foundations.test.ts`、`tests/e2e/foundations.spec.ts`、新增 `tests/e2e/lesson04-quality.spec.ts`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: typecheck、lint、unit、build、targeted Lesson 04、完整 e2e、LAN。
+- Test Results: 全部通过；单元 21 文件 151 项，完整浏览器 124/124，LAN 2/2。
+- CI Status: 本阶段未 Push，无新 CI。
+- Uncommitted Changes: 提交前为上述源码/测试/文档；`docs/review/` 未跟踪保留。
+- Unpushed Commits: 本轮本地提交未推送，等待审查授权。
+- Known Issues: 仅 h2 有逐选项测验反馈；Explain 自评不写档案；模拟器仍不建模 cache/pipeline/独立写回阶段；部分高级术语仅内联解释；截图为 Chromium 非真机。
+- Remaining Tasks: ChatGPT 第二轮评分；根据反馈决定是否继续打磨或进入下一课。
+- Next Recommended Action: 审查 `docs/review/LESSON_04_REVIEW_PACKAGE_V2.md` 与截图，再决定提交/推送。
+- Important Warnings: 不改旧 ID、不回退 contentVersion、不建第二词典；审查材料不得删除；README 保持不动。
+
+### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，课程质量标准归档）
+
+- Previous Agent: DeepSeek Harness（CI 修复 `0d36a35`）。
+- Current Development Phase: 纯文档归档 Curriculum Quality Standard 1.0，不改课程与业务代码。
+- Branch: `feature/curriculum-3-foundations`。
+- HEAD: 提交前基线 `0d36a35`；本记录随文档提交保存，SHA 用 `git log -1 --format="%H %s"` 查询。
+- Working Tree Status: 提交前干净，无 README 修改。
+- Latest Completed Task: 新增 `docs/CURRICULUM_QUALITY_STANDARD.md`（ positioning、深度、支架、技术英语、课程结构、实验、测评、100 分评分、双门禁、持续改进，以及仓库落地映射/评审清单）；`AGENTS.md` 与 `PROJECT_STATUS.md` 增加强制阅读入口。
+- Changed Files: `docs/CURRICULUM_QUALITY_STANDARD.md`（新增）、`AGENTS.md`、`docs/PROJECT_STATUS.md`、`docs/AGENT_HANDOFF.md`。
+- Tests Actually Run: 文档链接/路径/标题结构检查；未跑业务测试（纯文档变更，未改代码）。
+- Test Results: 文档内相对链接与引用路径均存在；标题层级与评分表完整。
+- CI Status: 本阶段未推送，无新 CI；上一条修复提交的 CI 状态以 GitHub 实际结果为准。
+- Uncommitted Changes: 无（以本提交为准）。
+- Unpushed Commits: `0d36a35` 已推送；本次文档提交未获本阶段 push 授权，保持本地。
+- Known Issues: 标准是规范性文档，正式发布前仍需按技术门在 CI 验证。
+- Remaining Tasks: 用户确认后可普通 push 该文档提交；下一课程按标准执行并留评审记录。
+- Next Recommended Action: 新课程开工前先读标准附录 A，再按附录 B 双门禁准备证据。
+- Important Warnings: 标准不追溯改写已稳定课程；不得以“字数”替代教学深度；实验必须保留共享实现与简化模型说明。
+
 ### Agent Handoff — 2026-11-12 Asia/Shanghai（DeepSeek Harness，WebKit 实验室控件修复）
 
 - Previous Agent: DeepSeek Harness（合并提交 `863080e`）。

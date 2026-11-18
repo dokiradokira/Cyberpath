@@ -11,7 +11,7 @@
 ### 开始工作
 
 1. 先执行 `git status`、`git branch -vv`、`git remote -v`、`git log -5 --oneline`。有未提交改动先记录归属与范围，不覆盖、不清理、不擅自暂存用户文件。
-2. 依次阅读 [项目状态](docs/PROJECT_STATUS.md)、[最新交接](docs/AGENT_HANDOFF.md)、[安全流程](docs/SECURE_DEVELOPMENT_WORKFLOW.md)，再按当前任务读取 README、阶段报告和 [路线图](docs/V2.2_ROADMAP.md)。文档是带时间和 SHA 的快照，最新 Git、源码及对应 SHA 的 CI 结果必须重新核对。
+2. 依次阅读 [项目状态](docs/PROJECT_STATUS.md)、[最新交接](docs/AGENT_HANDOFF.md)、[安全流程](docs/SECURE_DEVELOPMENT_WORKFLOW.md)，再按当前任务读取 README、阶段报告和 [路线图](docs/V2.2_ROADMAP.md)。开发或修改课程、词汇、实验与测验前，必须先阅读 [课程质量标准](docs/CURRICULUM_QUALITY_STANDARD.md)，并按其中的技术门与教育门验收。文档是带时间和 SHA 的快照，最新 Git、源码及对应 SHA 的 CI 结果必须重新核对。
 3. 明确当前任务、允许修改的文件、验收条件及用户授权范围；完成已有功能不代表授权开发下一阶段。不重复全面审计或重做已验收功能，只补查与任务有关的逻辑。
 4. 开始写入前确认前一 Agent 已停止该目录的编辑、Git 操作及会写文件的任务。**两个 Agent 不得同时修改同一个工作区**。无法确认时只读检查，交由负责人确认后再写；不能仅凭工作区干净就认定无人写入。
 

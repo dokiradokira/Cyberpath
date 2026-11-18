@@ -30,7 +30,12 @@ test("foundations lessons expose goals, tiered practice and a registered lab", a
       page.getByRole("heading", { name: lesson.title, level: 1 }),
     ).toBeVisible();
     await expect(page.locator(".learning-brief .learning-block")).toHaveCount(3);
-    for (const level of ["Understand", "Apply", "Reason"]) {
+    for (const level of [
+      "Understand",
+      "Apply",
+      "Reason",
+      ...(lesson.slug === "how-computers-work" ? ["Explain"] : []),
+    ]) {
       await expect(
         page.getByRole("region", { name: `${level} exercise` }),
       ).toHaveCount(1);

@@ -1,5 +1,39 @@
 # CyberPath 项目状态
 
+## 当前阶段：Lesson 04 FINAL 微调（2026-11-17）
+
+第三轮审查后的收尾微调，未重写课程、未改稳定 ID、`introducedIn`、IndexedDB schema 或 `contentVersion`，未修改其他课程。
+
+- Machine instruction 改为 ISA 定义的基本指令单位（保留 opcode、operands、micro-operations）。
+- Loader 改为把 executable 映射到进程地址空间、按需调入页面，明确不会一次性读入整个文件；`load into memory` 词条例句同步修正。
+- Page fault 删除 “(not resident, or not valid in its page table)”，保留“不在当前进程 working set 中”及 soft/hard fault 区别。
+- Windows 实践新增 `PagesInputPersec`、`PagesOutputPersec`：Input 为处理硬缺页从磁盘读取页，Output 为释放物理内存写回已修改页，`Pages/sec` 为二者之和，不能简单理解为硬缺页读取次数；不把 Output 说成硬缺页读取，也不把全部活动视为 pagefile swapping。
+- Quiz `h2` 的 Resource Monitor 指标改为进程级 `Hard Faults/sec`；`Page Faults/sec` 仍表示包含 soft/hard faults 的性能计数器，两者不混用。
+- 可选补充：stored-program 段落说明现代 CPU 可能使用独立指令缓存与数据缓存，不展开 Harvard 架构。
+
+验证：typecheck、lint、build 通过；单元 21 文件 152 项；定向 Lesson 04 20/20；完整浏览器 124/124；LAN 2/2。最终审查材料 `docs/review/LESSON_04_REVIEW_PACKAGE_FINAL.md`（未跟踪）。本地提交，未 Push。
+
+## 当前阶段：Lesson 04 V3 精度修复（2026-11-16）
+
+在 V2 教学升级基础上做定向精度修复，未重写八章、未改任何稳定 ID、`introducedIn`、IndexedDB schema 或 `contentVersion`。
+
+- 修正 `Page Faults/sec`（含软/硬缺页）与 `Pages/sec`（仅硬缺页引发的磁盘页读写）的区别，并加入 PowerShell 计数器与解释。
+- Page fault 改为“页面不在进程 working set 中”；soft fault 无需磁盘，hard fault 从 backing store（可能是 pagefile、EXE/DLL 映像或 memory-mapped file）读取。
+- 区分理论 working set 与 Windows 进程 working set（后者为当前驻留物理内存的页），并在 quiz `h2` 中使用“resident working set”。
+- `h2` 结论改为“证据支持 memory pressure 与 hard faults，但需确认 backing store / 磁盘目标后才能断言 pagefile swapping”；四个反馈同步更新。
+- Pipeline 改为主要提升 throughput、不保证单条指令 latency；补充 micro-operations、per-core L1/L2 与 shared LLC、DMA 完成中断为常见而非唯一、Explain 中初学者指标 vs profiler/硬件计数器。
+- 新增 8 条共享词汇：register、volatile、accumulator、opcode、instruction set、micro-operation、interrupt、memory bandwidth；本课词汇 59 条，全局 166 条；alias/收藏/复习沿用现有系统。
+
+验证：typecheck、lint、build 通过；单元 21 文件 151 项；完整浏览器 124/124；LAN 2/2。V3 审查材料见 `docs/review/LESSON_04_REVIEW_PACKAGE_V3.md`（未跟踪，等待第三轮审查）。本地提交、未 Push。
+
+## 当前阶段：Lesson 04 教学质量升级（2026-11-12）
+
+依据 Curriculum Quality Standard 1.0 与首轮审查（62/100），对 Lesson 04 做定向升级，未新增课程、未改旧课程/实验/测验 ID、未改 `introducedIn` 与 IndexedDB schema。
+
+修正 memory-bound 定义（内存访问延迟/带宽受限，数据可完全在 RAM 内），并区分 memory pressure、paging/swapping 与 thrashing；重写 quiz `h2`，加入 working set、硬缺页、Pages/sec 证据与四个选项的针对性反馈；正文与 CPU 实验统一 fetch/decode/execute/write-back 的模型边界，实验新增“教学模型非完整 CPU”说明（独立数组、概念地址、写回并入 execute）；Section 2–6 深化并新增 51 条本课共享词汇（含别名、例句），修正 `source`/`hierarchy`/`cache` 等跨课释义；新增不依赖选择题的 Explain 练习（提示、参考解释、常见误区，自评且不写档案）；Windows 实践区分累计 CPU/瞬时占用、空闲内存/内存压力、磁盘空间/活动率、缺页/换页。
+
+验证：typecheck、lint、build 通过；单元 21 文件 151 项；完整浏览器 **124/124**；LAN **2/2**。审查材料见 `docs/review/LESSON_04_REVIEW_PACKAGE_V2.md`（未提交，等待第二轮独立审查）。本轮本地提交、暂不 Push。
+
 ## 当前阶段：Foundations × Motion 合并整合（2026-11-12）
 
 本节覆盖下文各快照。`origin/master` 已含 Motion PR #5（合并提交 `00c2f02`，包含 `07a0bba` 与修复 `a91f3b3`）。本轮在 `feature/curriculum-3-foundations` 合入 `origin/master`：保留 Motion 的导航预取与 pending 反馈、词汇浮层退出修复、动效 tokens 与 AnimatedDetails，以及三节基础课程（04–06）、三个共享实验、词汇、三层练习与测验；旧课程/实验/测验 ID、IndexedDB schema 与 `contentVersion` 均未变。
@@ -11,6 +45,8 @@
 验证：typecheck、lint、build 通过；单元 21 文件 147 项通过；完整浏览器 Chromium + WebKit iPhone **114/114**；LAN **2/2**（首次与完整浏览器并行运行时 WebKit 主题恢复出现一次时序失败，单独重跑通过，未放宽断言）。未等待或轮询远程 CI；不 merge master、不部署、不打标签。
 
 下一步：用户在真机 Safari 复验三课实验、Motion 导航与词汇浮层；后续课程扩展另开分支。
+
+课程开发与验收自本轮起统一遵循 [Curriculum Quality Standard 1.0](CURRICULUM_QUALITY_STANDARD.md)：新课程与改动课程须同时通过技术门（typecheck/lint/build/unit/e2e/LAN/存储兼容/移动端/CI）与教育门（准确性、深度、零基础可读性、英文注释、先修链、实验、测评），评分 ≥85 且无强制阻断项。
 
 ### CI 修复：实验室控件在水合前禁用（2026-11-12）
 

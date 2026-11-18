@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useMemo, useState } from "react";
 import {
   CPU_DATA_CELLS,
@@ -58,6 +58,22 @@ export function CpuLab({ id = "cpu-sim" }: { id?: string }) {
         address 11, STORE the sum at address 12, then HALT. Change the inputs,
         predict the result, and step through fetch, decode and execute.
       </p>
+      <div className="notice" lang="en">
+        <p>
+          <strong>Teaching model, not a full CPU.</strong> The Program panel and
+          the Memory panel are stored separately here. Addresses 0–3 label
+          instructions and 10–12 label data, but they are conceptual labels, not
+          one shared address space. A real stored-program CPU fetches
+          instructions from the same memory system that holds data.
+        </p>
+        <p>
+          The simulator shows three phases: fetch, decode and execute. Write-back
+          is folded into execute, so STORE updates memory[12] when the execute
+          phase runs. Real processors often draw fetch, decode, execute, memory
+          and write-back as separate pipeline stages, and overlap several
+          instructions; this model does neither.
+        </p>
+      </div>
 
       <div className="device-buttons">
         <label>

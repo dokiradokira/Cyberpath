@@ -103,6 +103,9 @@ export function Quiz({ lesson }: { lesson: Lesson }) {
               <p className="feedback motion-reveal">
                 {answers[q.id] === q.answer ? "回答正确" : "回答错误"} ·{" "}
                 {q.explanation}
+                {q.feedback?.[answers[q.id]] && (
+                  <> {q.feedback[answers[q.id]]}</>
+                )}
               </p>
             )}
           </fieldset>
